@@ -5,14 +5,12 @@ import { ProviderGroup, UserGroup } from '../@core/datamodel/userDataModel';
 import { RBACINFO } from '../@core/urls/users-url.config';
 import { UserOrgService } from '../@core/service/user-org.service';
 import { AlertService } from '../@core/service/alert.service';
-import { HttpService } from '../@core/service/http.service';
 import { DataStoreService } from '../@core/service/data-store.service';
 import * as i0 from "@angular/core";
 export declare class UsersComponent implements OnInit {
     private userService;
     private fb;
     private alertService;
-    private httpService;
     private _storeservice;
     RBACORG: RBACINFO;
     PERMISSION: any;
@@ -41,7 +39,8 @@ export declare class UsersComponent implements OnInit {
     policyGroupList: any;
     orgInfo: any;
     orgId: any;
-    constructor(userService: UserOrgService, fb: FormBuilder, alertService: AlertService, httpService: HttpService, _storeservice: DataStoreService);
+    httpService: any;
+    constructor(userService: UserOrgService, fb: FormBuilder, alertService: AlertService, _storeservice: DataStoreService);
     ngOnInit(): void;
     initializeForm(): void;
     get formValidate(): {

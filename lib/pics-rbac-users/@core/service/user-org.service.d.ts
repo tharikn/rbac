@@ -1,21 +1,22 @@
 import { Observable } from 'rxjs';
-import { HttpService } from './http.service';
+import { DataStoreService } from './data-store.service';
 import * as i0 from "@angular/core";
 export declare class UserOrgService {
-    private httpService;
-    constructor(httpService: HttpService);
+    private _storeservice;
+    httpService: any;
+    constructor(_storeservice: DataStoreService);
     getAllUserList(key?: string): Observable<any>;
-    getAllUserOrgList(orgid: any): Observable<Object>;
-    saveUser(data: any): Observable<Object>;
-    updateUser(data: any, userid: string): Observable<Object>;
-    deleteUser(id?: string): Observable<Object>;
-    activateUser(data: any): Observable<Object>;
-    addProviderUser(data: any): Observable<Object>;
-    addUserRole(data: any): Observable<Object>;
-    uploadKey(objparams: any): Observable<Object>;
-    getOrgPolicyGroupList(orgid: any): Observable<Object>;
-    getAllUserRole(id?: any): Observable<Object>;
-    getRoleById(roleid: string): Observable<Object>;
+    getAllUserOrgList(orgid: any): any;
+    saveUser(data: any): any;
+    updateUser(data: any, userid: string): any;
+    deleteUser(id?: string): any;
+    activateUser(data: any): any;
+    addProviderUser(data: any): any;
+    addUserRole(data: any): any;
+    uploadKey(objparams: any): any;
+    getOrgPolicyGroupList(orgid: any): any;
+    getAllUserRole(id?: any): any;
+    getRoleById(roleid: string): any;
     static ɵfac: i0.ɵɵFactoryDeclaration<UserOrgService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<UserOrgService>;
 }

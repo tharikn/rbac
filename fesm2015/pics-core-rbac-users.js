@@ -1,30 +1,26 @@
 import * as i0 from '@angular/core';
 import { Injectable, Component, Directive, Input, NgModule, NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BehaviorSubject, of, Subject } from 'rxjs';
-import * as i14 from '@angular/common';
+import * as i13 from '@angular/common';
 import { DatePipe, CommonModule } from '@angular/common';
 import * as i2 from '@angular/forms';
 import { Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import * as i1 from '@angular/common/http';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
-import 'rxjs/add/operator/map';
-import { throwError } from 'rxjs/internal/observable/throwError';
-import { map } from 'rxjs/operators';
-import * as i1$1 from '@angular/router';
+import * as i1 from '@angular/router';
 import { NavigationStart } from '@angular/router';
-import * as i7 from 'primeng/card';
+import 'rxjs/add/operator/map';
+import * as i6 from 'primeng/card';
 import { CardModule } from 'primeng/card';
-import * as i8 from 'primeng/calendar';
+import * as i7 from 'primeng/calendar';
 import { CalendarModule } from 'primeng/calendar';
-import * as i9 from 'primeng/dropdown';
+import * as i8 from 'primeng/dropdown';
 import { DropdownModule } from 'primeng/dropdown';
-import * as i10 from 'primeng/multiselect';
+import * as i9 from 'primeng/multiselect';
 import { MultiSelectModule } from 'primeng/multiselect';
-import * as i11 from 'primeng/checkbox';
+import * as i10 from 'primeng/checkbox';
 import { CheckboxModule } from 'primeng/checkbox';
-import * as i13 from 'primeng/inputtext';
+import * as i12 from 'primeng/inputtext';
 import { InputTextModule } from 'primeng/inputtext';
-import * as i15 from 'primeng/tooltip';
+import * as i14 from 'primeng/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AccordionModule } from 'primeng/accordion';
 import { AvatarModule } from 'primeng/avatar';
@@ -55,7 +51,11 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
 import { TreeSelectModule } from 'primeng/treeselect';
+import * as i1$1 from '@angular/common/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { ConfirmationService } from 'primeng/api';
+import { throwError } from 'rxjs/internal/observable/throwError';
+import { map } from 'rxjs/operators';
 
 class RbacUsersService {
     constructor() { }
@@ -216,111 +216,16 @@ class AppConstants {
 AppConstants.errorMessage = 'Something went wrong!';
 AppConstants.regexEmail = '^[0-9a-zA-Z.-_+-]+[@][0-9a-zA-Z.-_+]+[.][0-9a-zA-Z]{2,}$';
 
-class HttpService {
-    constructor(http, _storeservice) {
-        this.http = http;
+class UserOrgService {
+    constructor(_storeservice) {
         this._storeservice = _storeservice;
-        this.overrideUrl = true;
-        this.baseUrl = '';
-        this.headers = new HttpHeaders()
-            .set('Accept', 'application/json')
-            .set('Content-Type', 'application/json')
-            .set('role', 'role=CP_PUBLIC');
-        this.showSpinner = new BehaviorSubject(false);
-        this.outsideShowSpinner = new BehaviorSubject(false);
         this._storeservice.currentStore.subscribe((res) => {
-            if (res['RBACORG'] && res['RBACORG'] !== '') {
-                this.RBACORG = res['RBACORG'];
-                this.url = this.RBACORG['apiHost'] ? this.RBACORG['apiHost'] : 'http://localhost:3000/api';
-                this.tokenKey = this.RBACORG['tokenKey'];
+            if (res) {
+                console.log('STORESERVICE_RES_USER_ORG_SERVICE', res);
+                console.log('HTTPSERVICE_RES_USER_ORG_SERVICE', res['HTTPSERVICE']);
+                this.httpService = res['HTTPSERVICE'];
             }
         });
-        this.url1 = '';
-    }
-    get(apiRoute) {
-        return this.http.get(`${this.url + apiRoute}`, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    post(apiRoute, body) {
-        return this.http.post(`${this.url + apiRoute}`, body, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    put(apiRoute, body) {
-        return this.http.put(`${this.url + apiRoute}`, body, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    patch(apiRoute, body) {
-        return this.http.patch(`${this.url + apiRoute}`, body, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    delete(apiRoute) {
-        return this.http.delete(`${this.url + apiRoute}`, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    getHttpHeaders() {
-        return new HttpHeaders().set('key', 'value');
-    }
-    getHttpNewHeaders() {
-        return this.headers.set('Authorization', `Bearer ${this.getToken()}`);
-    }
-    getAttachmentHttpHeaders(contentType) {
-        return new HttpHeaders().set('Content-Type', contentType).set('x-ms-blob-type', 'BlockBlob');
-    }
-    putUpload(apiRoute, body, contentType) {
-        return this.http.put(`${this.url1 + apiRoute}`, body, { headers: this.getAttachmentHttpHeaders(contentType) });
-    }
-    putupload2(apiRoute, body, contenttype) {
-        return this.http
-            .put(`${this.url1 + apiRoute}`, body, {
-            headers: this.getAttachmentHttpHeaders(contenttype),
-            observe: 'response'
-        })
-            .pipe(map(data => {
-            return data;
-        }));
-    }
-    /**
-     *
-     * @param apiRoute
-     * This function will download the stream file from the API service.
-     * No HTTP required for this stream. So used Window.location.href to download the file
-     */
-    getFormDownloaded(apiRoute) {
-        window.location.href = `${this.url + apiRoute}`;
-    }
-    //common http service(optional)
-    handleError(error) {
-        var _a, _b;
-        let errorMessage = '';
-        if (error.error instanceof ErrorEvent) {
-            // Client-side errors
-            errorMessage = `Error: ${error.error.message}`;
-        }
-        else {
-            // Server-side errors
-            errorMessage = `Error Code: ${error.status}\nMessage: ${((_a = error === null || error === void 0 ? void 0 : error.error) === null || _a === void 0 ? void 0 : _a.message) ? (_b = error === null || error === void 0 ? void 0 : error.error) === null || _b === void 0 ? void 0 : _b.message : error.message}`;
-        }
-        return throwError(errorMessage);
-    }
-    getToken() {
-        const token = this.tokenKey ? this.tokenKey : 'jwt-token';
-        return sessionStorage.getItem(token);
-    }
-}
-HttpService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService, deps: [{ token: i1.HttpClient }, { token: DataStoreService }], target: i0.ɵɵFactoryTarget.Injectable });
-HttpService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService, decorators: [{
-            type: Injectable
-        }], ctorParameters: function () { return [{ type: i1.HttpClient }, { type: DataStoreService }]; } });
-
-class UserOrgService {
-    constructor(httpService) {
-        this.httpService = httpService;
     }
     getAllUserList(key) {
         return this.httpService.get(`${UserConfig.EndPoint.User.getAllUserList}/${key}`);
@@ -359,14 +264,14 @@ class UserOrgService {
         return this.httpService.get(`${RoleConfig.EndPoint.role.getAllUserRole}/${roleid}`);
     }
 }
-UserOrgService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: UserOrgService, deps: [{ token: HttpService }], target: i0.ɵɵFactoryTarget.Injectable });
+UserOrgService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: UserOrgService, deps: [{ token: DataStoreService }], target: i0.ɵɵFactoryTarget.Injectable });
 UserOrgService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: UserOrgService, providedIn: 'root' });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: UserOrgService, decorators: [{
             type: Injectable,
             args: [{
                     providedIn: 'root'
                 }]
-        }], ctorParameters: function () { return [{ type: HttpService }]; } });
+        }], ctorParameters: function () { return [{ type: DataStoreService }]; } });
 
 class AlertService {
     constructor(router) {
@@ -411,11 +316,11 @@ class AlertService {
         this.subject.next({});
     }
 }
-AlertService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: AlertService, deps: [{ token: i1$1.Router }], target: i0.ɵɵFactoryTarget.Injectable });
+AlertService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: AlertService, deps: [{ token: i1.Router }], target: i0.ɵɵFactoryTarget.Injectable });
 AlertService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: AlertService });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: AlertService, decorators: [{
             type: Injectable
-        }], ctorParameters: function () { return [{ type: i1$1.Router }]; } });
+        }], ctorParameters: function () { return [{ type: i1.Router }]; } });
 var AlertType;
 (function (AlertType) {
     AlertType[AlertType["Success"] = 0] = "Success";
@@ -494,7 +399,7 @@ class AlertComponent {
     }
 }
 AlertComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: AlertComponent, deps: [{ token: AlertService }], target: i0.ɵɵFactoryTarget.Component });
-AlertComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: AlertComponent, selector: "app-alert", ngImport: i0, template: "<div *ngFor=\"let alert of alerts\" class=\"alert-animate {{ cssClass(alert) }} alert-dismissable\">\r\n  {{ alert.message }}\r\n  <a class=\"close\" (click)=\"removeAlert(alert)\">&times;</a>\r\n</div>\r\n", styles: [".alert-animate{position:fixed;top:10px;left:auto;right:10px;z-index:999999;min-width:400px;text-transform:capitalize;margin:0 auto;animation-name:slideInDown;animation-duration:1s;animation-fill-mode:both}.alert-animate .close{padding:3px;border-radius:2px;color:#fff;opacity:1;text-align:center;line-height:17px;font-size:24px}@keyframes slideInDown{0%{transform:translateY(-100%);visibility:visible}to{transform:translateY(0)}}.alert-animate.alert-success{background:#04844b;color:#fff;border-color:#04844b}.alert-danger{background:#b92b28;border-color:#b92b28;color:#fff}.alert-info{color:#fff;background:#0f3164;border-color:#0f3164}\n"], directives: [{ type: i14.NgForOf, selector: "[ngFor][ngForOf]", inputs: ["ngForOf", "ngForTrackBy", "ngForTemplate"] }] });
+AlertComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: AlertComponent, selector: "app-alert", ngImport: i0, template: "<div *ngFor=\"let alert of alerts\" class=\"alert-animate {{ cssClass(alert) }} alert-dismissable\">\r\n  {{ alert.message }}\r\n  <a class=\"close\" (click)=\"removeAlert(alert)\">&times;</a>\r\n</div>\r\n", styles: [".alert-animate{position:fixed;top:10px;left:auto;right:10px;z-index:999999;min-width:400px;text-transform:capitalize;margin:0 auto;animation-name:slideInDown;animation-duration:1s;animation-fill-mode:both}.alert-animate .close{padding:3px;border-radius:2px;color:#fff;opacity:1;text-align:center;line-height:17px;font-size:24px}@keyframes slideInDown{0%{transform:translateY(-100%);visibility:visible}to{transform:translateY(0)}}.alert-animate.alert-success{background:#04844b;color:#fff;border-color:#04844b}.alert-danger{background:#b92b28;border-color:#b92b28;color:#fff}.alert-info{color:#fff;background:#0f3164;border-color:#0f3164}\n"], directives: [{ type: i13.NgForOf, selector: "[ngFor][ngForOf]", inputs: ["ngForOf", "ngForTrackBy", "ngForTemplate"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: AlertComponent, decorators: [{
             type: Component,
             args: [{
@@ -563,11 +468,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImpo
             }] } });
 
 class UsersComponent {
-    constructor(userService, fb, alertService, httpService, _storeservice) {
+    constructor(userService, fb, alertService, _storeservice) {
         this.userService = userService;
         this.fb = fb;
         this.alertService = alertService;
-        this.httpService = httpService;
         this._storeservice = _storeservice;
         this.RBACORG = new RBACINFO();
         this.userList = [];
@@ -586,7 +490,11 @@ class UsersComponent {
     }
     ngOnInit() {
         this._storeservice.currentStore.subscribe((res) => {
-            console.log('STORESERVICE_USER_COMPONENT', res);
+            if (res) {
+                console.log('STORESERVICE_USER_COMPONENT', res);
+                console.log('HTTPSERVICE', res['HTTPSERVICE']);
+                this.httpService = res['HTTPSERVICE'];
+            }
         });
         if (this.RBACORG['orgID']) {
             this.orgId = parseInt(this.RBACORG['orgID']);
@@ -880,8 +788,8 @@ class UsersComponent {
         event.stopPropagation();
     }
 }
-UsersComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: UsersComponent, deps: [{ token: UserOrgService }, { token: i2.FormBuilder }, { token: AlertService }, { token: HttpService }, { token: DataStoreService }], target: i0.ɵɵFactoryTarget.Component });
-UsersComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: UsersComponent, selector: "users", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION" }, ngImport: i0, template: "<app-alert></app-alert>\r\n<div class=\"permission\">\r\n  <div class=\"row\" [formGroup]=\"userForm\">\r\n    <div class=\"col-lg-4 col-md-6 col-12\">\r\n      <div class=\"clearfix\"></div>\r\n      <div class=\"tab-content py-2 px-0 px-sm-0\">\r\n        <div class=\"tab-pane fade show active\">\r\n          <div class=\"form-group bgiconsearch\">\r\n            <input\r\n              class=\"form-control\"\r\n              fieldKey=\"SETTINGS_USR_SEARCH_BY_NAME\"\r\n              placeholder=\"Search by User name\"\r\n              type=\"text\"\r\n              (keyup)=\"searchUser($event)\"\r\n              pInputText />\r\n          </div>\r\n          <div class=\"clearfix\"></div>\r\n          <div class=\"useracess\">\r\n            <div\r\n              class=\"d-flex align-items-center justify-content-center h-100 w-100 ng-star-inserted\"\r\n              *ngIf=\"!filteredUserList.length\">\r\n              <p>No Record Found</p>\r\n            </div>\r\n            <ng-container *ngFor=\"let item of filteredUserList\">\r\n              <div class=\"row userdata align-items-center\" (click)=\"getUserInfo(item)\">\r\n                <div class=\"col-lg-2 col-md-3 col-2\">\r\n                  <img\r\n                    *ngIf=\"!item?.additionalinfo?.thumbnail?.url\"\r\n                    src=\"assets/images/user-empty.png\"\r\n                    alt=\"user\"\r\n                    class=\"userempty\" />\r\n                  <img\r\n                    *ngIf=\"item?.additionalinfo?.thumbnail?.url\"\r\n                    [src]=\"item?.additionalinfo?.thumbnail?.url\"\r\n                    alt=\"user\"\r\n                    class=\"userempty\" />\r\n                </div>\r\n                <div class=\"col-lg-8 col-md-7 col-8 overflow_txt pl-md-0\">\r\n                  <span class=\"nameuser\">{{ item.firstname + ' ' + item.lastname }}</span>\r\n                  <br />\r\n                  <span class=\"emailuser\">{{ item.email }}</span> <br />\r\n                </div>\r\n                <div class=\"col-md-2 col-2 text-right\">\r\n                  <span class=\"right-icons\" *ngIf=\"item?.islocked\">\r\n                    <em class=\"fa fa-lock mr-2 text-muted\" aria-hidden=\"true\" (click)=\"stopPropagation($event)\"></em>\r\n                  </span>\r\n                  <span class=\"right-icons\">\r\n                    <em\r\n                      class=\"fa fa-trash text-primary\"\r\n                      (click)=\"delete($event, item.id)\"\r\n                      aria-hidden=\"true\"\r\n                      *showField=\"'SETTINGS_USR_DELETE_USER'\"></em>\r\n                  </span>\r\n                </div>\r\n              </div>\r\n            </ng-container>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class=\"col-lg-8 col-md-6 col-12 user-right setting-tab mt-2\">\r\n      <p-card class=\"rbac-card h-100\" [style]=\"{ width: '100%' }\">\r\n        <div class=\"strip_head toggleleft\">\r\n          <span class=\"report_head font-weight-bold\">Personal Details</span>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"fname\" class=\"referral-form-labels\"\r\n              >First Name\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <input\r\n              id=\"fname\"\r\n              type=\"text\"\r\n              placeholder=\"Enter First Name\"\r\n              formControlName=\"firstname\"\r\n              fieldKey=\"SETTINGS_USR_FIRST_NAME\"\r\n              aria-describedby=\"fname\"\r\n              pInputText />\r\n            <div *ngIf=\"formValidate['firstname'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['firstname'].invalid\" class=\"p-error block\">First Name is required </small>\r\n            </div>\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"mname\" class=\"referral-form-labels\">Middle Name </label>\r\n            <input\r\n              id=\"mname\"\r\n              type=\"text\"\r\n              placeholder=\"Enter Middle Name\"\r\n              formControlName=\"middlename\"\r\n              fieldKey=\"SETTINGS_USR_MIDDLE_NAME\"\r\n              aria-describedby=\"mname\"\r\n              pInputText />\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"lName\" class=\"referral-form-labels\"\r\n              >Last Name\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <input\r\n              id=\"lName\"\r\n              type=\"text\"\r\n              formControlName=\"lastname\"\r\n              placeholder=\"Enter Last Name\"\r\n              fieldKey=\"SETTINGS_USR_LAST_NAME\"\r\n              pInputText\r\n              aria-describedby=\"lName\" />\r\n            <div *ngIf=\"formValidate['lastname'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['lastname'].invalid\" class=\"p-error block\">Last Name is required </small>\r\n            </div>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <!-- <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"userName\" class=\"referral-form-labels\"\r\n              >User Name\r\n            </label>\r\n            <input\r\n              id=\"userName\"\r\n              type=\"text\"\r\n              formControlName=\"username\"\r\n              placeholder=\"Enter User Name\"\r\n              aria-describedby=\"userName\"\r\n              fieldKey=\"SETTINGS_USR_USERNAME\"\r\n              pInputText />\r\n            <div *ngIf=\"formValidate['username'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['username'].invalid\" class=\"p-error block\">User Name is required </small>\r\n            </div>\r\n          </div> -->\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"dateformat\" class=\"referral-form-labels\"\r\n              >DOB\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <p-calendar\r\n              formControlName=\"dob\"\r\n              placeholder=\"Select Date Of Birth\"\r\n              dateFormat=\"yy-mm-dd\"\r\n              [maxDate]=\"currentDate\"\r\n              fieldKey=\"SETTINGS_USR_DOB\"\r\n              inputId=\"dateformat\"></p-calendar>\r\n            <div *ngIf=\"formValidate['dob'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['dob'].invalid\" class=\"p-error block\">DOB is required </small>\r\n            </div>\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"usersEmailid\" class=\"referral-form-labels\"\r\n              >Email\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <input\r\n              id=\"usersEmailid\"\r\n              fieldKey=\"SETTINGS_USR_EMAIL\"\r\n              formControlName=\"email\"\r\n              placeholder=\"Enter Email\"\r\n              type=\"text\"\r\n              pInputText />\r\n            <div *ngIf=\"formValidate['email'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['email'].invalid\" class=\"p-error block\">Email is required </small>\r\n            </div>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label aria-labelledby=\"role\" for=\"role\" class=\"referral-form-labels\"\r\n              >Role\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <p-dropdown\r\n              inputId=\"role\"\r\n              [options]=\"userRoles\"\r\n              placeholder=\"Select a Role\"\r\n              formControlName=\"userroles\"\r\n              styleClass=\"w-100\"\r\n              optionLabel=\"name\"\r\n              optionValue=\"id\"\r\n              ariaFilterLabel=\"null\"\r\n              fieldKey=\"SETTINGS_USR_ROLE\"\r\n              (onChange)=\"getRolePolicyGroups($event.value)\">\r\n            </p-dropdown>\r\n            <div *ngIf=\"formValidate['userroles'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['userroles'].invalid\" class=\"p-error block\">Roles is required </small>\r\n            </div>\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"pGroup\" class=\"referral-form-labels\">Policy Group </label>\r\n            <p-multiSelect\r\n              [options]=\"policyGroupList\"\r\n              formControlName=\"userpolicygroups\"\r\n              defaultLabel=\"Select a Policy Group\"\r\n              optionLabel=\"policygroupname\"\r\n              optionValue=\"id\"\r\n              inputId=\"pGroup\"\r\n              ariaFilterLabel=\"null\"\r\n              fieldKey=\"SETTINGS_USR_POLICY_GROUP\"\r\n              display=\"chip\">\r\n            </p-multiSelect>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12 mb-1\" *ngIf=\"!sendCredentials\">\r\n            <label for=\"file\" class=\"btn btn-primary mt-2 mb-2 profile\">\r\n              <img style=\"width: 25px\" src=\"assets/images/upload.png\" alt=\"upload\" />&nbsp;&nbsp;Add Image</label\r\n            >\r\n            <input\r\n              type=\"file\"\r\n              (change)=\"handleFileInput($event)\"\r\n              id=\"file\"\r\n              aria-hidden=\"true\"\r\n              style=\"visibility: hidden; display: none\" />&nbsp;&nbsp;\r\n            <img\r\n              *ngIf=\"userForm.controls['thumbnail'].value\"\r\n              [src]=\"userForm.controls['thumbnail'].value\"\r\n              alt=\"user\"\r\n              class=\"userempty\" />\r\n            <label\r\n              class=\"warning\"\r\n              [ngStyle]=\"{\r\n                color: imageInformation === 'Image size exceeds 100 KB' ? '#fc0303' : '#007cc3'\r\n              }\"\r\n              >{{ imageInformation }}</label\r\n            >&nbsp;&nbsp;<em\r\n              class=\"pi pi-trash\"\r\n              pTooltip=\"Remove Image\"\r\n              *ngIf=\"imageInformation && imageInformation !== 'Image size exceeds 100 KB'\"\r\n              (click)=\"removeThumbnail()\"></em>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <div class=\"p-field-checkbox send-credentials\" *ngIf=\"sendCredentials\">\r\n              <p-checkbox\r\n                class=\"p-m-1 p-m-lg-2\"\r\n                inputId=\"binary\"\r\n                [binary]=\"true\"\r\n                fieldKey=\"SETTINGS_USR_EMAIL_TO_CURRENT_USER\"\r\n                formControlName=\"emailtocurrentuser\">\r\n              </p-checkbox>\r\n              <label for=\"binary\">Send Credentials to Current Logged in User</label>\r\n            </div>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <div class=\"p-field-checkbox send-credentials\" *ngIf=\"!sendCredentials\">\r\n              <p-checkbox class=\"p-m-1 p-m-lg-2\" inputId=\"isenabled\" [binary]=\"true\" formControlName=\"isenabled\">\r\n              </p-checkbox>\r\n              <label for=\"isenabled\">Active</label>\r\n            </div>\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <div class=\"p-field-checkbox send-credentials\" *ngIf=\"!sendCredentials\">\r\n              <p-checkbox class=\"p-m-1 p-m-lg-2\" inputId=\"islocked\" [binary]=\"true\" formControlName=\"islocked\">\r\n              </p-checkbox>\r\n              <label for=\"islocked\">Locked</label>\r\n            </div>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\"></div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\"></div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12 mb-0\">\r\n            <button\r\n              fieldKey=\"SETTINGS_USR_ADD_UPDATE\"\r\n              class=\"pull-right mr-2 mb-2 btn btn-primary btncommon\"\r\n              (click)=\"addUser()\">\r\n              {{ userid ? 'Update User' : 'Add User' }}\r\n            </button>\r\n            <button\r\n              fieldKey=\"SETTINGS_USR_CANCEL\"\r\n              class=\"pull-right mb-2 mr-2 btn bg-white text-primary btncancel\"\r\n              (click)=\"cancelUser()\">\r\n              Cancel\r\n            </button>\r\n          </div>\r\n        </div>\r\n      </p-card>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div class=\"modal\" id=\"Deleteuser\" tabindex=\"-1\" role=\"dialog\">\r\n  <div class=\"modal-dialog\" role=\"document\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <h5 class=\"modal-title\">Delete User</h5>\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\r\n          <span aria-hidden=\"true\">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class=\"modal-body\">\r\n        Are you sure want to Delete User?\r\n        <div class=\"clearfix\"></div>\r\n        <div class=\"mt-2\">\r\n          <button class=\"pull-right mb-2 btn btn-primary btncommon delete\" data-dismiss=\"modal\" (click)=\"deleteUser()\">\r\n            Delete\r\n          </button>\r\n          <button class=\"pull-right mb-2 mr-2 btn bg-white text-primary btncancel\" data-dismiss=\"modal\">Cancel</button>\r\n        </div>\r\n        <div class=\"clearfix\"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n", styles: [".head-div{padding-top:9px;padding-left:7px}.bgiconsearch{margin-bottom:5px;padding-bottom:0;font-size:13px}.useracess{border-radius:2px;padding:5px 0;overflow-y:auto}.pi-trash{color:red;font-size:12px}.userempty{max-width:none;border-radius:50%;height:35px;width:35px}.row.userdata{margin:0;border-bottom:solid 1px var(--table-border);padding:5px 0;cursor:pointer}.overflow_txt{overflow:hidden;text-overflow:ellipsis}span.nameuser{font-size:var(--font-13);color:var(--label-text);font-weight:600}.userid,span.emailuser{font-size:var(--font-13);color:#767676}.activate{position:absolute;margin-top:-46px;margin-left:44rem}.toggleleft{font-size:14px;font-weight:600;display:block;margin-top:-12px;padding-bottom:13px}.report_button{margin-left:12px}.rbac-card .profile{color:#fff}.rbac-card .warning{margin-left:10px}.right-icons .fa{margin-top:3px;display:inline-block;z-index:9}.right-icons .fa-lock{font-size:19px}.right-icons .fa-trash{font-size:18px}@media screen and (max-width: 767px){.useracess{max-height:400px}}@media screen and (min-width: 768px){.useracess{height:calc(100vh - 188px)}}@media screen and (min-width: 990px) and (max-width: 1024px){.useracess .userempty{height:100%;width:100%}}\n"], components: [{ type: AlertComponent, selector: "app-alert" }, { type: i7.Card, selector: "p-card", inputs: ["header", "subheader", "style", "styleClass"] }, { type: i8.Calendar, selector: "p-calendar", inputs: ["style", "styleClass", "inputStyle", "inputId", "name", "inputStyleClass", "placeholder", "ariaLabelledBy", "iconAriaLabel", "disabled", "dateFormat", "multipleSeparator", "rangeSeparator", "inline", "showOtherMonths", "selectOtherMonths", "showIcon", "icon", "appendTo", "readonlyInput", "shortYearCutoff", "monthNavigator", "yearNavigator", "hourFormat", "timeOnly", "stepHour", "stepMinute", "stepSecond", "showSeconds", "required", "showOnFocus", "showWeek", "showClear", "dataType", "selectionMode", "maxDateCount", "showButtonBar", "todayButtonStyleClass", "clearButtonStyleClass", "autoZIndex", "baseZIndex", "panelStyleClass", "panelStyle", "keepInvalid", "hideOnDateTimeSelect", "touchUI", "timeSeparator", "focusTrap", "showTransitionOptions", "hideTransitionOptions", "tabindex", "view", "defaultDate", "minDate", "maxDate", "disabledDates", "disabledDays", "yearRange", "showTime", "responsiveOptions", "numberOfMonths", "firstDayOfWeek", "locale"], outputs: ["onFocus", "onBlur", "onClose", "onSelect", "onClear", "onInput", "onTodayClick", "onClearClick", "onMonthChange", "onYearChange", "onClickOutside", "onShow"] }, { type: i9.Dropdown, selector: "p-dropdown", inputs: ["scrollHeight", "filter", "name", "style", "panelStyle", "styleClass", "panelStyleClass", "readonly", "required", "editable", "appendTo", "tabindex", "placeholder", "filterPlaceholder", "filterLocale", "inputId", "selectId", "dataKey", "filterBy", "autofocus", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "autoDisplayFirst", "group", "showClear", "emptyFilterMessage", "emptyMessage", "virtualScroll", "itemSize", "autoZIndex", "baseZIndex", "showTransitionOptions", "hideTransitionOptions", "ariaFilterLabel", "ariaLabel", "ariaLabelledBy", "filterMatchMode", "maxlength", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "autofocusFilter", "disabled", "options", "filterValue"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onShow", "onHide", "onClear"] }, { type: i10.MultiSelect, selector: "p-multiSelect", inputs: ["style", "styleClass", "panelStyle", "panelStyleClass", "inputId", "disabled", "readonly", "group", "filter", "filterPlaceHolder", "filterLocale", "overlayVisible", "tabindex", "appendTo", "dataKey", "name", "label", "ariaLabelledBy", "displaySelectedLabel", "maxSelectedLabels", "selectionLimit", "selectedItemsLabel", "showToggleAll", "emptyFilterMessage", "emptyMessage", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "showHeader", "autoZIndex", "baseZIndex", "filterBy", "virtualScroll", "itemSize", "showTransitionOptions", "hideTransitionOptions", "ariaFilterLabel", "filterMatchMode", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "autofocusFilter", "display", "autocomplete", "showClear", "scrollHeight", "defaultLabel", "placeholder", "options", "filterValue"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onClear", "onPanelShow", "onPanelHide"] }, { type: i11.Checkbox, selector: "p-checkbox", inputs: ["value", "name", "disabled", "binary", "label", "ariaLabelledBy", "ariaLabel", "tabindex", "inputId", "style", "styleClass", "labelStyleClass", "formControl", "checkboxIcon", "readonly", "required", "trueValue", "falseValue"], outputs: ["onChange"] }], directives: [{ type: i2.NgControlStatusGroup, selector: "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]" }, { type: i2.FormGroupDirective, selector: "[formGroup]", inputs: ["formGroup"], outputs: ["ngSubmit"], exportAs: ["ngForm"] }, { type: PermissionDirective, selector: "[fieldKey]", inputs: ["fieldKey"] }, { type: i13.InputText, selector: "[pInputText]" }, { type: i14.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { type: i14.NgForOf, selector: "[ngFor][ngForOf]", inputs: ["ngForOf", "ngForTrackBy", "ngForTemplate"] }, { type: i2.DefaultValueAccessor, selector: "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]" }, { type: i2.NgControlStatus, selector: "[formControlName],[ngModel],[formControl]" }, { type: i2.FormControlName, selector: "[formControlName]", inputs: ["disabled", "formControlName", "ngModel"], outputs: ["ngModelChange"] }, { type: i14.NgStyle, selector: "[ngStyle]", inputs: ["ngStyle"] }, { type: i15.Tooltip, selector: "[pTooltip]", inputs: ["tooltipPosition", "tooltipEvent", "appendTo", "positionStyle", "tooltipStyleClass", "tooltipZIndex", "escape", "showDelay", "hideDelay", "life", "positionTop", "positionLeft", "pTooltip", "tooltipDisabled", "tooltipOptions"] }] });
+UsersComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: UsersComponent, deps: [{ token: UserOrgService }, { token: i2.FormBuilder }, { token: AlertService }, { token: DataStoreService }], target: i0.ɵɵFactoryTarget.Component });
+UsersComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: UsersComponent, selector: "users", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION" }, ngImport: i0, template: "<app-alert></app-alert>\r\n<div class=\"permission\">\r\n  <div class=\"row\" [formGroup]=\"userForm\">\r\n    <div class=\"col-lg-4 col-md-6 col-12\">\r\n      <div class=\"clearfix\"></div>\r\n      <div class=\"tab-content py-2 px-0 px-sm-0\">\r\n        <div class=\"tab-pane fade show active\">\r\n          <div class=\"form-group bgiconsearch\">\r\n            <input\r\n              class=\"form-control\"\r\n              fieldKey=\"SETTINGS_USR_SEARCH_BY_NAME\"\r\n              placeholder=\"Search by User name\"\r\n              type=\"text\"\r\n              (keyup)=\"searchUser($event)\"\r\n              pInputText />\r\n          </div>\r\n          <div class=\"clearfix\"></div>\r\n          <div class=\"useracess\">\r\n            <div\r\n              class=\"d-flex align-items-center justify-content-center h-100 w-100 ng-star-inserted\"\r\n              *ngIf=\"!filteredUserList.length\">\r\n              <p>No Record Found</p>\r\n            </div>\r\n            <ng-container *ngFor=\"let item of filteredUserList\">\r\n              <div class=\"row userdata align-items-center\" (click)=\"getUserInfo(item)\">\r\n                <div class=\"col-lg-2 col-md-3 col-2\">\r\n                  <img\r\n                    *ngIf=\"!item?.additionalinfo?.thumbnail?.url\"\r\n                    src=\"assets/images/user-empty.png\"\r\n                    alt=\"user\"\r\n                    class=\"userempty\" />\r\n                  <img\r\n                    *ngIf=\"item?.additionalinfo?.thumbnail?.url\"\r\n                    [src]=\"item?.additionalinfo?.thumbnail?.url\"\r\n                    alt=\"user\"\r\n                    class=\"userempty\" />\r\n                </div>\r\n                <div class=\"col-lg-8 col-md-7 col-8 overflow_txt pl-md-0\">\r\n                  <span class=\"nameuser\">{{ item.firstname + ' ' + item.lastname }}</span>\r\n                  <br />\r\n                  <span class=\"emailuser\">{{ item.email }}</span> <br />\r\n                </div>\r\n                <div class=\"col-md-2 col-2 text-right\">\r\n                  <span class=\"right-icons\" *ngIf=\"item?.islocked\">\r\n                    <em class=\"fa fa-lock mr-2 text-muted\" aria-hidden=\"true\" (click)=\"stopPropagation($event)\"></em>\r\n                  </span>\r\n                  <span class=\"right-icons\">\r\n                    <em\r\n                      class=\"fa fa-trash text-primary\"\r\n                      (click)=\"delete($event, item.id)\"\r\n                      aria-hidden=\"true\"\r\n                      *showField=\"'SETTINGS_USR_DELETE_USER'\"></em>\r\n                  </span>\r\n                </div>\r\n              </div>\r\n            </ng-container>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class=\"col-lg-8 col-md-6 col-12 user-right setting-tab mt-2\">\r\n      <p-card class=\"rbac-card h-100\" [style]=\"{ width: '100%' }\">\r\n        <div class=\"strip_head toggleleft\">\r\n          <span class=\"report_head font-weight-bold\">Personal Details</span>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"fname\" class=\"referral-form-labels\"\r\n              >First Name\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <input\r\n              id=\"fname\"\r\n              type=\"text\"\r\n              placeholder=\"Enter First Name\"\r\n              formControlName=\"firstname\"\r\n              fieldKey=\"SETTINGS_USR_FIRST_NAME\"\r\n              aria-describedby=\"fname\"\r\n              pInputText />\r\n            <div *ngIf=\"formValidate['firstname'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['firstname'].invalid\" class=\"p-error block\">First Name is required </small>\r\n            </div>\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"mname\" class=\"referral-form-labels\">Middle Name </label>\r\n            <input\r\n              id=\"mname\"\r\n              type=\"text\"\r\n              placeholder=\"Enter Middle Name\"\r\n              formControlName=\"middlename\"\r\n              fieldKey=\"SETTINGS_USR_MIDDLE_NAME\"\r\n              aria-describedby=\"mname\"\r\n              pInputText />\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"lName\" class=\"referral-form-labels\"\r\n              >Last Name\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <input\r\n              id=\"lName\"\r\n              type=\"text\"\r\n              formControlName=\"lastname\"\r\n              placeholder=\"Enter Last Name\"\r\n              fieldKey=\"SETTINGS_USR_LAST_NAME\"\r\n              pInputText\r\n              aria-describedby=\"lName\" />\r\n            <div *ngIf=\"formValidate['lastname'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['lastname'].invalid\" class=\"p-error block\">Last Name is required </small>\r\n            </div>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <!-- <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"userName\" class=\"referral-form-labels\"\r\n              >User Name\r\n            </label>\r\n            <input\r\n              id=\"userName\"\r\n              type=\"text\"\r\n              formControlName=\"username\"\r\n              placeholder=\"Enter User Name\"\r\n              aria-describedby=\"userName\"\r\n              fieldKey=\"SETTINGS_USR_USERNAME\"\r\n              pInputText />\r\n            <div *ngIf=\"formValidate['username'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['username'].invalid\" class=\"p-error block\">User Name is required </small>\r\n            </div>\r\n          </div> -->\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"dateformat\" class=\"referral-form-labels\"\r\n              >DOB\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <p-calendar\r\n              formControlName=\"dob\"\r\n              placeholder=\"Select Date Of Birth\"\r\n              dateFormat=\"yy-mm-dd\"\r\n              [maxDate]=\"currentDate\"\r\n              fieldKey=\"SETTINGS_USR_DOB\"\r\n              inputId=\"dateformat\"></p-calendar>\r\n            <div *ngIf=\"formValidate['dob'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['dob'].invalid\" class=\"p-error block\">DOB is required </small>\r\n            </div>\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"usersEmailid\" class=\"referral-form-labels\"\r\n              >Email\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <input\r\n              id=\"usersEmailid\"\r\n              fieldKey=\"SETTINGS_USR_EMAIL\"\r\n              formControlName=\"email\"\r\n              placeholder=\"Enter Email\"\r\n              type=\"text\"\r\n              pInputText />\r\n            <div *ngIf=\"formValidate['email'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['email'].invalid\" class=\"p-error block\">Email is required </small>\r\n            </div>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label aria-labelledby=\"role\" for=\"role\" class=\"referral-form-labels\"\r\n              >Role\r\n              <span class=\"requiredfield text-danger\">*</span>\r\n            </label>\r\n            <p-dropdown\r\n              inputId=\"role\"\r\n              [options]=\"userRoles\"\r\n              placeholder=\"Select a Role\"\r\n              formControlName=\"userroles\"\r\n              styleClass=\"w-100\"\r\n              optionLabel=\"name\"\r\n              optionValue=\"id\"\r\n              ariaFilterLabel=\"null\"\r\n              fieldKey=\"SETTINGS_USR_ROLE\"\r\n              (onChange)=\"getRolePolicyGroups($event.value)\">\r\n            </p-dropdown>\r\n            <div *ngIf=\"formValidate['userroles'].errors && formSubmit\">\r\n              <small *ngIf=\"formValidate['userroles'].invalid\" class=\"p-error block\">Roles is required </small>\r\n            </div>\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <label for=\"pGroup\" class=\"referral-form-labels\">Policy Group </label>\r\n            <p-multiSelect\r\n              [options]=\"policyGroupList\"\r\n              formControlName=\"userpolicygroups\"\r\n              defaultLabel=\"Select a Policy Group\"\r\n              optionLabel=\"policygroupname\"\r\n              optionValue=\"id\"\r\n              inputId=\"pGroup\"\r\n              ariaFilterLabel=\"null\"\r\n              fieldKey=\"SETTINGS_USR_POLICY_GROUP\"\r\n              display=\"chip\">\r\n            </p-multiSelect>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12 mb-1\" *ngIf=\"!sendCredentials\">\r\n            <label for=\"file\" class=\"btn btn-primary mt-2 mb-2 profile\">\r\n              <img style=\"width: 25px\" src=\"assets/images/upload.png\" alt=\"upload\" />&nbsp;&nbsp;Add Image</label\r\n            >\r\n            <input\r\n              type=\"file\"\r\n              (change)=\"handleFileInput($event)\"\r\n              id=\"file\"\r\n              aria-hidden=\"true\"\r\n              style=\"visibility: hidden; display: none\" />&nbsp;&nbsp;\r\n            <img\r\n              *ngIf=\"userForm.controls['thumbnail'].value\"\r\n              [src]=\"userForm.controls['thumbnail'].value\"\r\n              alt=\"user\"\r\n              class=\"userempty\" />\r\n            <label\r\n              class=\"warning\"\r\n              [ngStyle]=\"{\r\n                color: imageInformation === 'Image size exceeds 100 KB' ? '#fc0303' : '#007cc3'\r\n              }\"\r\n              >{{ imageInformation }}</label\r\n            >&nbsp;&nbsp;<em\r\n              class=\"pi pi-trash\"\r\n              pTooltip=\"Remove Image\"\r\n              *ngIf=\"imageInformation && imageInformation !== 'Image size exceeds 100 KB'\"\r\n              (click)=\"removeThumbnail()\"></em>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <div class=\"p-field-checkbox send-credentials\" *ngIf=\"sendCredentials\">\r\n              <p-checkbox\r\n                class=\"p-m-1 p-m-lg-2\"\r\n                inputId=\"binary\"\r\n                [binary]=\"true\"\r\n                fieldKey=\"SETTINGS_USR_EMAIL_TO_CURRENT_USER\"\r\n                formControlName=\"emailtocurrentuser\">\r\n              </p-checkbox>\r\n              <label for=\"binary\">Send Credentials to Current Logged in User</label>\r\n            </div>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <div class=\"p-field-checkbox send-credentials\" *ngIf=\"!sendCredentials\">\r\n              <p-checkbox class=\"p-m-1 p-m-lg-2\" inputId=\"isenabled\" [binary]=\"true\" formControlName=\"isenabled\">\r\n              </p-checkbox>\r\n              <label for=\"isenabled\">Active</label>\r\n            </div>\r\n          </div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\">\r\n            <div class=\"p-field-checkbox send-credentials\" *ngIf=\"!sendCredentials\">\r\n              <p-checkbox class=\"p-m-1 p-m-lg-2\" inputId=\"islocked\" [binary]=\"true\" formControlName=\"islocked\">\r\n              </p-checkbox>\r\n              <label for=\"islocked\">Locked</label>\r\n            </div>\r\n          </div>\r\n        </div>\r\n        <div class=\"p-fluid p-formgrid row\">\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\"></div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12\"></div>\r\n          <div class=\"p-field col-lg-4 col-sm-4 col-md-12 col-12 mb-0\">\r\n            <button\r\n              fieldKey=\"SETTINGS_USR_ADD_UPDATE\"\r\n              class=\"pull-right mr-2 mb-2 btn btn-primary btncommon\"\r\n              (click)=\"addUser()\">\r\n              {{ userid ? 'Update User' : 'Add User' }}\r\n            </button>\r\n            <button\r\n              fieldKey=\"SETTINGS_USR_CANCEL\"\r\n              class=\"pull-right mb-2 mr-2 btn bg-white text-primary btncancel\"\r\n              (click)=\"cancelUser()\">\r\n              Cancel\r\n            </button>\r\n          </div>\r\n        </div>\r\n      </p-card>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div class=\"modal\" id=\"Deleteuser\" tabindex=\"-1\" role=\"dialog\">\r\n  <div class=\"modal-dialog\" role=\"document\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <h5 class=\"modal-title\">Delete User</h5>\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\r\n          <span aria-hidden=\"true\">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class=\"modal-body\">\r\n        Are you sure want to Delete User?\r\n        <div class=\"clearfix\"></div>\r\n        <div class=\"mt-2\">\r\n          <button class=\"pull-right mb-2 btn btn-primary btncommon delete\" data-dismiss=\"modal\" (click)=\"deleteUser()\">\r\n            Delete\r\n          </button>\r\n          <button class=\"pull-right mb-2 mr-2 btn bg-white text-primary btncancel\" data-dismiss=\"modal\">Cancel</button>\r\n        </div>\r\n        <div class=\"clearfix\"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n", styles: [".head-div{padding-top:9px;padding-left:7px}.bgiconsearch{margin-bottom:5px;padding-bottom:0;font-size:13px}.useracess{border-radius:2px;padding:5px 0;overflow-y:auto}.pi-trash{color:red;font-size:12px}.userempty{max-width:none;border-radius:50%;height:35px;width:35px}.row.userdata{margin:0;border-bottom:solid 1px var(--table-border);padding:5px 0;cursor:pointer}.overflow_txt{overflow:hidden;text-overflow:ellipsis}span.nameuser{font-size:var(--font-13);color:var(--label-text);font-weight:600}.userid,span.emailuser{font-size:var(--font-13);color:#767676}.activate{position:absolute;margin-top:-46px;margin-left:44rem}.toggleleft{font-size:14px;font-weight:600;display:block;margin-top:-12px;padding-bottom:13px}.report_button{margin-left:12px}.rbac-card .profile{color:#fff}.rbac-card .warning{margin-left:10px}.right-icons .fa{margin-top:3px;display:inline-block;z-index:9}.right-icons .fa-lock{font-size:19px}.right-icons .fa-trash{font-size:18px}@media screen and (max-width: 767px){.useracess{max-height:400px}}@media screen and (min-width: 768px){.useracess{height:calc(100vh - 188px)}}@media screen and (min-width: 990px) and (max-width: 1024px){.useracess .userempty{height:100%;width:100%}}\n"], components: [{ type: AlertComponent, selector: "app-alert" }, { type: i6.Card, selector: "p-card", inputs: ["header", "subheader", "style", "styleClass"] }, { type: i7.Calendar, selector: "p-calendar", inputs: ["style", "styleClass", "inputStyle", "inputId", "name", "inputStyleClass", "placeholder", "ariaLabelledBy", "iconAriaLabel", "disabled", "dateFormat", "multipleSeparator", "rangeSeparator", "inline", "showOtherMonths", "selectOtherMonths", "showIcon", "icon", "appendTo", "readonlyInput", "shortYearCutoff", "monthNavigator", "yearNavigator", "hourFormat", "timeOnly", "stepHour", "stepMinute", "stepSecond", "showSeconds", "required", "showOnFocus", "showWeek", "showClear", "dataType", "selectionMode", "maxDateCount", "showButtonBar", "todayButtonStyleClass", "clearButtonStyleClass", "autoZIndex", "baseZIndex", "panelStyleClass", "panelStyle", "keepInvalid", "hideOnDateTimeSelect", "touchUI", "timeSeparator", "focusTrap", "showTransitionOptions", "hideTransitionOptions", "tabindex", "view", "defaultDate", "minDate", "maxDate", "disabledDates", "disabledDays", "yearRange", "showTime", "responsiveOptions", "numberOfMonths", "firstDayOfWeek", "locale"], outputs: ["onFocus", "onBlur", "onClose", "onSelect", "onClear", "onInput", "onTodayClick", "onClearClick", "onMonthChange", "onYearChange", "onClickOutside", "onShow"] }, { type: i8.Dropdown, selector: "p-dropdown", inputs: ["scrollHeight", "filter", "name", "style", "panelStyle", "styleClass", "panelStyleClass", "readonly", "required", "editable", "appendTo", "tabindex", "placeholder", "filterPlaceholder", "filterLocale", "inputId", "selectId", "dataKey", "filterBy", "autofocus", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "autoDisplayFirst", "group", "showClear", "emptyFilterMessage", "emptyMessage", "virtualScroll", "itemSize", "autoZIndex", "baseZIndex", "showTransitionOptions", "hideTransitionOptions", "ariaFilterLabel", "ariaLabel", "ariaLabelledBy", "filterMatchMode", "maxlength", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "autofocusFilter", "disabled", "options", "filterValue"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onShow", "onHide", "onClear"] }, { type: i9.MultiSelect, selector: "p-multiSelect", inputs: ["style", "styleClass", "panelStyle", "panelStyleClass", "inputId", "disabled", "readonly", "group", "filter", "filterPlaceHolder", "filterLocale", "overlayVisible", "tabindex", "appendTo", "dataKey", "name", "label", "ariaLabelledBy", "displaySelectedLabel", "maxSelectedLabels", "selectionLimit", "selectedItemsLabel", "showToggleAll", "emptyFilterMessage", "emptyMessage", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "showHeader", "autoZIndex", "baseZIndex", "filterBy", "virtualScroll", "itemSize", "showTransitionOptions", "hideTransitionOptions", "ariaFilterLabel", "filterMatchMode", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "autofocusFilter", "display", "autocomplete", "showClear", "scrollHeight", "defaultLabel", "placeholder", "options", "filterValue"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onClear", "onPanelShow", "onPanelHide"] }, { type: i10.Checkbox, selector: "p-checkbox", inputs: ["value", "name", "disabled", "binary", "label", "ariaLabelledBy", "ariaLabel", "tabindex", "inputId", "style", "styleClass", "labelStyleClass", "formControl", "checkboxIcon", "readonly", "required", "trueValue", "falseValue"], outputs: ["onChange"] }], directives: [{ type: i2.NgControlStatusGroup, selector: "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]" }, { type: i2.FormGroupDirective, selector: "[formGroup]", inputs: ["formGroup"], outputs: ["ngSubmit"], exportAs: ["ngForm"] }, { type: PermissionDirective, selector: "[fieldKey]", inputs: ["fieldKey"] }, { type: i12.InputText, selector: "[pInputText]" }, { type: i13.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { type: i13.NgForOf, selector: "[ngFor][ngForOf]", inputs: ["ngForOf", "ngForTrackBy", "ngForTemplate"] }, { type: i2.DefaultValueAccessor, selector: "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]" }, { type: i2.NgControlStatus, selector: "[formControlName],[ngModel],[formControl]" }, { type: i2.FormControlName, selector: "[formControlName]", inputs: ["disabled", "formControlName", "ngModel"], outputs: ["ngModelChange"] }, { type: i13.NgStyle, selector: "[ngStyle]", inputs: ["ngStyle"] }, { type: i14.Tooltip, selector: "[pTooltip]", inputs: ["tooltipPosition", "tooltipEvent", "appendTo", "positionStyle", "tooltipStyleClass", "tooltipZIndex", "escape", "showDelay", "hideDelay", "life", "positionTop", "positionLeft", "pTooltip", "tooltipDisabled", "tooltipOptions"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: UsersComponent, decorators: [{
             type: Component,
             args: [{
@@ -889,7 +797,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImpo
                     templateUrl: './users.component.html',
                     styleUrls: ['./users.component.scss']
                 }]
-        }], ctorParameters: function () { return [{ type: UserOrgService }, { type: i2.FormBuilder }, { type: AlertService }, { type: HttpService }, { type: DataStoreService }]; }, propDecorators: { RBACORG: [{
+        }], ctorParameters: function () { return [{ type: UserOrgService }, { type: i2.FormBuilder }, { type: AlertService }, { type: DataStoreService }]; }, propDecorators: { RBACORG: [{
                 type: Input
             }], PERMISSION: [{
                 type: Input
@@ -1103,6 +1011,108 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImpo
                     schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]
                 }]
         }] });
+
+class HttpService {
+    constructor(http, _storeservice) {
+        this.http = http;
+        this._storeservice = _storeservice;
+        this.overrideUrl = true;
+        this.baseUrl = '';
+        this.headers = new HttpHeaders()
+            .set('Accept', 'application/json')
+            .set('Content-Type', 'application/json')
+            .set('role', 'role=CP_PUBLIC');
+        this.showSpinner = new BehaviorSubject(false);
+        this.outsideShowSpinner = new BehaviorSubject(false);
+        this._storeservice.currentStore.subscribe((res) => {
+            if (res['RBACORG'] && res['RBACORG'] !== '') {
+                this.RBACORG = res['RBACORG'];
+                this.url = this.RBACORG['apiHost'] ? this.RBACORG['apiHost'] : 'http://localhost:3000/api';
+                this.tokenKey = this.RBACORG['tokenKey'];
+            }
+        });
+        this.url1 = '';
+    }
+    get(apiRoute) {
+        return this.http.get(`${this.url + apiRoute}`, {
+            headers: this.getHttpNewHeaders()
+        });
+    }
+    post(apiRoute, body) {
+        return this.http.post(`${this.url + apiRoute}`, body, {
+            headers: this.getHttpNewHeaders()
+        });
+    }
+    put(apiRoute, body) {
+        return this.http.put(`${this.url + apiRoute}`, body, {
+            headers: this.getHttpNewHeaders()
+        });
+    }
+    patch(apiRoute, body) {
+        return this.http.patch(`${this.url + apiRoute}`, body, {
+            headers: this.getHttpNewHeaders()
+        });
+    }
+    delete(apiRoute) {
+        return this.http.delete(`${this.url + apiRoute}`, {
+            headers: this.getHttpNewHeaders()
+        });
+    }
+    getHttpHeaders() {
+        return new HttpHeaders().set('key', 'value');
+    }
+    getHttpNewHeaders() {
+        return this.headers.set('Authorization', `Bearer ${this.getToken()}`);
+    }
+    getAttachmentHttpHeaders(contentType) {
+        return new HttpHeaders().set('Content-Type', contentType).set('x-ms-blob-type', 'BlockBlob');
+    }
+    putUpload(apiRoute, body, contentType) {
+        return this.http.put(`${this.url1 + apiRoute}`, body, { headers: this.getAttachmentHttpHeaders(contentType) });
+    }
+    putupload2(apiRoute, body, contenttype) {
+        return this.http
+            .put(`${this.url1 + apiRoute}`, body, {
+            headers: this.getAttachmentHttpHeaders(contenttype),
+            observe: 'response'
+        })
+            .pipe(map(data => {
+            return data;
+        }));
+    }
+    /**
+     *
+     * @param apiRoute
+     * This function will download the stream file from the API service.
+     * No HTTP required for this stream. So used Window.location.href to download the file
+     */
+    getFormDownloaded(apiRoute) {
+        window.location.href = `${this.url + apiRoute}`;
+    }
+    //common http service(optional)
+    handleError(error) {
+        var _a, _b;
+        let errorMessage = '';
+        if (error.error instanceof ErrorEvent) {
+            // Client-side errors
+            errorMessage = `Error: ${error.error.message}`;
+        }
+        else {
+            // Server-side errors
+            errorMessage = `Error Code: ${error.status}\nMessage: ${((_a = error === null || error === void 0 ? void 0 : error.error) === null || _a === void 0 ? void 0 : _a.message) ? (_b = error === null || error === void 0 ? void 0 : error.error) === null || _b === void 0 ? void 0 : _b.message : error.message}`;
+        }
+        return throwError(errorMessage);
+    }
+    getToken() {
+        const token = this.tokenKey ? this.tokenKey : 'jwt-token';
+        return sessionStorage.getItem(token);
+    }
+}
+HttpService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService, deps: [{ token: i1$1.HttpClient }, { token: DataStoreService }], target: i0.ɵɵFactoryTarget.Injectable });
+HttpService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService, decorators: [{
+            type: Injectable
+        }], ctorParameters: function () { return [{ type: i1$1.HttpClient }, { type: DataStoreService }]; } });
 
 class RbacUsersModule {
 }
