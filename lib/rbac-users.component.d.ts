@@ -9,9 +9,9 @@ export declare class RbacUsersComponent implements OnInit {
     private _storeservice;
     RBACORG: RBACINFO;
     PERMISSION: any;
-    HTTPSERVICE: Observable<any>;
+    COMMONSERVICE: Observable<any>;
     constructor(permissionStore: PermissionStore, _storeservice: DataStoreService);
     ngOnInit(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<RbacUsersComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<RbacUsersComponent, "rbac-users", never, { "RBACORG": "RBACORG"; "PERMISSION": "PERMISSION"; "HTTPSERVICE": "HTTPSERVICE"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<RbacUsersComponent, "rbac-users", never, { "RBACORG": "RBACORG"; "PERMISSION": "PERMISSION"; "COMMONSERVICE": "COMMONSERVICE"; }, {}, never, never>;
 }

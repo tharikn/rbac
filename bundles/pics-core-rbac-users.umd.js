@@ -694,8 +694,6 @@
             this._storeservice = _storeservice;
             this._storeservice.currentStore.subscribe(function (res) {
                 if (res) {
-                    console.log('STORESERVICE_RES_USER_ORG_SERVICE', res);
-                    console.log('HTTPSERVICE_RES_USER_ORG_SERVICE', res['HTTPSERVICE']);
                     _this.httpService = res['HTTPSERVICE'];
                 }
             });
@@ -987,8 +985,6 @@
             var _this = this;
             this._storeservice.currentStore.subscribe(function (res) {
                 if (res) {
-                    console.log('STORESERVICE_USER_COMPONENT', res);
-                    console.log('HTTPSERVICE', res['HTTPSERVICE']);
                     _this.httpService = res['HTTPSERVICE'];
                 }
             });
@@ -1322,10 +1318,9 @@
         }
         RbacUsersComponent.prototype.ngOnInit = function () {
             var _this = this;
-            this.HTTPSERVICE.subscribe(function (val) {
+            this.COMMONSERVICE.subscribe(function (val) {
                 if (val) {
-                    console.log("RBAC-USERS-LIBRARY", val);
-                    _this._storeservice.setData('HTTPSERVICE', val.http);
+                    _this._storeservice.setData('HTTPSERVICE', val.httpService);
                 }
             });
             this._storeservice.setData('RBACORG', this.RBACORG);
@@ -1334,7 +1329,7 @@
         return RbacUsersComponent;
     }());
     RbacUsersComponent.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: RbacUsersComponent, deps: [{ token: PermissionStore }, { token: DataStoreService }], target: i0__namespace.ɵɵFactoryTarget.Component });
-    RbacUsersComponent.ɵcmp = i0__namespace.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: RbacUsersComponent, selector: "rbac-users", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION", HTTPSERVICE: "HTTPSERVICE" }, ngImport: i0__namespace, template: "\n    <users [RBACORG]=\"RBACORG\" [PERMISSION]=\"PERMISSION\"></users>\n  ", isInline: true, components: [{ type: UsersComponent, selector: "users", inputs: ["RBACORG", "PERMISSION"] }] });
+    RbacUsersComponent.ɵcmp = i0__namespace.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: RbacUsersComponent, selector: "rbac-users", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION", COMMONSERVICE: "COMMONSERVICE" }, ngImport: i0__namespace, template: "\n    <users [RBACORG]=\"RBACORG\" [PERMISSION]=\"PERMISSION\"></users>\n  ", isInline: true, components: [{ type: UsersComponent, selector: "users", inputs: ["RBACORG", "PERMISSION"] }] });
     i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: RbacUsersComponent, decorators: [{
                 type: i0.Component,
                 args: [{
@@ -1346,7 +1341,7 @@
                     type: i0.Input
                 }], PERMISSION: [{
                     type: i0.Input
-                }], HTTPSERVICE: [{
+                }], COMMONSERVICE: [{
                     type: i0.Input
                 }] } });
 
