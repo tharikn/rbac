@@ -51,11 +51,8 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
 import { TreeSelectModule } from 'primeng/treeselect';
-import * as i1$1 from '@angular/common/http';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ConfirmationService } from 'primeng/api';
-import { throwError } from 'rxjs/internal/observable/throwError';
-import { map } from 'rxjs/operators';
 
 class RbacUsersService {
     constructor() { }
@@ -1012,113 +1009,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImpo
                 }]
         }] });
 
-class HttpService {
-    constructor(http, _storeservice) {
-        this.http = http;
-        this._storeservice = _storeservice;
-        this.overrideUrl = true;
-        this.baseUrl = '';
-        this.headers = new HttpHeaders()
-            .set('Accept', 'application/json')
-            .set('Content-Type', 'application/json')
-            .set('role', 'role=CP_PUBLIC');
-        this.showSpinner = new BehaviorSubject(false);
-        this.outsideShowSpinner = new BehaviorSubject(false);
-        this._storeservice.currentStore.subscribe((res) => {
-            if (res['RBACORG'] && res['RBACORG'] !== '') {
-                this.RBACORG = res['RBACORG'];
-                this.url = this.RBACORG['apiHost'] ? this.RBACORG['apiHost'] : 'http://localhost:3000/api';
-                this.tokenKey = this.RBACORG['tokenKey'];
-            }
-        });
-        this.url1 = '';
-    }
-    get(apiRoute) {
-        return this.http.get(`${this.url + apiRoute}`, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    post(apiRoute, body) {
-        return this.http.post(`${this.url + apiRoute}`, body, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    put(apiRoute, body) {
-        return this.http.put(`${this.url + apiRoute}`, body, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    patch(apiRoute, body) {
-        return this.http.patch(`${this.url + apiRoute}`, body, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    delete(apiRoute) {
-        return this.http.delete(`${this.url + apiRoute}`, {
-            headers: this.getHttpNewHeaders()
-        });
-    }
-    getHttpHeaders() {
-        return new HttpHeaders().set('key', 'value');
-    }
-    getHttpNewHeaders() {
-        return this.headers.set('Authorization', `Bearer ${this.getToken()}`);
-    }
-    getAttachmentHttpHeaders(contentType) {
-        return new HttpHeaders().set('Content-Type', contentType).set('x-ms-blob-type', 'BlockBlob');
-    }
-    putUpload(apiRoute, body, contentType) {
-        return this.http.put(`${this.url1 + apiRoute}`, body, { headers: this.getAttachmentHttpHeaders(contentType) });
-    }
-    putupload2(apiRoute, body, contenttype) {
-        return this.http
-            .put(`${this.url1 + apiRoute}`, body, {
-            headers: this.getAttachmentHttpHeaders(contenttype),
-            observe: 'response'
-        })
-            .pipe(map(data => {
-            return data;
-        }));
-    }
-    /**
-     *
-     * @param apiRoute
-     * This function will download the stream file from the API service.
-     * No HTTP required for this stream. So used Window.location.href to download the file
-     */
-    getFormDownloaded(apiRoute) {
-        window.location.href = `${this.url + apiRoute}`;
-    }
-    //common http service(optional)
-    handleError(error) {
-        var _a, _b;
-        let errorMessage = '';
-        if (error.error instanceof ErrorEvent) {
-            // Client-side errors
-            errorMessage = `Error: ${error.error.message}`;
-        }
-        else {
-            // Server-side errors
-            errorMessage = `Error Code: ${error.status}\nMessage: ${((_a = error === null || error === void 0 ? void 0 : error.error) === null || _a === void 0 ? void 0 : _a.message) ? (_b = error === null || error === void 0 ? void 0 : error.error) === null || _b === void 0 ? void 0 : _b.message : error.message}`;
-        }
-        return throwError(errorMessage);
-    }
-    getToken() {
-        const token = this.tokenKey ? this.tokenKey : 'jwt-token';
-        return sessionStorage.getItem(token);
-    }
-}
-HttpService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService, deps: [{ token: i1$1.HttpClient }, { token: DataStoreService }], target: i0.ɵɵFactoryTarget.Injectable });
-HttpService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: HttpService, decorators: [{
-            type: Injectable
-        }], ctorParameters: function () { return [{ type: i1$1.HttpClient }, { type: DataStoreService }]; } });
-
 class RbacUsersModule {
 }
 RbacUsersModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: RbacUsersModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 RbacUsersModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: RbacUsersModule, declarations: [RbacUsersComponent], imports: [PicsRbacUsersModule], exports: [RbacUsersComponent] });
-RbacUsersModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: RbacUsersModule, providers: [UserOrgService, HttpClient, HttpService, AlertService, ConfirmationService, PermissionStore, DataStoreService], imports: [[
+RbacUsersModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: RbacUsersModule, providers: [UserOrgService, HttpClient, AlertService, ConfirmationService, PermissionStore, DataStoreService], imports: [[
             PicsRbacUsersModule
         ]] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: RbacUsersModule, decorators: [{
@@ -1133,7 +1028,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImpo
                     exports: [
                         RbacUsersComponent
                     ],
-                    providers: [UserOrgService, HttpClient, HttpService, AlertService, ConfirmationService, PermissionStore, DataStoreService]
+                    providers: [UserOrgService, HttpClient, AlertService, ConfirmationService, PermissionStore, DataStoreService]
                 }]
         }] });
 

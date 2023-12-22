@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs'), require('@angular/common'), require('@angular/forms'), require('@angular/router'), require('rxjs/add/operator/map'), require('primeng/card'), require('primeng/calendar'), require('primeng/dropdown'), require('primeng/multiselect'), require('primeng/checkbox'), require('primeng/inputtext'), require('primeng/tooltip'), require('@ng-bootstrap/ng-bootstrap'), require('primeng/accordion'), require('primeng/avatar'), require('primeng/badge'), require('primeng/button'), require('primeng/confirmdialog'), require('primeng/confirmpopup'), require('primeng/contextmenu'), require('primeng/dialog'), require('primeng/editor'), require('primeng/fieldset'), require('primeng/fileupload'), require('primeng/inputmask'), require('primeng/inputswitch'), require('primeng/inputtextarea'), require('primeng/knob'), require('primeng/message'), require('primeng/orderlist'), require('primeng/password'), require('primeng/progressspinner'), require('primeng/radiobutton'), require('primeng/ripple'), require('primeng/sidebar'), require('primeng/speeddial'), require('primeng/steps'), require('primeng/table'), require('primeng/tabmenu'), require('primeng/tabview'), require('primeng/toast'), require('primeng/treeselect'), require('@angular/common/http'), require('primeng/api'), require('rxjs/internal/observable/throwError'), require('rxjs/operators')) :
-    typeof define === 'function' && define.amd ? define('@pics-core/rbac-users', ['exports', '@angular/core', 'rxjs', '@angular/common', '@angular/forms', '@angular/router', 'rxjs/add/operator/map', 'primeng/card', 'primeng/calendar', 'primeng/dropdown', 'primeng/multiselect', 'primeng/checkbox', 'primeng/inputtext', 'primeng/tooltip', '@ng-bootstrap/ng-bootstrap', 'primeng/accordion', 'primeng/avatar', 'primeng/badge', 'primeng/button', 'primeng/confirmdialog', 'primeng/confirmpopup', 'primeng/contextmenu', 'primeng/dialog', 'primeng/editor', 'primeng/fieldset', 'primeng/fileupload', 'primeng/inputmask', 'primeng/inputswitch', 'primeng/inputtextarea', 'primeng/knob', 'primeng/message', 'primeng/orderlist', 'primeng/password', 'primeng/progressspinner', 'primeng/radiobutton', 'primeng/ripple', 'primeng/sidebar', 'primeng/speeddial', 'primeng/steps', 'primeng/table', 'primeng/tabmenu', 'primeng/tabview', 'primeng/toast', 'primeng/treeselect', '@angular/common/http', 'primeng/api', 'rxjs/internal/observable/throwError', 'rxjs/operators'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global["pics-core"] = global["pics-core"] || {}, global["pics-core"]["rbac-users"] = {}), global.ng.core, global.rxjs, global.ng.common, global.ng.forms, global.ng.router, global.rxjs["add/operator/map"], global.i6, global.i7, global.i8, global.i9, global.i10, global.i12, global.i14, global.ngBootstrap, global.accordion, global.avatar, global.badge, global.button, global.confirmdialog, global.confirmpopup, global.contextmenu, global.dialog, global.editor, global.fieldset, global.fileupload, global.inputmask, global.inputswitch, global.inputtextarea, global.knob, global.message, global.orderlist, global.password, global.progressspinner, global.radiobutton, global.ripple, global.sidebar, global.speeddial, global.steps, global.table, global.tabmenu, global.tabview, global.toast, global.treeselect, global.ng.common.http, global.api, global.rxjs["internal/observable/throwError"], global.rxjs.operators));
-})(this, (function (exports, i0, rxjs, i13, i2, i1, map, i6, i7, i8, i9, i10, i12, i14, ngBootstrap, accordion, avatar, badge, button, confirmdialog, confirmpopup, contextmenu, dialog, editor, fieldset, fileupload, inputmask, inputswitch, inputtextarea, knob, message, orderlist, password, progressspinner, radiobutton, ripple, sidebar, speeddial, steps, table, tabmenu, tabview, toast, treeselect, i1$1, api, throwError, operators) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs'), require('@angular/common'), require('@angular/forms'), require('@angular/router'), require('rxjs/add/operator/map'), require('primeng/card'), require('primeng/calendar'), require('primeng/dropdown'), require('primeng/multiselect'), require('primeng/checkbox'), require('primeng/inputtext'), require('primeng/tooltip'), require('@ng-bootstrap/ng-bootstrap'), require('primeng/accordion'), require('primeng/avatar'), require('primeng/badge'), require('primeng/button'), require('primeng/confirmdialog'), require('primeng/confirmpopup'), require('primeng/contextmenu'), require('primeng/dialog'), require('primeng/editor'), require('primeng/fieldset'), require('primeng/fileupload'), require('primeng/inputmask'), require('primeng/inputswitch'), require('primeng/inputtextarea'), require('primeng/knob'), require('primeng/message'), require('primeng/orderlist'), require('primeng/password'), require('primeng/progressspinner'), require('primeng/radiobutton'), require('primeng/ripple'), require('primeng/sidebar'), require('primeng/speeddial'), require('primeng/steps'), require('primeng/table'), require('primeng/tabmenu'), require('primeng/tabview'), require('primeng/toast'), require('primeng/treeselect'), require('@angular/common/http'), require('primeng/api')) :
+    typeof define === 'function' && define.amd ? define('@pics-core/rbac-users', ['exports', '@angular/core', 'rxjs', '@angular/common', '@angular/forms', '@angular/router', 'rxjs/add/operator/map', 'primeng/card', 'primeng/calendar', 'primeng/dropdown', 'primeng/multiselect', 'primeng/checkbox', 'primeng/inputtext', 'primeng/tooltip', '@ng-bootstrap/ng-bootstrap', 'primeng/accordion', 'primeng/avatar', 'primeng/badge', 'primeng/button', 'primeng/confirmdialog', 'primeng/confirmpopup', 'primeng/contextmenu', 'primeng/dialog', 'primeng/editor', 'primeng/fieldset', 'primeng/fileupload', 'primeng/inputmask', 'primeng/inputswitch', 'primeng/inputtextarea', 'primeng/knob', 'primeng/message', 'primeng/orderlist', 'primeng/password', 'primeng/progressspinner', 'primeng/radiobutton', 'primeng/ripple', 'primeng/sidebar', 'primeng/speeddial', 'primeng/steps', 'primeng/table', 'primeng/tabmenu', 'primeng/tabview', 'primeng/toast', 'primeng/treeselect', '@angular/common/http', 'primeng/api'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global["pics-core"] = global["pics-core"] || {}, global["pics-core"]["rbac-users"] = {}), global.ng.core, global.rxjs, global.ng.common, global.ng.forms, global.ng.router, global.rxjs["add/operator/map"], global.i6, global.i7, global.i8, global.i9, global.i10, global.i12, global.i14, global.ngBootstrap, global.accordion, global.avatar, global.badge, global.button, global.confirmdialog, global.confirmpopup, global.contextmenu, global.dialog, global.editor, global.fieldset, global.fileupload, global.inputmask, global.inputswitch, global.inputtextarea, global.knob, global.message, global.orderlist, global.password, global.progressspinner, global.radiobutton, global.ripple, global.sidebar, global.speeddial, global.steps, global.table, global.tabmenu, global.tabview, global.toast, global.treeselect, global.ng.common.http, global.api));
+})(this, (function (exports, i0, rxjs, i13, i2, i1, map, i6, i7, i8, i9, i10, i12, i14, ngBootstrap, accordion, avatar, badge, button, confirmdialog, confirmpopup, contextmenu, dialog, editor, fieldset, fileupload, inputmask, inputswitch, inputtextarea, knob, message, orderlist, password, progressspinner, radiobutton, ripple, sidebar, speeddial, steps, table, tabmenu, tabview, toast, treeselect, http, api) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) return e;
@@ -33,7 +33,6 @@
     var i10__namespace = /*#__PURE__*/_interopNamespace(i10);
     var i12__namespace = /*#__PURE__*/_interopNamespace(i12);
     var i14__namespace = /*#__PURE__*/_interopNamespace(i14);
-    var i1__namespace$1 = /*#__PURE__*/_interopNamespace(i1$1);
 
     var RbacUsersService = /** @class */ (function () {
         function RbacUsersService() {
@@ -1531,110 +1530,6 @@
                     }]
             }] });
 
-    var HttpService = /** @class */ (function () {
-        function HttpService(http, _storeservice) {
-            var _this = this;
-            this.http = http;
-            this._storeservice = _storeservice;
-            this.overrideUrl = true;
-            this.baseUrl = '';
-            this.headers = new i1$1.HttpHeaders()
-                .set('Accept', 'application/json')
-                .set('Content-Type', 'application/json')
-                .set('role', 'role=CP_PUBLIC');
-            this.showSpinner = new rxjs.BehaviorSubject(false);
-            this.outsideShowSpinner = new rxjs.BehaviorSubject(false);
-            this._storeservice.currentStore.subscribe(function (res) {
-                if (res['RBACORG'] && res['RBACORG'] !== '') {
-                    _this.RBACORG = res['RBACORG'];
-                    _this.url = _this.RBACORG['apiHost'] ? _this.RBACORG['apiHost'] : 'http://localhost:3000/api';
-                    _this.tokenKey = _this.RBACORG['tokenKey'];
-                }
-            });
-            this.url1 = '';
-        }
-        HttpService.prototype.get = function (apiRoute) {
-            return this.http.get("" + (this.url + apiRoute), {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.post = function (apiRoute, body) {
-            return this.http.post("" + (this.url + apiRoute), body, {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.put = function (apiRoute, body) {
-            return this.http.put("" + (this.url + apiRoute), body, {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.patch = function (apiRoute, body) {
-            return this.http.patch("" + (this.url + apiRoute), body, {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.delete = function (apiRoute) {
-            return this.http.delete("" + (this.url + apiRoute), {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.getHttpHeaders = function () {
-            return new i1$1.HttpHeaders().set('key', 'value');
-        };
-        HttpService.prototype.getHttpNewHeaders = function () {
-            return this.headers.set('Authorization', "Bearer " + this.getToken());
-        };
-        HttpService.prototype.getAttachmentHttpHeaders = function (contentType) {
-            return new i1$1.HttpHeaders().set('Content-Type', contentType).set('x-ms-blob-type', 'BlockBlob');
-        };
-        HttpService.prototype.putUpload = function (apiRoute, body, contentType) {
-            return this.http.put("" + (this.url1 + apiRoute), body, { headers: this.getAttachmentHttpHeaders(contentType) });
-        };
-        HttpService.prototype.putupload2 = function (apiRoute, body, contenttype) {
-            return this.http
-                .put("" + (this.url1 + apiRoute), body, {
-                headers: this.getAttachmentHttpHeaders(contenttype),
-                observe: 'response'
-            })
-                .pipe(operators.map(function (data) {
-                return data;
-            }));
-        };
-        /**
-         *
-         * @param apiRoute
-         * This function will download the stream file from the API service.
-         * No HTTP required for this stream. So used Window.location.href to download the file
-         */
-        HttpService.prototype.getFormDownloaded = function (apiRoute) {
-            window.location.href = "" + (this.url + apiRoute);
-        };
-        //common http service(optional)
-        HttpService.prototype.handleError = function (error) {
-            var _a, _b;
-            var errorMessage = '';
-            if (error.error instanceof ErrorEvent) {
-                // Client-side errors
-                errorMessage = "Error: " + error.error.message;
-            }
-            else {
-                // Server-side errors
-                errorMessage = "Error Code: " + error.status + "\nMessage: " + (((_a = error === null || error === void 0 ? void 0 : error.error) === null || _a === void 0 ? void 0 : _a.message) ? (_b = error === null || error === void 0 ? void 0 : error.error) === null || _b === void 0 ? void 0 : _b.message : error.message);
-            }
-            return throwError.throwError(errorMessage);
-        };
-        HttpService.prototype.getToken = function () {
-            var token = this.tokenKey ? this.tokenKey : 'jwt-token';
-            return sessionStorage.getItem(token);
-        };
-        return HttpService;
-    }());
-    HttpService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: HttpService, deps: [{ token: i1__namespace$1.HttpClient }, { token: DataStoreService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    HttpService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: HttpService });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: HttpService, decorators: [{
-                type: i0.Injectable
-            }], ctorParameters: function () { return [{ type: i1__namespace$1.HttpClient }, { type: DataStoreService }]; } });
-
     var RbacUsersModule = /** @class */ (function () {
         function RbacUsersModule() {
         }
@@ -1642,7 +1537,7 @@
     }());
     RbacUsersModule.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: RbacUsersModule, deps: [], target: i0__namespace.ɵɵFactoryTarget.NgModule });
     RbacUsersModule.ɵmod = i0__namespace.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: RbacUsersModule, declarations: [RbacUsersComponent], imports: [PicsRbacUsersModule], exports: [RbacUsersComponent] });
-    RbacUsersModule.ɵinj = i0__namespace.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: RbacUsersModule, providers: [UserOrgService, i1$1.HttpClient, HttpService, AlertService, api.ConfirmationService, PermissionStore, DataStoreService], imports: [[
+    RbacUsersModule.ɵinj = i0__namespace.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: RbacUsersModule, providers: [UserOrgService, http.HttpClient, AlertService, api.ConfirmationService, PermissionStore, DataStoreService], imports: [[
                 PicsRbacUsersModule
             ]] });
     i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: RbacUsersModule, decorators: [{
@@ -1657,7 +1552,7 @@
                         exports: [
                             RbacUsersComponent
                         ],
-                        providers: [UserOrgService, i1$1.HttpClient, HttpService, AlertService, api.ConfirmationService, PermissionStore, DataStoreService]
+                        providers: [UserOrgService, http.HttpClient, AlertService, api.ConfirmationService, PermissionStore, DataStoreService]
                     }]
             }] });
 
