@@ -1,6 +1,12 @@
 {
-  "name": "@pics-core/config-login-settings",
-  "version": "1.0.1",
+  "name": "@pics-core/rbac-users",
+  "version": "1.0.1-OR.2",
+  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
+  "directories": {
+    "lib": "lib"
+  },
+  "author": "tulasireddy",
+  "license": "ISC",
   "peerDependencies": {
     "@angular/common": "^12.2.0",
     "@angular/core": "^12.2.0",
@@ -16,17 +22,11 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "main": "bundles/pics-core-config-login-settings.umd.js",
-  "module": "fesm2015/pics-core-config-login-settings.js",
-  "es2015": "fesm2015/pics-core-config-login-settings.js",
-  "esm2015": "esm2015/pics-core-config-login-settings.js",
-  "fesm2015": "fesm2015/pics-core-config-login-settings.js",
-  "typings": "pics-core-config-login-settings.d.ts",
-  "sideEffects": false,
-  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
-  "directories": {
-    "lib": "lib"
-  },
-  "author": "Abishkumar",
-  "license": "ISC"
+  "main": "bundles/pics-core-rbac-users.umd.js",
+  "module": "fesm2015/pics-core-rbac-users.js",
+  "es2015": "fesm2015/pics-core-rbac-users.js",
+  "esm2015": "esm2015/pics-core-rbac-users.js",
+  "fesm2015": "fesm2015/pics-core-rbac-users.js",
+  "typings": "pics-core-rbac-users.d.ts",
+  "sideEffects": false
 }

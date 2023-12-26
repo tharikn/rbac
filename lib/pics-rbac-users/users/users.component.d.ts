@@ -39,7 +39,13 @@ export declare class UsersComponent implements OnInit {
     policyGroupList: any;
     orgInfo: any;
     orgId: any;
+    firstname: string;
     httpService: any;
+    lastname: string;
+    middlename: string;
+    modelFirstName: string;
+    modelMiddleName: string;
+    modelLastName: string;
     constructor(userService: UserOrgService, fb: FormBuilder, alertService: AlertService, _storeservice: DataStoreService);
     ngOnInit(): void;
     initializeForm(): void;
@@ -67,6 +73,9 @@ export declare class UsersComponent implements OnInit {
     removeThumbnail(): void;
     validateImage(file: any): boolean;
     stopPropagation(event: Event): void;
+    onModelFirst(value: string): void;
+    onModelMiddle(value: string): void;
+    onModelLast(value: string): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<UsersComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<UsersComponent, "users", never, { "RBACORG": "RBACORG"; "PERMISSION": "PERMISSION"; }, {}, never, never>;
 }
