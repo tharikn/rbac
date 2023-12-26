@@ -1086,7 +1086,6 @@
                 if (res) {
                     _this.httpService = res['HTTPSERVICE'];
                     _this.authService = res['AUTHSERVICE'];
-                    _this.attachmentService = res['ATTACHMENTSERVICE'];
                 }
             });
         }
@@ -1216,7 +1215,7 @@
                 fileName: "login-orgimage/" + this.userid + "/" + this.uploadedFileBanner
             };
             if (this.validateImage(fileValue.target.files, 'BANNER')) {
-                this.attachmentService.uploadKey(this.imageDataBanner).subscribe(function (res) {
+                this.httpService.uploadKey(this.imageDataBanner).subscribe(function (res) {
                     _this.urlPathBanner = res.data;
                     var uploadAttachment = document.getElementById('file1');
                     var uploadAttachmentDetails = uploadAttachment.files[0];
@@ -1376,9 +1375,8 @@
                 _this.PERMISSION = val.PERMISSION;
                 _this._storeservice.setData('RBACORG', _this.RBACORG);
                 _this.permissionStore.setStore(_this.PERMISSION);
-                _this._storeservice.setData('HTTPSERVICE', val.httpService);
-                _this._storeservice.setData('AUTHSERVICE', val.authService);
-                _this._storeservice.setData('ATTACHMENTSERVICE', val.attachmentService);
+                _this._storeservice.setData('HTTPSERVICE', val.HTTPSERVICE);
+                _this._storeservice.setData('AUTHSERVICE', val.AUTHSERVICE);
             });
         };
         return ConfigLoginSettingsComponent;

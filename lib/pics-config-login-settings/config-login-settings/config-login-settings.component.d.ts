@@ -40,7 +40,6 @@ export declare class ConfigLoginSettingsComponent implements OnInit {
     editConfigSettings: any;
     httpService: any;
     authService: any;
-    attachmentService: any;
     constructor(alertService: AlertService, _formBuilder: FormBuilder, _configurationSettingsService: ConfigurationSettingsService, _storeservice: DataStoreService);
     ngOnInit(): void;
     initilizeForm(): void;

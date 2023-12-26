@@ -571,7 +571,6 @@ class ConfigLoginSettingsComponent$1 {
             if (res) {
                 this.httpService = res['HTTPSERVICE'];
                 this.authService = res['AUTHSERVICE'];
-                this.attachmentService = res['ATTACHMENTSERVICE'];
             }
         });
     }
@@ -695,7 +694,7 @@ class ConfigLoginSettingsComponent$1 {
             fileName: `login-orgimage/${this.userid}/${this.uploadedFileBanner}`
         };
         if (this.validateImage(fileValue.target.files, 'BANNER')) {
-            this.attachmentService.uploadKey(this.imageDataBanner).subscribe((res) => {
+            this.httpService.uploadKey(this.imageDataBanner).subscribe((res) => {
                 this.urlPathBanner = res.data;
                 const uploadAttachment = document.getElementById('file1');
                 const uploadAttachmentDetails = uploadAttachment.files[0];
@@ -851,9 +850,8 @@ class ConfigLoginSettingsComponent {
             this.PERMISSION = val.PERMISSION;
             this._storeservice.setData('RBACORG', this.RBACORG);
             this.permissionStore.setStore(this.PERMISSION);
-            this._storeservice.setData('HTTPSERVICE', val.httpService);
-            this._storeservice.setData('AUTHSERVICE', val.authService);
-            this._storeservice.setData('ATTACHMENTSERVICE', val.attachmentService);
+            this._storeservice.setData('HTTPSERVICE', val.HTTPSERVICE);
+            this._storeservice.setData('AUTHSERVICE', val.AUTHSERVICE);
         });
     }
 }
