@@ -1,3 +1,3 @@
-export * from './lib/rbac-users.service';
-export * from './lib/rbac-users.component';
-export * from './lib/rbac-users.module';
+export * from './lib/config-login-settings.service';
+export * from './lib/config-login-settings.component';
+export * from './lib/config-login-settings.module';
