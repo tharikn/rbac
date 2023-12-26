@@ -1215,7 +1215,7 @@
                 fileName: "login-orgimage/" + this.userid + "/" + this.uploadedFileBanner
             };
             if (this.validateImage(fileValue.target.files, 'BANNER')) {
-                this.httpService.uploadKey(this.imageDataBanner).subscribe(function (res) {
+                this._configurationSettingsService.uploadKey(this.imageDataBanner).subscribe(function (res) {
                     _this.urlPathBanner = res.data;
                     var uploadAttachment = document.getElementById('file1');
                     var uploadAttachmentDetails = uploadAttachment.files[0];

@@ -694,7 +694,7 @@ class ConfigLoginSettingsComponent$1 {
             fileName: `login-orgimage/${this.userid}/${this.uploadedFileBanner}`
         };
         if (this.validateImage(fileValue.target.files, 'BANNER')) {
-            this.httpService.uploadKey(this.imageDataBanner).subscribe((res) => {
+            this._configurationSettingsService.uploadKey(this.imageDataBanner).subscribe((res) => {
                 this.urlPathBanner = res.data;
                 const uploadAttachment = document.getElementById('file1');
                 const uploadAttachmentDetails = uploadAttachment.files[0];
