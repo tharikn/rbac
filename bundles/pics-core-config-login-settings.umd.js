@@ -1371,24 +1371,20 @@
         }
         ConfigLoginSettingsComponent.prototype.ngOnInit = function () {
             var _this = this;
-            this.COMMONSERVICE.subscribe(function (val) {
-                if (val) {
-                    _this._storeservice.setData('HTTPSERVICE', val.httpService);
-                    _this._storeservice.setData('AUTHSERVICE', val.authService);
-                    _this._storeservice.setData('ATTACHMENTSERVICE', val.attachmentService);
-                }
-            });
             this.configureEvent.subscribe(function (val) {
                 _this.RBACORG = val.RBACORG;
                 _this.PERMISSION = val.PERMISSION;
                 _this._storeservice.setData('RBACORG', _this.RBACORG);
                 _this.permissionStore.setStore(_this.PERMISSION);
+                _this._storeservice.setData('HTTPSERVICE', val.httpService);
+                _this._storeservice.setData('AUTHSERVICE', val.authService);
+                _this._storeservice.setData('ATTACHMENTSERVICE', val.attachmentService);
             });
         };
         return ConfigLoginSettingsComponent;
     }());
     ConfigLoginSettingsComponent.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigLoginSettingsComponent, deps: [{ token: PermissionStore }, { token: DataStoreService }], target: i0__namespace.ɵɵFactoryTarget.Component });
-    ConfigLoginSettingsComponent.ɵcmp = i0__namespace.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: ConfigLoginSettingsComponent, selector: "config-login-settings", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION", configureEvent: "configureEvent", COMMONSERVICE: "COMMONSERVICE" }, ngImport: i0__namespace, template: "\n    <lib-config-login-settings></lib-config-login-settings>\n  ", isInline: true, components: [{ type: ConfigLoginSettingsComponent$1, selector: "lib-config-login-settings" }] });
+    ConfigLoginSettingsComponent.ɵcmp = i0__namespace.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: ConfigLoginSettingsComponent, selector: "config-login-settings", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION", configureEvent: "configureEvent" }, ngImport: i0__namespace, template: "\n    <lib-config-login-settings></lib-config-login-settings>\n  ", isInline: true, components: [{ type: ConfigLoginSettingsComponent$1, selector: "lib-config-login-settings" }] });
     i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigLoginSettingsComponent, decorators: [{
                 type: i0.Component,
                 args: [{
@@ -1401,8 +1397,6 @@
                 }], PERMISSION: [{
                     type: i0.Input
                 }], configureEvent: [{
-                    type: i0.Input
-                }], COMMONSERVICE: [{
                     type: i0.Input
                 }] } });
 

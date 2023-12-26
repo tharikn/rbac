@@ -10,9 +10,8 @@ export declare class ConfigLoginSettingsComponent implements OnInit {
     RBACORG?: RBACINFO;
     PERMISSION?: any;
     configureEvent: Observable<any>;
-    COMMONSERVICE: Observable<any>;
     constructor(permissionStore: PermissionStore, _storeservice: DataStoreService);
     ngOnInit(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ConfigLoginSettingsComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ConfigLoginSettingsComponent, "config-login-settings", never, { "RBACORG": "RBACORG"; "PERMISSION": "PERMISSION"; "configureEvent": "configureEvent"; "COMMONSERVICE": "COMMONSERVICE"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ConfigLoginSettingsComponent, "config-login-settings", never, { "RBACORG": "RBACORG"; "PERMISSION": "PERMISSION"; "configureEvent": "configureEvent"; }, {}, never, never>;
 }

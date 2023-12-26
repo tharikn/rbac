@@ -846,23 +846,19 @@ class ConfigLoginSettingsComponent {
         this.RBACORG = new RBACINFO();
     }
     ngOnInit() {
-        this.COMMONSERVICE.subscribe((val) => {
-            if (val) {
-                this._storeservice.setData('HTTPSERVICE', val.httpService);
-                this._storeservice.setData('AUTHSERVICE', val.authService);
-                this._storeservice.setData('ATTACHMENTSERVICE', val.attachmentService);
-            }
-        });
         this.configureEvent.subscribe((val) => {
             this.RBACORG = val.RBACORG;
             this.PERMISSION = val.PERMISSION;
             this._storeservice.setData('RBACORG', this.RBACORG);
             this.permissionStore.setStore(this.PERMISSION);
+            this._storeservice.setData('HTTPSERVICE', val.httpService);
+            this._storeservice.setData('AUTHSERVICE', val.authService);
+            this._storeservice.setData('ATTACHMENTSERVICE', val.attachmentService);
         });
     }
 }
 ConfigLoginSettingsComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: ConfigLoginSettingsComponent, deps: [{ token: PermissionStore }, { token: DataStoreService }], target: i0.ɵɵFactoryTarget.Component });
-ConfigLoginSettingsComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: ConfigLoginSettingsComponent, selector: "config-login-settings", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION", configureEvent: "configureEvent", COMMONSERVICE: "COMMONSERVICE" }, ngImport: i0, template: `
+ConfigLoginSettingsComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: ConfigLoginSettingsComponent, selector: "config-login-settings", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION", configureEvent: "configureEvent" }, ngImport: i0, template: `
     <lib-config-login-settings></lib-config-login-settings>
   `, isInline: true, components: [{ type: ConfigLoginSettingsComponent$1, selector: "lib-config-login-settings" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: ConfigLoginSettingsComponent, decorators: [{
@@ -879,8 +875,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImpo
             }], PERMISSION: [{
                 type: Input
             }], configureEvent: [{
-                type: Input
-            }], COMMONSERVICE: [{
                 type: Input
             }] } });
 
