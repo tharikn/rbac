@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs'), require('@angular/forms'), require('@angular/router'), require('rxjs/add/operator/map'), require('@angular/common/http'), require('ngxf-uploader'), require('rxjs/internal/observable/throwError'), require('rxjs/operators'), require('@angular/common'), require('primeng/card'), require('primeng/dialog'), require('primeng/checkbox'), require('primeng/dropdown'), require('primeng/inputtext'), require('primeng/api'), require('@ng-bootstrap/ng-bootstrap'), require('primeng/accordion'), require('primeng/avatar'), require('primeng/badge'), require('primeng/button'), require('primeng/calendar'), require('primeng/confirmdialog'), require('primeng/confirmpopup'), require('primeng/contextmenu'), require('primeng/editor'), require('primeng/fieldset'), require('primeng/fileupload'), require('primeng/inputmask'), require('primeng/inputswitch'), require('primeng/inputtextarea'), require('primeng/knob'), require('primeng/message'), require('primeng/multiselect'), require('primeng/orderlist'), require('primeng/password'), require('primeng/progressspinner'), require('primeng/radiobutton'), require('primeng/ripple'), require('primeng/sidebar'), require('primeng/speeddial'), require('primeng/steps'), require('primeng/table'), require('primeng/tabmenu'), require('primeng/tabview'), require('primeng/toast'), require('primeng/treeselect')) :
-    typeof define === 'function' && define.amd ? define('@pics-core/config-login-settings', ['exports', '@angular/core', 'rxjs', '@angular/forms', '@angular/router', 'rxjs/add/operator/map', '@angular/common/http', 'ngxf-uploader', 'rxjs/internal/observable/throwError', 'rxjs/operators', '@angular/common', 'primeng/card', 'primeng/dialog', 'primeng/checkbox', 'primeng/dropdown', 'primeng/inputtext', 'primeng/api', '@ng-bootstrap/ng-bootstrap', 'primeng/accordion', 'primeng/avatar', 'primeng/badge', 'primeng/button', 'primeng/calendar', 'primeng/confirmdialog', 'primeng/confirmpopup', 'primeng/contextmenu', 'primeng/editor', 'primeng/fieldset', 'primeng/fileupload', 'primeng/inputmask', 'primeng/inputswitch', 'primeng/inputtextarea', 'primeng/knob', 'primeng/message', 'primeng/multiselect', 'primeng/orderlist', 'primeng/password', 'primeng/progressspinner', 'primeng/radiobutton', 'primeng/ripple', 'primeng/sidebar', 'primeng/speeddial', 'primeng/steps', 'primeng/table', 'primeng/tabmenu', 'primeng/tabview', 'primeng/toast', 'primeng/treeselect'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global["pics-core"] = global["pics-core"] || {}, global["pics-core"]["config-login-settings"] = {}), global.ng.core, global.rxjs, global.ng.forms, global.ng.router, global.rxjs["add/operator/map"], global.ng.common.http, global.i1$2, global.rxjs["internal/observable/throwError"], global.rxjs.operators, global.ng.common, global.i9, global.i10, global.i11, global.i12, global.i13, global.api, global.ngBootstrap, global.accordion, global.avatar, global.badge, global.button, global.calendar, global.confirmdialog, global.confirmpopup, global.contextmenu, global.editor, global.fieldset, global.fileupload, global.inputmask, global.inputswitch, global.inputtextarea, global.knob, global.message, global.multiselect, global.orderlist, global.password, global.progressspinner, global.radiobutton, global.ripple, global.sidebar, global.speeddial, global.steps, global.table, global.tabmenu, global.tabview, global.toast, global.treeselect));
-})(this, (function (exports, i0, rxjs, i5, i1, map, i1$1, i1$2, throwError, operators, i2, i9, i10, i11, i12, i13, api, ngBootstrap, accordion, avatar, badge, button, calendar, confirmdialog, confirmpopup, contextmenu, editor, fieldset, fileupload, inputmask, inputswitch, inputtextarea, knob, message, multiselect, orderlist, password, progressspinner, radiobutton, ripple, sidebar, speeddial, steps, table, tabmenu, tabview, toast, treeselect) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs'), require('@angular/forms'), require('@angular/router'), require('rxjs/add/operator/map'), require('@angular/common'), require('primeng/card'), require('primeng/dialog'), require('primeng/checkbox'), require('primeng/dropdown'), require('primeng/inputtext'), require('primeng/api'), require('@angular/common/http'), require('@ng-bootstrap/ng-bootstrap'), require('primeng/accordion'), require('primeng/avatar'), require('primeng/badge'), require('primeng/button'), require('primeng/calendar'), require('primeng/confirmdialog'), require('primeng/confirmpopup'), require('primeng/contextmenu'), require('primeng/editor'), require('primeng/fieldset'), require('primeng/fileupload'), require('primeng/inputmask'), require('primeng/inputswitch'), require('primeng/inputtextarea'), require('primeng/knob'), require('primeng/message'), require('primeng/multiselect'), require('primeng/orderlist'), require('primeng/password'), require('primeng/progressspinner'), require('primeng/radiobutton'), require('primeng/ripple'), require('primeng/sidebar'), require('primeng/speeddial'), require('primeng/steps'), require('primeng/table'), require('primeng/tabmenu'), require('primeng/tabview'), require('primeng/toast'), require('primeng/treeselect')) :
+    typeof define === 'function' && define.amd ? define('@pics-core/config-login-settings', ['exports', '@angular/core', 'rxjs', '@angular/forms', '@angular/router', 'rxjs/add/operator/map', '@angular/common', 'primeng/card', 'primeng/dialog', 'primeng/checkbox', 'primeng/dropdown', 'primeng/inputtext', 'primeng/api', '@angular/common/http', '@ng-bootstrap/ng-bootstrap', 'primeng/accordion', 'primeng/avatar', 'primeng/badge', 'primeng/button', 'primeng/calendar', 'primeng/confirmdialog', 'primeng/confirmpopup', 'primeng/contextmenu', 'primeng/editor', 'primeng/fieldset', 'primeng/fileupload', 'primeng/inputmask', 'primeng/inputswitch', 'primeng/inputtextarea', 'primeng/knob', 'primeng/message', 'primeng/multiselect', 'primeng/orderlist', 'primeng/password', 'primeng/progressspinner', 'primeng/radiobutton', 'primeng/ripple', 'primeng/sidebar', 'primeng/speeddial', 'primeng/steps', 'primeng/table', 'primeng/tabmenu', 'primeng/tabview', 'primeng/toast', 'primeng/treeselect'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global["pics-core"] = global["pics-core"] || {}, global["pics-core"]["config-login-settings"] = {}), global.ng.core, global.rxjs, global.ng.forms, global.ng.router, global.rxjs["add/operator/map"], global.ng.common, global.i6, global.i7, global.i8, global.i9, global.i10, global.api, global.ng.common.http, global.ngBootstrap, global.accordion, global.avatar, global.badge, global.button, global.calendar, global.confirmdialog, global.confirmpopup, global.contextmenu, global.editor, global.fieldset, global.fileupload, global.inputmask, global.inputswitch, global.inputtextarea, global.knob, global.message, global.multiselect, global.orderlist, global.password, global.progressspinner, global.radiobutton, global.ripple, global.sidebar, global.speeddial, global.steps, global.table, global.tabmenu, global.tabview, global.toast, global.treeselect));
+})(this, (function (exports, i0, rxjs, i2$1, i1, map, i2, i6, i7, i8, i9, i10, api, i1$1, ngBootstrap, accordion, avatar, badge, button, calendar, confirmdialog, confirmpopup, contextmenu, editor, fieldset, fileupload, inputmask, inputswitch, inputtextarea, knob, message, multiselect, orderlist, password, progressspinner, radiobutton, ripple, sidebar, speeddial, steps, table, tabmenu, tabview, toast, treeselect) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) return e;
@@ -23,16 +23,15 @@
     }
 
     var i0__namespace = /*#__PURE__*/_interopNamespace(i0);
-    var i5__namespace = /*#__PURE__*/_interopNamespace(i5);
+    var i2__namespace$1 = /*#__PURE__*/_interopNamespace(i2$1);
     var i1__namespace = /*#__PURE__*/_interopNamespace(i1);
-    var i1__namespace$1 = /*#__PURE__*/_interopNamespace(i1$1);
-    var i1__namespace$2 = /*#__PURE__*/_interopNamespace(i1$2);
     var i2__namespace = /*#__PURE__*/_interopNamespace(i2);
+    var i6__namespace = /*#__PURE__*/_interopNamespace(i6);
+    var i7__namespace = /*#__PURE__*/_interopNamespace(i7);
+    var i8__namespace = /*#__PURE__*/_interopNamespace(i8);
     var i9__namespace = /*#__PURE__*/_interopNamespace(i9);
     var i10__namespace = /*#__PURE__*/_interopNamespace(i10);
-    var i11__namespace = /*#__PURE__*/_interopNamespace(i11);
-    var i12__namespace = /*#__PURE__*/_interopNamespace(i12);
-    var i13__namespace = /*#__PURE__*/_interopNamespace(i13);
+    var i1__namespace$1 = /*#__PURE__*/_interopNamespace(i1$1);
 
     var ConfigLoginSettingsService = /** @class */ (function () {
         function ConfigLoginSettingsService() {
@@ -888,686 +887,6 @@
         }
     };
 
-    var DynamicTabPageConfig = /** @class */ (function () {
-        function DynamicTabPageConfig() {
-        }
-        return DynamicTabPageConfig;
-    }());
-    DynamicTabPageConfig.EndPoint = {
-        Page: {
-            getActivePage: '/pageversion/{id}',
-            getPage: '/page',
-            getPageById: '/page/{id}',
-            getResponseByPageId: '/app/formresponse/{responseId}/getByPageId/{pageId}',
-            createFormResponse: '/app/formresponse/create',
-            patchFormResponse: '/app/formresponse',
-            updateFormResponse: '/pagedata/'
-        },
-        Narrative: {
-            getIncidentListById: '/incident/listBySourceId/{id}'
-        },
-        Notification: {
-            createSurveyConfig: '/surveyconfig/usersurvey/{id}/{status}/{pagedataid}'
-        },
-        Finance: {
-            exportDocument: '/integrated/exportDocuments/',
-            uploadDocument: 'document/upload',
-            getUniqueId: '/uniqueIdLogic/'
-        },
-        Attachments: {
-            createAttachment: '/app/formresponseattachment/create'
-        }
-    };
-
-    var HttpService = /** @class */ (function () {
-        function HttpService(http, _storeservice) {
-            var _this = this;
-            this.http = http;
-            this._storeservice = _storeservice;
-            this.overrideUrl = true;
-            this.baseUrl = '';
-            this.headers = new i1$1.HttpHeaders()
-                .set('Accept', 'application/json')
-                .set('Content-Type', 'application/json')
-                .set('role', 'role=CP_PUBLIC');
-            this.showSpinner = new rxjs.BehaviorSubject(false);
-            this.outsideShowSpinner = new rxjs.BehaviorSubject(false);
-            this._storeservice.currentStore.subscribe(function (res) {
-                if (res['RBACORG'] && res['RBACORG'] !== '') {
-                    _this.RBACORG = res['RBACORG'];
-                    _this.url = _this.RBACORG['apiHost'] ? _this.RBACORG['apiHost'] : 'http://localhost:3000/api';
-                    _this.tokenKey = _this.RBACORG['tokenKey'];
-                }
-            });
-            this.url1 = '';
-        }
-        HttpService.prototype.get = function (apiRoute) {
-            return this.http.get("" + (this.url + apiRoute), {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.post = function (apiRoute, body) {
-            return this.http.post("" + (this.url + apiRoute), body, {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.put = function (apiRoute, body) {
-            return this.http.put("" + (this.url + apiRoute), body, {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.patch = function (apiRoute, body) {
-            return this.http.patch("" + (this.url + apiRoute), body, {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.delete = function (apiRoute) {
-            return this.http.delete("" + (this.url + apiRoute), {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.getHttpHeaders = function () {
-            return new i1$1.HttpHeaders().set('key', 'value');
-        };
-        HttpService.prototype.getHttpNewHeaders = function () {
-            return this.headers.set('Authorization', "Bearer " + this.getToken());
-        };
-        HttpService.prototype.getAttachmentHttpHeaders = function (contentType) {
-            return new i1$1.HttpHeaders().set('Content-Type', contentType).set('x-ms-blob-type', 'BlockBlob');
-        };
-        HttpService.prototype.putUpload = function (apiRoute, body, contentType) {
-            return this.http.put("" + (this.url1 + apiRoute), body, { headers: this.getAttachmentHttpHeaders(contentType) });
-        };
-        HttpService.prototype.getAuthValidation = function (apiRoute, token) {
-            return this.http.get("" + (this.url + apiRoute), {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.getAuthAccessKey = function (apiRoute, body) {
-            return this.http.post("" + (this.url + apiRoute), body, {
-                headers: this.getHttpNewHeaders()
-            });
-        };
-        HttpService.prototype.putupload2 = function (apiRoute, body, contenttype) {
-            return this.http
-                .put("" + (this.url1 + apiRoute), body, {
-                headers: this.getAttachmentHttpHeaders(contenttype),
-                observe: 'response'
-            })
-                .pipe(operators.map(function (data) {
-                return data;
-            }));
-        };
-        /**
-         *
-         * @param apiRoute
-         * This function will download the stream file from the API service.
-         * No HTTP required for this stream. So used Window.location.href to download the file
-         */
-        HttpService.prototype.getFormDownloaded = function (apiRoute) {
-            window.location.href = "" + (this.url + apiRoute);
-        };
-        //common http service(optional)
-        HttpService.prototype.handleError = function (error) {
-            var _a, _b;
-            var errorMessage = '';
-            if (error.error instanceof ErrorEvent) {
-                // Client-side errors
-                errorMessage = "Error: " + error.error.message;
-            }
-            else {
-                // Server-side errors
-                errorMessage = "Error Code: " + error.status + "\nMessage: " + (((_a = error === null || error === void 0 ? void 0 : error.error) === null || _a === void 0 ? void 0 : _a.message) ? (_b = error === null || error === void 0 ? void 0 : error.error) === null || _b === void 0 ? void 0 : _b.message : error.message);
-            }
-            return throwError.throwError(errorMessage);
-        };
-        HttpService.prototype.getToken = function () {
-            var token = this.tokenKey ? this.tokenKey : 'jwt-token';
-            return sessionStorage.getItem(token);
-        };
-        return HttpService;
-    }());
-    HttpService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: HttpService, deps: [{ token: i1__namespace$1.HttpClient }, { token: DataStoreService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    HttpService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: HttpService });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: HttpService, decorators: [{
-                type: i0.Injectable
-            }], ctorParameters: function () { return [{ type: i1__namespace$1.HttpClient }, { type: DataStoreService }]; } });
-
-    var DynamicTabPageService = /** @class */ (function () {
-        function DynamicTabPageService(uploadService, httpService) {
-            this.uploadService = uploadService;
-            this.httpService = httpService;
-            this.isPageDesign = new rxjs.BehaviorSubject(false);
-            this.observePage = this.isPageDesign.asObservable();
-        }
-        DynamicTabPageService.prototype.getActivePage = function (tabPageId, permission) {
-            return this.httpService.get("" + DynamicTabPageConfig.EndPoint.Page.getActivePage.replace('{id}', tabPageId) + (permission ? '?applyPermissions=true' : ''));
-        };
-        DynamicTabPageService.prototype.getDynamicPage = function (pageId) {
-            return this.httpService.get(DynamicTabPageConfig.EndPoint.Page.getPage + "/" + pageId);
-        };
-        DynamicTabPageService.prototype.getPageById = function (pageId) {
-            return this.httpService.get(DynamicTabPageConfig.EndPoint.Page.getPageById.replace('{id}', pageId));
-        };
-        DynamicTabPageService.prototype.getListBySourceId = function (sourceId) {
-            return this.httpService.get(DynamicTabPageConfig.EndPoint.Narrative.getIncidentListById.replace('{id}', sourceId));
-        };
-        DynamicTabPageService.prototype.getResponseByPageId = function (responseId, pageId) {
-            return this.httpService.get(DynamicTabPageConfig.EndPoint.Page.getResponseByPageId
-                .replace('{responseId}', responseId)
-                .replace('{pageId}', pageId));
-        };
-        DynamicTabPageService.prototype.createFormResponse = function (id, requestData) {
-            return this.httpService.post(id
-                ? DynamicTabPageConfig.EndPoint.Page.updateFormResponse
-                : DynamicTabPageConfig.EndPoint.Page.createFormResponse, requestData);
-        };
-        DynamicTabPageService.prototype.createUserSurvey = function (history, Id) {
-            var _a;
-            return this.httpService.post(DynamicTabPageConfig.EndPoint.Notification.createSurveyConfig
-                .replace('{id}', (_a = history === null || history === void 0 ? void 0 : history.state) === null || _a === void 0 ? void 0 : _a.usersurveyid)
-                .replace('{status}', 'Completed')
-                .replace('{pagedataid}', Id), {});
-        };
-        DynamicTabPageService.prototype.updateFormResponse = function (id, requestData) {
-            return this.httpService.patch(DynamicTabPageConfig.EndPoint.Page.patchFormResponse + "/" + id, requestData);
-        };
-        DynamicTabPageService.prototype.exportReport = function (data) {
-            return this.httpService.post(DynamicTabPageConfig.EndPoint.Finance.exportDocument, data);
-        };
-        DynamicTabPageService.prototype.uploadFile = function (file) {
-            return this.uploadService.upload({
-                url: this.httpService.baseUrl + '/' + DynamicTabPageConfig.EndPoint.Finance.uploadDocument,
-                headers: new i1$1.HttpHeaders()
-                    .set('ctype', 'file')
-                    .set('uniqueid', '6b61ac1e-221a-495c-957b-ad85f65be25a')
-                    .set('role', 'role=CP_PUBLIC'),
-                files: file,
-                process: true
-            });
-        };
-        DynamicTabPageService.prototype.getUniqueId = function (api) {
-            return this.httpService.get(DynamicTabPageConfig.EndPoint.Finance.getUniqueId + api);
-        };
-        DynamicTabPageService.prototype.changePage = function (page) {
-            this.isPageDesign.next(page);
-        };
-        DynamicTabPageService.prototype.createFormResponseAttachment = function (data) {
-            return this.httpService.post(DynamicTabPageConfig.EndPoint.Attachments.createAttachment, data);
-        };
-        return DynamicTabPageService;
-    }());
-    DynamicTabPageService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: DynamicTabPageService, deps: [{ token: i1__namespace$2.NgxfUploaderService }, { token: HttpService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    DynamicTabPageService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: DynamicTabPageService, providedIn: 'root' });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: DynamicTabPageService, decorators: [{
-                type: i0.Injectable,
-                args: [{
-                        providedIn: 'root'
-                    }]
-            }], ctorParameters: function () { return [{ type: i1__namespace$2.NgxfUploaderService }, { type: HttpService }]; } });
-
-    var PageHeaderURL = /** @class */ (function () {
-        function PageHeaderURL() {
-        }
-        return PageHeaderURL;
-    }());
-    PageHeaderURL.EndPoints = {
-        page: {
-            getAuthorizedPages: '/platform/page-designer/page/organization/{orgid}?returnUserPage=true&excludeNoActiveVersionPages=true'
-        }
-    };
-
-    var PageHeaderService = /** @class */ (function () {
-        function PageHeaderService(httpService) {
-            this.httpService = httpService;
-        }
-        PageHeaderService.prototype.getAuthorizedPages = function (orgid) {
-            return this.httpService.get(PageHeaderURL.EndPoints.page.getAuthorizedPages.replace('{orgid}', orgid));
-        };
-        return PageHeaderService;
-    }());
-    PageHeaderService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: PageHeaderService, deps: [{ token: HttpService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    PageHeaderService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: PageHeaderService, providedIn: 'root' });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: PageHeaderService, decorators: [{
-                type: i0.Injectable,
-                args: [{
-                        providedIn: 'root'
-                    }]
-            }], ctorParameters: function () { return [{ type: HttpService }]; } });
-
-    var AuthState = /** @class */ (function () {
-        function AuthState() {
-        }
-        return AuthState;
-    }());
-
-    var AuthStore = /** @class */ (function (_super) {
-        __extends(AuthStore, _super);
-        function AuthStore(httpService) {
-            var _this = _super.call(this, new AuthState()) || this;
-            _this.httpService = httpService;
-            return _this;
-        }
-        AuthStore.prototype.addAuthInfo = function (user) {
-            this.setState(Object.assign(Object.assign({}, this.state), { user: user }));
-        };
-        AuthStore.prototype.getAuthInfo = function () {
-            console.log(this.state);
-            if (this.state.user) {
-                return rxjs.of(this.state.user);
-            }
-            else {
-                return rxjs.forkJoin([this.httpService.get(AuthURL.EndPoints.auth.user.userInfo)]).pipe(operators.tap(function (_a) {
-                    var _b = __read(_a, 1), user = _b[0];
-                    return user;
-                }));
-            }
-        };
-        return AuthStore;
-    }(Store));
-    AuthStore.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AuthStore, deps: [{ token: HttpService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    AuthStore.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AuthStore });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AuthStore, decorators: [{
-                type: i0.Injectable
-            }], ctorParameters: function () { return [{ type: HttpService }]; } });
-
-    var credentialsKey = 'jwt-token';
-    /**
-     * Provides storage for authentication credentials.
-     * The Credentials interface should be replaced with proper implementation.
-     */
-    var CredentialsService = /** @class */ (function () {
-        function CredentialsService() {
-            this.token = null;
-            var savedCredentials = sessionStorage.getItem(credentialsKey);
-            if (savedCredentials) {
-                this.token = savedCredentials;
-            }
-        }
-        /**
-         * Checks is the user is authenticated.
-         * @return True if the user is authenticated.
-         */
-        CredentialsService.prototype.isAuthenticated = function () {
-            return !!this.credentials;
-        };
-        Object.defineProperty(CredentialsService.prototype, "credentials", {
-            /**
-             * Gets the user credentials.
-             * @return The user credentials or null if the user is not authenticated.
-             */
-            get: function () {
-                return this.token;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        /**
-         * Sets the user credentials.
-         * The credentials may be persisted across sessions by setting the `remember` parameter to true.
-         * Otherwise, the credentials are only persisted for the current session.
-         * @param credentials The user credentials.
-         * @param remember True to remember credentials across sessions.
-         */
-        CredentialsService.prototype.setCredentials = function (credentials) {
-            this.token = credentials || null;
-            if (credentials) {
-                sessionStorage.setItem(credentialsKey, credentials);
-            }
-            else {
-                sessionStorage.clear();
-            }
-        };
-        return CredentialsService;
-    }());
-    CredentialsService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CredentialsService, deps: [], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    CredentialsService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CredentialsService, providedIn: 'root' });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CredentialsService, decorators: [{
-                type: i0.Injectable,
-                args: [{
-                        providedIn: 'root'
-                    }]
-            }], ctorParameters: function () { return []; } });
-
-    var StorageService = /** @class */ (function () {
-        function StorageService(Storage) {
-            this.Storage = Storage;
-        }
-        StorageService.prototype.getItem = function (key) {
-            return this.Storage.getItem(key);
-        };
-        StorageService.prototype.setItem = function (key, item) {
-            return this.Storage.setItem(key, item);
-        };
-        StorageService.prototype.getObj = function (key, safe) {
-            if (safe === void 0) { safe = true; }
-            try {
-                var item = this.getItem(key);
-                return JSON.parse(item);
-            }
-            catch (e) {
-                if (!safe) {
-                    throw e;
-                }
-            }
-        };
-        StorageService.prototype.setObj = function (key, item) {
-            return this.setItem(key, JSON.stringify(item));
-        };
-        StorageService.prototype.removeItem = function (key) {
-            this.Storage.removeItem(key);
-        };
-        StorageService.prototype.clear = function () {
-            this.Storage.clear();
-        };
-        return StorageService;
-    }());
-
-    var LocalService = /** @class */ (function (_super) {
-        __extends(LocalService, _super);
-        function LocalService() {
-            return _super.call(this, window.sessionStorage) || this;
-        }
-        return LocalService;
-    }(StorageService));
-    LocalService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalService, deps: [], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    LocalService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalService, providedIn: 'root' });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalService, decorators: [{
-                type: i0.Injectable,
-                args: [{
-                        providedIn: 'root'
-                    }]
-            }], ctorParameters: function () { return []; } });
-
-    var AuthService = /** @class */ (function () {
-        function AuthService(injector, httpService, store, _router, credentialsService, localstore) {
-            this.httpService = httpService;
-            this.store = store;
-            this._router = _router;
-            this.credentialsService = credentialsService;
-            this.localstore = localstore;
-            this.orgInfo = new rxjs.BehaviorSubject('');
-            this.currentOrgInfo = this.orgInfo.asObservable();
-            this.currentMenu = new rxjs.BehaviorSubject('');
-            this.currentMenuInfo = this.currentMenu.asObservable();
-            this.alertService = injector.get(AlertService);
-            this.dynamicTabPageService = injector.get(DynamicTabPageService);
-            this.pageHeaderService = injector.get(PageHeaderService);
-        }
-        AuthService.prototype.feedOrgInfo = function (data) {
-            this.orgInfo.next(data);
-        };
-        AuthService.prototype.getCurrentMenu = function (data) {
-            this.currentMenu.next(data);
-        };
-        AuthService.prototype.getUserOrgList = function () {
-            return this.httpService.get(AuthURL.EndPoints.auth.user.orgList);
-        };
-        AuthService.prototype.getUnNotified = function () {
-            return this.httpService.get(AuthURL.EndPoints.auth.user.notification);
-        };
-        AuthService.prototype.updateUnNotified = function (data) {
-            return this.httpService.post(AuthURL.EndPoints.auth.user.notification, data);
-        };
-        AuthService.prototype.updateWorkerAvailability = function (data) {
-            return this.httpService.patch(AuthURL.EndPoints.auth.user.workerAvailability, data);
-        };
-        AuthService.prototype.getWorkerAvailability = function () {
-            return this.httpService.get(AuthURL.EndPoints.auth.user.getWorkerAvailability);
-        };
-        AuthService.prototype.getMstrToken = function () {
-            return this.httpService.get(AuthURL.EndPoints.auth.microstrategy.login).pipe(function (res) {
-                return res;
-            });
-        };
-        AuthService.prototype.login = function (email, password, otp) {
-            var _this = this;
-            var body = {
-                email: email,
-                password: password,
-                secret: otp ? otp : ''
-            };
-            return this.httpService.post(AuthURL.EndPoints.auth.user.login, body).pipe(operators.mergeMap(function (res) {
-                if (res['data'] === 'MFA_CODE_SEND') {
-                    return rxjs.of(res['data']);
-                }
-                _this.credentialsService.setCredentials(res['data'].idToken.jwtToken);
-                sessionStorage.setItem('refreshToken', res['data'].refreshToken.token);
-                sessionStorage.setItem('email', res['data'].idToken.payload['email']);
-                sessionStorage.setItem('id', res['data'].idToken.payload['custom:id']);
-                sessionStorage.setItem('username', res['data'].idToken.payload['name']);
-                return _this.getUserInfo();
-            }));
-        };
-        AuthService.prototype.refreshToken = function (platform) {
-            var _this = this;
-            if (platform === void 0) { platform = 'aws'; }
-            var email = sessionStorage.getItem('email');
-            var refreshToken = sessionStorage.getItem('refreshToken');
-            var body = {
-                email: email,
-                refreshToken: refreshToken
-            };
-            if (platform === 'aws') {
-                return this.httpService.post(AuthURL.EndPoints.auth.user.refreshToken, body).pipe(operators.mergeMap(function (res) {
-                    _this.credentialsService.setCredentials(res['data'].idToken.jwtToken);
-                    sessionStorage.setItem('refreshToken', res['data'].refreshToken.token);
-                    sessionStorage.setItem('email', res['data'].idToken.payload['email']);
-                    sessionStorage.setItem('id', res['data'].idToken.payload['custom:id']);
-                    sessionStorage.setItem('username', res['data'].idToken.payload['name']);
-                    console.log('new token generated...', res['data'].idToken.jwtToken);
-                    return [res['data'].idToken.jwtToken];
-                }));
-            }
-            else {
-                return this.httpService.post(AuthURL.EndPoints.auth.user.refreshToken, body).pipe(operators.mergeMap(function (res) {
-                    _this.credentialsService.setCredentials(res['data'].token);
-                    sessionStorage.setItem('refreshToken', res['data'].refreshToken);
-                    return [res['data'].token];
-                }));
-            }
-        };
-        AuthService.prototype.resetLoggedIn = function () {
-            this.httpService
-                .post(AuthURL.EndPoints.auth.user.logout, {
-                email: sessionStorage.getItem('email')
-            })
-                .subscribe(function () {
-                console.log('Logged in flag reset successful.');
-            });
-        };
-        AuthService.prototype.logout = function () {
-            this._router.navigate(['/login']);
-            sessionStorage.clear();
-            localStorage.clear();
-        };
-        AuthService.prototype.getUserInfo = function () {
-            var _this = this;
-            return rxjs.forkJoin([this.httpService.get(AuthURL.EndPoints.auth.user.userInfo)]).pipe(operators.tap(function (_a) {
-                var _b = __read(_a, 1), user = _b[0];
-                _this.store.addAuthInfo(user['data']);
-                return user;
-            }));
-        };
-        AuthService.prototype.getUserRole = function (id) {
-            return this.httpService.get(AuthURL.EndPoints.auth.user.userRole.replace('{id}', id)).pipe(function (res) {
-                return res;
-            });
-        };
-        AuthService.prototype.routeToDynamicPage = function (orgid) {
-            return this.httpService
-                .get(AuthURL.EndPoints.auth.user.routeToDynamicPage.replace('{orgid}', orgid))
-                .pipe(function (res) {
-                return res;
-            });
-        };
-        AuthService.prototype.getAuthMe = function () {
-            return this.httpService.get(AuthURL.EndPoints.auth.user.authMe);
-        };
-        AuthService.prototype.ResetPassword = function (data) {
-            return this.httpService.post(AuthURL.EndPoints.auth.user.resetPassword, data);
-        };
-        AuthService.prototype.getRoleKey = function () {
-            var user = this.localstore.getObj('user');
-            if (user && user.role) {
-                return user.role.rolekey;
-            }
-        };
-        AuthService.prototype.isAdmin = function () {
-            return 'ADM' === this.getRoleKey();
-        };
-        AuthService.prototype.getOrgID = function () {
-            var user = this.localstore.getObj('user');
-            if (user && user.userWorkInfo && user.userWorkInfo.organization && user.userWorkInfo.organization.id) {
-                return user.userWorkInfo.organization.id;
-            }
-            else {
-                return '';
-            }
-        };
-        AuthService.prototype.conformMail = function (data) {
-            return this.httpService.post(AuthURL.EndPoints.auth.user.conformMail, data);
-        };
-        AuthService.prototype.changePassword = function (data) {
-            return this.httpService.post(AuthURL.EndPoints.auth.user.changePassword, data);
-        };
-        AuthService.prototype.setSharedMessage = function (data) {
-            this.sharedInfo = data;
-        };
-        AuthService.prototype.getSharedMessage = function () {
-            return this.sharedInfo;
-        };
-        AuthService.prototype.checkDynamicPagePermission = function (pageId) {
-            return __awaiter(this, void 0, void 0, function () {
-                var dynamicPages;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, this.getAuthorizedPages()];
-                        case 1:
-                            dynamicPages = _a.sent();
-                            if (pageId) {
-                                this.dynamicTabPageService.getPageById(pageId).subscribe(function (res) {
-                                    if (dynamicPages.some(function (page) { return page.id === res['data'][0].activeVersion.id; })) {
-                                        _this._router.navigate(["pages/dynamic-search/search/" + res['data'][0].activeVersion.id]);
-                                    }
-                                    else {
-                                        _this.alertService.error("You don't have permissions for " + res['data'][0].activeVersion.pagename + " . Please Contact Administrator");
-                                    }
-                                });
-                            }
-                            else {
-                                this.alertService.error('You don\'t have permissions to perform the following operations .Please Contact Administrator');
-                            }
-                            return [2 /*return*/];
-                    }
-                });
-            });
-        };
-        AuthService.prototype.getCurrentOrg = function () {
-            return this.getUserOrgList()
-                .toPromise()
-                .then(function (response) {
-                return response['data'][0].id;
-            });
-        };
-        AuthService.prototype.getAuthorizedPages = function () {
-            return __awaiter(this, void 0, void 0, function () {
-                var orgId;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, this.getCurrentOrg()];
-                        case 1:
-                            orgId = _a.sent();
-                            return [2 /*return*/, this.pageHeaderService
-                                    .getAuthorizedPages(orgId)
-                                    .toPromise()
-                                    .then(function (response) {
-                                    var dynamicPage = response['data'].filter(function (page) {
-                                        return (page.activeVersion &&
-                                            (page.activeVersion.gridconfig || page.activeVersion.templatejson || _this.getCustomPage(page)));
-                                    });
-                                    return dynamicPage.map(function (page) { return ({
-                                        id: page.activeVersion.id,
-                                        name: page.activeVersion.pagename,
-                                        activeVersion: page.activeVersion
-                                    }); });
-                                }, function (_error) { return _this.alertService.error(AppConstants.errorMessage); })];
-                    }
-                });
-            });
-        };
-        AuthService.prototype.getCustomPage = function (page) {
-            if (page.activeVersion.tabconfig) {
-                var routingTab = JSON.parse(page.activeVersion.tabconfig).filter(function (x) { return x.type === 'ROUTING'; });
-                return routingTab.length && page;
-            }
-        };
-        AuthService.prototype.validateToken = function (token, requestObject) {
-            var _this = this;
-            this.credentialsService.setCredentials(token);
-            return this.httpService.getAuthAccessKey(AuthURL.EndPoints.auth.user.getTokenValidationUrl, requestObject).pipe(operators.mergeMap(function (res) {
-                if (res['data'] === 'MFA_CODE_SEND') {
-                    return rxjs.of(res['data']);
-                }
-                _this.credentialsService.setCredentials(res['data'].token);
-                sessionStorage.setItem('refreshToken', res['data'].refreshToken);
-                sessionStorage.setItem('email', res['data'].email);
-                sessionStorage.setItem('id', res['data'].id);
-                sessionStorage.setItem('username', res['data'].name);
-                return _this.getUserInfo();
-            }));
-        };
-        AuthService.prototype.generateLoginUrl = function () {
-            return this.httpService.get(AuthURL.EndPoints.auth.user.generateLoginUrl);
-        };
-        return AuthService;
-    }());
-    AuthService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AuthService, deps: [{ token: i0__namespace.Injector }, { token: HttpService }, { token: AuthStore }, { token: i1__namespace.Router }, { token: CredentialsService }, { token: LocalService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    AuthService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AuthService, providedIn: 'root' });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AuthService, decorators: [{
-                type: i0.Injectable,
-                args: [{
-                        providedIn: 'root'
-                    }]
-            }], ctorParameters: function () { return [{ type: i0__namespace.Injector }, { type: HttpService }, { type: AuthStore }, { type: i1__namespace.Router }, { type: CredentialsService }, { type: LocalService }]; } });
-
-    var AttachmentsService = /** @class */ (function () {
-        function AttachmentsService(http) {
-            this.http = http;
-            // This is intentional
-        }
-        AttachmentsService.prototype.getAttachmentReferral = function (referralid) {
-            return this.http.get(AttachmentConfig$1.EndPoint.Attachments.GetAttachmentReferral + '/' + referralid);
-        };
-        AttachmentsService.prototype.getCategoryLookup = function (name) {
-            return this.http.get(AttachmentConfig$1.EndPoint.Attachments.GetCategoryLookup + '/' + name);
-        };
-        AttachmentsService.prototype.uploadKey = function (objparams) {
-            return this.http.post(AttachmentConfig$1.EndPoint.Attachments.UploadKey, objparams);
-        };
-        AttachmentsService.prototype.downloadKey = function (objparams) {
-            return this.http.post(AttachmentConfig$1.EndPoint.Attachments.DownloadKey, objparams);
-        };
-        AttachmentsService.prototype.postAttachment = function (objparams) {
-            return this.http.post(AttachmentConfig$1.EndPoint.Attachments.PostAttachment, objparams);
-        };
-        AttachmentsService.prototype.putAttachment = function (objparams, attachmentId) {
-            console.log(AttachmentConfig$1.EndPoint.Attachments.PutAttachment + '/' + attachmentId, objparams);
-            return this.http.patch(AttachmentConfig$1.EndPoint.Attachments.PutAttachment + '/' + attachmentId, objparams);
-        };
-        return AttachmentsService;
-    }());
-    AttachmentsService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AttachmentsService, deps: [{ token: HttpService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    AttachmentsService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AttachmentsService, providedIn: 'root' });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: AttachmentsService, decorators: [{
-                type: i0.Injectable,
-                args: [{
-                        providedIn: 'root'
-                    }]
-            }], ctorParameters: function () { return [{ type: HttpService }]; } });
-
     var ConfigurationSettingsConfig = /** @class */ (function () {
         function ConfigurationSettingsConfig() {
         }
@@ -1641,9 +960,14 @@
     };
 
     var ConfigurationSettingsService = /** @class */ (function () {
-        function ConfigurationSettingsService(httpService) {
-            this.httpService = httpService;
-            // This is intentional
+        function ConfigurationSettingsService(_storeservice) {
+            var _this = this;
+            this._storeservice = _storeservice;
+            this._storeservice.currentStore.subscribe(function (res) {
+                if (res) {
+                    _this.httpService = res['HTTPSERVICE'];
+                }
+            });
         }
         ConfigurationSettingsService.prototype.getUserList = function (orgid) {
             return this.httpService.get(ConfigurationSettingsConfig.EndPoint.User.getUserorgList + orgid);
@@ -1677,14 +1001,14 @@
         };
         return ConfigurationSettingsService;
     }());
-    ConfigurationSettingsService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigurationSettingsService, deps: [{ token: HttpService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
+    ConfigurationSettingsService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigurationSettingsService, deps: [{ token: DataStoreService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
     ConfigurationSettingsService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigurationSettingsService, providedIn: 'root' });
     i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigurationSettingsService, decorators: [{
                 type: i0.Injectable,
                 args: [{
                         providedIn: 'root'
                     }]
-            }], ctorParameters: function () { return [{ type: HttpService }]; } });
+            }], ctorParameters: function () { return [{ type: DataStoreService }]; } });
 
     var DISPLAY_IN_SECONDS = 8;
     var AlertComponent = /** @class */ (function () {
@@ -1740,11 +1064,9 @@
             }], ctorParameters: function () { return [{ type: AlertService }]; } });
 
     var ConfigLoginSettingsComponent$1 = /** @class */ (function () {
-        function ConfigLoginSettingsComponent(authService, alertService, attachmentService, httpService, _formBuilder, _configurationSettingsService, _storeservice) {
-            this.authService = authService;
+        function ConfigLoginSettingsComponent(alertService, _formBuilder, _configurationSettingsService, _storeservice) {
+            var _this = this;
             this.alertService = alertService;
-            this.attachmentService = attachmentService;
-            this.httpService = httpService;
             this._formBuilder = _formBuilder;
             this._configurationSettingsService = _configurationSettingsService;
             this._storeservice = _storeservice;
@@ -1760,12 +1082,13 @@
             this.bannerVisible = false;
             this.loginEvent$ = new rxjs.BehaviorSubject(null);
             this.userid = sessionStorage.getItem('id');
-            // this.orgSubs = this.authService.orgInfo.subscribe(o => {
-            //   this.orgId = o;
-            //   if (this.orgId) {
-            //     this.getRolesList();
-            //   }
-            // });
+            this._storeservice.currentStore.subscribe(function (res) {
+                if (res) {
+                    _this.httpService = res['HTTPSERVICE'];
+                    _this.authService = res['AUTHSERVICE'];
+                    _this.attachmentService = res['ATTACHMENTSERVICE'];
+                }
+            });
         }
         ConfigLoginSettingsComponent.prototype.ngOnInit = function () {
             var _this = this;
@@ -1790,12 +1113,12 @@
                 id: [''],
                 registration: false,
                 layout: [1],
-                role_for_registration: ['', i5.Validators.required],
-                template_for_registration: ['', i5.Validators.required],
-                banner: ['', i5.Validators.required],
-                organization_title: ['', i5.Validators.required],
-                logo: ['', i5.Validators.required],
-                organizationid: ['', i5.Validators.required]
+                role_for_registration: ['', i2$1.Validators.required],
+                template_for_registration: ['', i2$1.Validators.required],
+                banner: ['', i2$1.Validators.required],
+                organization_title: ['', i2$1.Validators.required],
+                logo: ['', i2$1.Validators.required],
+                organizationid: ['', i2$1.Validators.required]
             });
         };
         ConfigLoginSettingsComponent.prototype.getRolesList = function () {
@@ -1837,10 +1160,9 @@
                         var reader = new FileReader();
                         reader.onload = function () {
                             // this.thumbnailLogo = reader.result as string;
-                            var urlPathLogo = _this.urlPathLogo ? _this.urlPathLogo.split('?')[0] : '';
-                            _this.thumbnailLogo = urlPathLogo;
+                            _this.thumbnailLogo = _this.urlPathLogo;
                             _this.configRegistrationForm.patchValue({
-                                logo: urlPathLogo
+                                logo: _this.urlPathLogo
                             });
                         };
                         reader.readAsDataURL(file);
@@ -1903,6 +1225,7 @@
                         .subscribe(function (_resp) {
                         _this.alertService.success('Uploaded Successfully!');
                         var reader = new FileReader();
+                        _this.thumbnailBanner = _this.urlPathBanner;
                         reader.onload = function () {
                             _this.configRegistrationForm.patchValue({
                                 banner: _this.urlPathBanner
@@ -2029,8 +1352,8 @@
         };
         return ConfigLoginSettingsComponent;
     }());
-    ConfigLoginSettingsComponent$1.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigLoginSettingsComponent$1, deps: [{ token: AuthService }, { token: AlertService }, { token: AttachmentsService }, { token: HttpService }, { token: i5__namespace.FormBuilder }, { token: ConfigurationSettingsService }, { token: DataStoreService }], target: i0__namespace.ɵɵFactoryTarget.Component });
-    ConfigLoginSettingsComponent$1.ɵcmp = i0__namespace.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: ConfigLoginSettingsComponent$1, selector: "lib-config-login-settings", ngImport: i0__namespace, template: "<app-alert></app-alert>\r\n<p-card styleClass=\"w-100\">\r\n  <div class=\"row\">\r\n    <div class=\"col-md-12 col-12\">\r\n      <div class=\"customizer customizer-styling customizer-styling-skin skin\">\r\n        <h6 class=\"font-weight-bold mb-3\">Choose Login Layout</h6>\r\n        <div class=\"d-flex justify-content-start align-items-center\">\r\n          <!-- Layout 1 -->\r\n          <div class=\"custom-control custom-radio mr-4 mb-md-0 mb-3\">\r\n            <figure class=\"active mb-0\">\r\n              <label role=\"link\" class=\"mb-0 layout-select\" for=\"layout1\">\r\n                <img src=\"../../../../assets/images/Layout.jpg\" class=\"img-fluid\" alt=\"layout1\" />\r\n              </label>\r\n              <figcaption>\r\n                <input\r\n                  type=\"radio\"\r\n                  id=\"layout1\"\r\n                  name=\"layout\"\r\n                  class=\"custom-control-input layout-name\"\r\n                  [attr.checked]=\"true\"\r\n                  value=\"Layout 1\" />\r\n                <label class=\"custom-control-label mt-2 mb-0\" for=\"layout1\">Layout 1</label>\r\n              </figcaption>\r\n            </figure>\r\n          </div>\r\n\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</p-card>\r\n\r\n<p-card styleClass=\"w-100 mt-3\">\r\n  <div class=\"customizer\" [formGroup]=\"configRegistrationForm\">\r\n    <h6 class=\"font-weight-bold mb-3\">Configure Login</h6>\r\n    <div class=\"row\">\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels\" for=\"organizationName\">Organization Title</label>\r\n        <input\r\n          class=\"form-control\"\r\n          type=\"text\"\r\n          placeholder=\"Title Name\"\r\n          id=\"organizationName\"\r\n          autocomplete=\"off\"\r\n          formControlName=\"organization_title\"\r\n          pInputText />\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels mb-0\" for=\"thumbnailBanner\">Upload Banner</label>\r\n        <div *ngIf=\"!thumbnailBanner\" id=\"thumbnailBanner\">\r\n          <figure class=\"mt-2 mb-0 pic-upload justify-content-md-center\">\r\n            <label for=\"file1\" class=\"btn btn-primary file-upload-btn mb-0\">\r\n              <span class=\"d-flex align-items-center justify-content-center\">\r\n                <span class=\"aterial-icon material-symbols-outlined text-white mr-2\">cloud_upload</span>\r\n                <span>Upload</span>\r\n              </span>\r\n            </label>\r\n            <input\r\n              type=\"file\"\r\n              id=\"file1\"\r\n              aria-hidden=\"true\"\r\n              style=\"display: none\"\r\n              (change)=\"handleFileInputBanner($event)\" />\r\n          </figure>\r\n          <p><small>Image size max 1MB (min-width 1100px and min-height 800px)</small></p>\r\n        </div>\r\n        <div *ngIf=\"thumbnailBanner\">\r\n          <div class=\"d-flex align-items-center justify-content-between p-1 bg-light\">\r\n            <span role=\"button\" (click)=\"showUploadedBanner()\" title=\"Zoom\">\r\n              <img width=\"45\" height=\"45\" [src]=\"thumbnailBanner || 'assets/images/user-empty.png'\" alt=\"upload\" />\r\n            </span>\r\n            <span>\r\n              <em\r\n                role=\"button\"\r\n                class=\"fa fa-search-plus fa-lg text-primary mr-2\"\r\n                (click)=\"showUploadedBanner()\"\r\n                title=\"Zoom\"></em>\r\n              <em\r\n                role=\"button\"\r\n                class=\"fa fa-trash fa-lg text-danger mr-2\"\r\n                (click)=\"removeThumbnailBanner()\"\r\n                title=\"Delete\"></em>\r\n            </span>\r\n          </div>\r\n          <p-dialog header=\"Banner Preview\" [(visible)]=\"bannerVisible\" [style]=\"{ width: '50vw' }\">\r\n            <img class=\"img-fluid\" [attr.src]=\"thumbnailBanner || 'assets/images/user-empty.png'\" alt=\"upload\" />\r\n          </p-dialog>\r\n        </div>\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-122 form-group\">\r\n        <label class=\"intake-form-labels mb-0\" for=\"thumbnailLogo\">Upload Logo</label>\r\n        <div *ngIf=\"!thumbnailLogo\" id=\"thumbnailLogo\">\r\n          <figure class=\"mt-2 mb-0 pic-upload justify-content-md-center\">\r\n            <label for=\"file\" class=\"btn btn-primary file-upload-btn mb-0\">\r\n              <span class=\"d-flex align-items-center justify-content-center\">\r\n                <span class=\"aterial-icon material-symbols-outlined text-white mr-2\">cloud_upload</span>\r\n                <span>Upload</span>\r\n              </span>\r\n            </label>\r\n            <input type=\"file\" id=\"file\" aria-hidden=\"true\" style=\"display: none\" (change)=\"handleFileInput($event)\" />\r\n          </figure>\r\n          <p><small>Image size max 120kb (min-width 400px and min-height 60px)</small></p>\r\n        </div>\r\n        <div *ngIf=\"thumbnailLogo\">\r\n          <div class=\"d-flex align-items-center justify-content-between p-1 bg-light\">\r\n            <span role=\"button\" (click)=\"showUploadedLogo()\" title=\"Zoom\">\r\n              <img width=\"45\" height=\"45\" [attr.src]=\"thumbnailLogo || 'assets/images/user-empty.png'\" alt=\"upload\" />\r\n            </span>\r\n            <span>\r\n              <em\r\n                role=\"button\"\r\n                class=\"fa fa-search-plus fa-lg text-primary mr-2\"\r\n                (click)=\"showUploadedLogo()\"\r\n                title=\"Zoom\"></em>\r\n              <em\r\n                role=\"button\"\r\n                class=\"fa fa-trash fa-lg text-danger mr-2\"\r\n                (click)=\"removeThumbnail()\"\r\n                title=\"Delete\"></em>\r\n            </span>\r\n          </div>\r\n          <p-dialog header=\"Logo Preview\" [(visible)]=\"visible\" [style]=\"{ width: '50vw' }\">\r\n            <img class=\"img-fluid\" [src]=\"thumbnailLogo || 'assets/images/user-empty.png'\" alt=\"upload\" />\r\n          </p-dialog>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</p-card>\r\n\r\n<p-card styleClass=\"w-100 mt-3\">\r\n  <div class=\"customizer\" [formGroup]=\"configRegistrationForm\">\r\n    <h6 class=\"font-weight-bold mb-3\">Configure Registration</h6>\r\n    <div class=\"row\">\r\n      <div class=\"col-md-12 col-sm-6 col-12 mb-md-4 mb-3\">\r\n        <p-checkbox inputId=\"registrationid\" [binary]=\"true\" formControlName=\"registration\"></p-checkbox>\r\n        <label class=\"intake-form-labels mb-0 ml-2\" for=\"registrationid\">Enable Registration?</label>\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels\" for=\"selectOrganization\">Select Organization</label>\r\n        <p-dropdown\r\n          styleClass=\"w-100\"\r\n          optionLabel=\"name\"\r\n          optionValue=\"id\"\r\n          [options]=\"organizations\"\r\n          placeholder=\"Select Role\"\r\n          id=\"selectOrganization\"\r\n          formControlName=\"organizationid\"\r\n          ariaLabelledBy=\"roleforregistration\">\r\n        </p-dropdown>\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels\" for=\"roleforregistration\">Select Role</label>\r\n        <p-dropdown\r\n          styleClass=\"w-100\"\r\n          optionLabel=\"name\"\r\n          optionValue=\"id\"\r\n          [options]=\"userRoles\"\r\n          placeholder=\"Select Role\"\r\n          id=\"roleforregistration\"\r\n          formControlName=\"role_for_registration\"\r\n          ariaLabelledBy=\"roleforregistration\">\r\n        </p-dropdown>\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels\" for=\"templateforregistration\">Select Template</label>\r\n        <p-dropdown\r\n          styleClass=\"w-100\"\r\n          optionLabel=\"name\"\r\n          optionValue=\"id\"\r\n          [options]=\"emailTemplate\"\r\n          placeholder=\"Select Template\"\r\n          id=\"templateforregistration\"\r\n          formControlName=\"template_for_registration\"\r\n          ariaLabelledBy=\"templateforregistration\">\r\n        </p-dropdown>\r\n      </div>\r\n    </div>\r\n    <div class=\"text-md-right mt-2\">\r\n      <button type=\"button\" class=\"btn btn-primary\" (click)=\"saveConfig()\">\r\n        {{ updateButton ? 'Update' : 'Submit' }}\r\n      </button>\r\n    </div>\r\n  </div>\r\n</p-card>\r\n", styles: ["@charset \"UTF-8\";:host ::ng-deep .p-card .p-card-body .p-card-content{padding:0}.customizer .custom-checkbox.custom-control,.customizer .custom-radio.custom-control{padding-left:0}.customizer .custom-checkbox.custom-control .theme-select,.customizer .custom-radio.custom-control .theme-select{border:2px solid #ddd;border-radius:7px}.customizer .custom-checkbox.custom-control .active .theme-select,.customizer .custom-radio.custom-control .active .theme-select{border-color:var(--primary)}.customizer .custom-checkbox .custom-control-input:checked~.custom-control-label:before,.customizer .custom-radio .custom-control-input:checked~.custom-control-label:before{content:\"\\f00c\";font-family:\"FontAwesome\",sans-serif;color:var(--hover-text);background-color:var(--btn);border-color:var(--btn);font-size:10px;display:flex;align-items:center;padding:2px}.customizer .custom-checkbox label,.customizer .custom-radio label{cursor:pointer}.customizer .custom-checkbox .font-box,.customizer .custom-radio .font-box{display:flex;justify-content:center;align-items:center;width:150px;height:120px;color:var(--text-dark)}.customizer .custom-checkbox .custom-control-label,.customizer .custom-radio .custom-control-label{position:relative;vertical-align:middle;font-size:var(--base-font-size);line-height:normal;color:var(--text-dark);cursor:pointer;padding-left:25px}.customizer .custom-checkbox .custom-control-label:after,.customizer .custom-radio .custom-control-label:after{border-color:var(--btn)}.customizer .custom-checkbox .custom-control-label:before,.customizer .custom-checkbox .custom-control-label:after,.customizer .custom-radio .custom-control-label:before,.customizer .custom-radio .custom-control-label:after{background-image:none;width:16px;height:16px;left:0;box-shadow:none;top:0}.customizer hr{border-color:var(--table-border)}.customizer .customizer-header{background:var(--background-color);color:var(--text-dark)}.customizer .customizer-header .customizer-close{position:absolute;right:.6rem;top:.6rem;padding:7px;width:auto;z-index:10;color:var(--text-dark);cursor:pointer}.customizer .customizer-header .customizer-close .material-icon{font-size:1.5rem}.customizer .customizer-header .customizer-close:hover{color:var(--btn)}.customizer h4{font-size:var(--font-15);font-weight:600;color:var(--text-dark)}.customizer h6{font-size:var(--font-14);color:var(--text-dark)}.customizer p{font-size:var(--base-font-size);font-weight:400;color:var(--text-dark)}.customizer .customizer-toggle{background:var(--btn);color:var(--hover-text);box-shadow:-3px 0 8px #22292f1a;border-top-left-radius:6px;border-bottom-left-radius:6px;position:absolute;top:50%;width:38px;height:38px;left:-39px;text-align:center;line-height:40px;border-left:1px solid var(--checkbox-border);cursor:pointer}.customizer .customizer-toggle .fa-cog{font-size:var(--font-15)}.customizer .customizer-toggle:hover{text-decoration:none}.customizer .customizer-styling-skin.skin .custom-control .custom-control-label{position:relative;padding-left:25px}.customizer .custom-control:first-child .font-box{font-size:var(--font-21);font-weight:400}.customizer .custom-control:last-child .font-box{font-size:var(--font-26);font-weight:600}\n"], components: [{ type: AlertComponent, selector: "app-alert" }, { type: i9__namespace.Card, selector: "p-card", inputs: ["header", "subheader", "style", "styleClass"] }, { type: i10__namespace.Dialog, selector: "p-dialog", inputs: ["header", "draggable", "resizable", "positionLeft", "positionTop", "contentStyle", "contentStyleClass", "modal", "closeOnEscape", "dismissableMask", "rtl", "closable", "responsive", "appendTo", "breakpoints", "styleClass", "maskStyleClass", "showHeader", "breakpoint", "blockScroll", "autoZIndex", "baseZIndex", "minX", "minY", "focusOnShow", "maximizable", "keepInViewport", "focusTrap", "transitionOptions", "closeIcon", "closeAriaLabel", "closeTabindex", "minimizeIcon", "maximizeIcon", "visible", "style", "position"], outputs: ["onShow", "onHide", "visibleChange", "onResizeInit", "onResizeEnd", "onDragEnd", "onMaximize"] }, { type: i11__namespace.Checkbox, selector: "p-checkbox", inputs: ["value", "name", "disabled", "binary", "label", "ariaLabelledBy", "ariaLabel", "tabindex", "inputId", "style", "styleClass", "labelStyleClass", "formControl", "checkboxIcon", "readonly", "required", "trueValue", "falseValue"], outputs: ["onChange"] }, { type: i12__namespace.Dropdown, selector: "p-dropdown", inputs: ["scrollHeight", "filter", "name", "style", "panelStyle", "styleClass", "panelStyleClass", "readonly", "required", "editable", "appendTo", "tabindex", "placeholder", "filterPlaceholder", "filterLocale", "inputId", "selectId", "dataKey", "filterBy", "autofocus", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "autoDisplayFirst", "group", "showClear", "emptyFilterMessage", "emptyMessage", "virtualScroll", "itemSize", "autoZIndex", "baseZIndex", "showTransitionOptions", "hideTransitionOptions", "ariaFilterLabel", "ariaLabel", "ariaLabelledBy", "filterMatchMode", "maxlength", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "autofocusFilter", "disabled", "options", "filterValue"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onShow", "onHide", "onClear"] }], directives: [{ type: i5__namespace.NgControlStatusGroup, selector: "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]" }, { type: i5__namespace.FormGroupDirective, selector: "[formGroup]", inputs: ["formGroup"], outputs: ["ngSubmit"], exportAs: ["ngForm"] }, { type: i5__namespace.DefaultValueAccessor, selector: "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]" }, { type: i5__namespace.NgControlStatus, selector: "[formControlName],[ngModel],[formControl]" }, { type: i5__namespace.FormControlName, selector: "[formControlName]", inputs: ["disabled", "formControlName", "ngModel"], outputs: ["ngModelChange"] }, { type: i13__namespace.InputText, selector: "[pInputText]" }, { type: i2__namespace.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }] });
+    ConfigLoginSettingsComponent$1.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigLoginSettingsComponent$1, deps: [{ token: AlertService }, { token: i2__namespace$1.FormBuilder }, { token: ConfigurationSettingsService }, { token: DataStoreService }], target: i0__namespace.ɵɵFactoryTarget.Component });
+    ConfigLoginSettingsComponent$1.ɵcmp = i0__namespace.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: ConfigLoginSettingsComponent$1, selector: "lib-config-login-settings", ngImport: i0__namespace, template: "<app-alert></app-alert>\r\n<p-card styleClass=\"w-100\">\r\n  <div class=\"row\">\r\n    <div class=\"col-md-12 col-12\">\r\n      <div class=\"customizer customizer-styling customizer-styling-skin skin\">\r\n        <h6 class=\"font-weight-bold mb-3\">Choose Login Layout</h6>\r\n        <div class=\"d-flex justify-content-start align-items-center\">\r\n          <!-- Layout 1 -->\r\n          <div class=\"custom-control custom-radio mr-4 mb-md-0 mb-3\">\r\n            <figure class=\"active mb-0\">\r\n              <label role=\"link\" class=\"mb-0 layout-select\" for=\"layout1\">\r\n                <img src=\"../../../../assets/images/Layout.jpg\" class=\"img-fluid\" alt=\"layout1\" />\r\n              </label>\r\n              <figcaption>\r\n                <input\r\n                  type=\"radio\"\r\n                  id=\"layout1\"\r\n                  name=\"layout\"\r\n                  class=\"custom-control-input layout-name\"\r\n                  [attr.checked]=\"true\"\r\n                  value=\"Layout 1\" />\r\n                <label class=\"custom-control-label mt-2 mb-0\" for=\"layout1\">Layout 1</label>\r\n              </figcaption>\r\n            </figure>\r\n          </div>\r\n\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</p-card>\r\n\r\n<p-card styleClass=\"w-100 mt-3\">\r\n  <div class=\"customizer\" [formGroup]=\"configRegistrationForm\">\r\n    <h6 class=\"font-weight-bold mb-3\">Configure Login</h6>\r\n    <div class=\"row\">\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels\" for=\"organizationName\">Organization Title</label>\r\n        <input\r\n          class=\"form-control\"\r\n          type=\"text\"\r\n          placeholder=\"Title Name\"\r\n          id=\"organizationName\"\r\n          autocomplete=\"off\"\r\n          formControlName=\"organization_title\"\r\n          pInputText />\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels mb-0\" for=\"thumbnailBanner\">Upload Banner</label>\r\n        <div *ngIf=\"!thumbnailBanner\" id=\"thumbnailBanner\">\r\n          <figure class=\"mt-2 mb-0 pic-upload justify-content-md-center\">\r\n            <label for=\"file1\" class=\"btn btn-primary file-upload-btn mb-0\">\r\n              <span class=\"d-flex align-items-center justify-content-center\">\r\n                <span class=\"aterial-icon material-symbols-outlined text-white mr-2\">cloud_upload</span>\r\n                <span>Upload</span>\r\n              </span>\r\n            </label>\r\n            <input\r\n              type=\"file\"\r\n              id=\"file1\"\r\n              aria-hidden=\"true\"\r\n              style=\"display: none\"\r\n              (change)=\"handleFileInputBanner($event)\" />\r\n          </figure>\r\n          <p><small>Image size max 1MB (min-width 1100px and min-height 800px)</small></p>\r\n        </div>\r\n        <div *ngIf=\"thumbnailBanner\">\r\n          <div class=\"d-flex align-items-center justify-content-between p-1 bg-light\">\r\n            <span role=\"button\" (click)=\"showUploadedBanner()\" title=\"Zoom\">\r\n              <img width=\"45\" height=\"45\" [src]=\"thumbnailBanner || 'assets/images/user-empty.png'\" alt=\"upload\" />\r\n            </span>\r\n            <span>\r\n              <em\r\n                role=\"button\"\r\n                class=\"fa fa-search-plus fa-lg text-primary mr-2\"\r\n                (click)=\"showUploadedBanner()\"\r\n                title=\"Zoom\"></em>\r\n              <em\r\n                role=\"button\"\r\n                class=\"fa fa-trash fa-lg text-danger mr-2\"\r\n                (click)=\"removeThumbnailBanner()\"\r\n                title=\"Delete\"></em>\r\n            </span>\r\n          </div>\r\n          <p-dialog header=\"Banner Preview\" [(visible)]=\"bannerVisible\" [style]=\"{ width: '50vw' }\">\r\n            <img class=\"img-fluid\" [attr.src]=\"thumbnailBanner || 'assets/images/user-empty.png'\" alt=\"upload\" />\r\n          </p-dialog>\r\n        </div>\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-122 form-group\">\r\n        <label class=\"intake-form-labels mb-0\" for=\"thumbnailLogo\">Upload Logo</label>\r\n        <div *ngIf=\"!thumbnailLogo\" id=\"thumbnailLogo\">\r\n          <figure class=\"mt-2 mb-0 pic-upload justify-content-md-center\">\r\n            <label for=\"file\" class=\"btn btn-primary file-upload-btn mb-0\">\r\n              <span class=\"d-flex align-items-center justify-content-center\">\r\n                <span class=\"aterial-icon material-symbols-outlined text-white mr-2\">cloud_upload</span>\r\n                <span>Upload</span>\r\n              </span>\r\n            </label>\r\n            <input type=\"file\" id=\"file\" aria-hidden=\"true\" style=\"display: none\" (change)=\"handleFileInput($event)\" />\r\n          </figure>\r\n          <p><small>Image size max 120kb (min-width 400px and min-height 60px)</small></p>\r\n        </div>\r\n        <div *ngIf=\"thumbnailLogo\">\r\n          <div class=\"d-flex align-items-center justify-content-between p-1 bg-light\">\r\n            <span role=\"button\" (click)=\"showUploadedLogo()\" title=\"Zoom\">\r\n              <img width=\"45\" height=\"45\" [attr.src]=\"thumbnailLogo || 'assets/images/user-empty.png'\" alt=\"upload\" />\r\n            </span>\r\n            <span>\r\n              <em\r\n                role=\"button\"\r\n                class=\"fa fa-search-plus fa-lg text-primary mr-2\"\r\n                (click)=\"showUploadedLogo()\"\r\n                title=\"Zoom\"></em>\r\n              <em\r\n                role=\"button\"\r\n                class=\"fa fa-trash fa-lg text-danger mr-2\"\r\n                (click)=\"removeThumbnail()\"\r\n                title=\"Delete\"></em>\r\n            </span>\r\n          </div>\r\n          <p-dialog header=\"Logo Preview\" [(visible)]=\"visible\" [style]=\"{ width: '50vw' }\">\r\n            <img class=\"img-fluid\" [src]=\"thumbnailLogo || 'assets/images/user-empty.png'\" alt=\"upload\" />\r\n          </p-dialog>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</p-card>\r\n\r\n<p-card styleClass=\"w-100 mt-3\">\r\n  <div class=\"customizer\" [formGroup]=\"configRegistrationForm\">\r\n    <h6 class=\"font-weight-bold mb-3\">Configure Registration</h6>\r\n    <div class=\"row\">\r\n      <div class=\"col-md-12 col-sm-6 col-12 mb-md-4 mb-3\">\r\n        <p-checkbox inputId=\"registrationid\" [binary]=\"true\" formControlName=\"registration\"></p-checkbox>\r\n        <label class=\"intake-form-labels mb-0 ml-2\" for=\"registrationid\">Enable Registration?</label>\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels\" for=\"selectOrganization\">Select Organization</label>\r\n        <p-dropdown\r\n          styleClass=\"w-100\"\r\n          optionLabel=\"name\"\r\n          optionValue=\"id\"\r\n          [options]=\"organizations\"\r\n          placeholder=\"Select Role\"\r\n          id=\"selectOrganization\"\r\n          formControlName=\"organizationid\"\r\n          ariaLabelledBy=\"roleforregistration\">\r\n        </p-dropdown>\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels\" for=\"roleforregistration\">Select Role</label>\r\n        <p-dropdown\r\n          styleClass=\"w-100\"\r\n          optionLabel=\"name\"\r\n          optionValue=\"id\"\r\n          [options]=\"userRoles\"\r\n          placeholder=\"Select Role\"\r\n          id=\"roleforregistration\"\r\n          formControlName=\"role_for_registration\"\r\n          ariaLabelledBy=\"roleforregistration\">\r\n        </p-dropdown>\r\n      </div>\r\n      <div class=\"col-md-4 col-sm-6 col-12 form-group\">\r\n        <label class=\"intake-form-labels\" for=\"templateforregistration\">Select Template</label>\r\n        <p-dropdown\r\n          styleClass=\"w-100\"\r\n          optionLabel=\"name\"\r\n          optionValue=\"id\"\r\n          [options]=\"emailTemplate\"\r\n          placeholder=\"Select Template\"\r\n          id=\"templateforregistration\"\r\n          formControlName=\"template_for_registration\"\r\n          ariaLabelledBy=\"templateforregistration\">\r\n        </p-dropdown>\r\n      </div>\r\n    </div>\r\n    <div class=\"text-md-right mt-2\">\r\n      <button type=\"button\" class=\"btn btn-primary\" (click)=\"saveConfig()\">\r\n        {{ updateButton ? 'Update' : 'Submit' }}\r\n      </button>\r\n    </div>\r\n  </div>\r\n</p-card>\r\n", styles: ["@charset \"UTF-8\";:host ::ng-deep .p-card .p-card-body .p-card-content{padding:0}.customizer .custom-checkbox.custom-control,.customizer .custom-radio.custom-control{padding-left:0}.customizer .custom-checkbox.custom-control .theme-select,.customizer .custom-radio.custom-control .theme-select{border:2px solid #ddd;border-radius:7px}.customizer .custom-checkbox.custom-control .active .theme-select,.customizer .custom-radio.custom-control .active .theme-select{border-color:var(--primary)}.customizer .custom-checkbox .custom-control-input:checked~.custom-control-label:before,.customizer .custom-radio .custom-control-input:checked~.custom-control-label:before{content:\"\\f00c\";font-family:\"FontAwesome\",sans-serif;color:var(--hover-text);background-color:var(--btn);border-color:var(--btn);font-size:10px;display:flex;align-items:center;padding:2px}.customizer .custom-checkbox label,.customizer .custom-radio label{cursor:pointer}.customizer .custom-checkbox .font-box,.customizer .custom-radio .font-box{display:flex;justify-content:center;align-items:center;width:150px;height:120px;color:var(--text-dark)}.customizer .custom-checkbox .custom-control-label,.customizer .custom-radio .custom-control-label{position:relative;vertical-align:middle;font-size:var(--base-font-size);line-height:normal;color:var(--text-dark);cursor:pointer;padding-left:25px}.customizer .custom-checkbox .custom-control-label:after,.customizer .custom-radio .custom-control-label:after{border-color:var(--btn)}.customizer .custom-checkbox .custom-control-label:before,.customizer .custom-checkbox .custom-control-label:after,.customizer .custom-radio .custom-control-label:before,.customizer .custom-radio .custom-control-label:after{background-image:none;width:16px;height:16px;left:0;box-shadow:none;top:0}.customizer hr{border-color:var(--table-border)}.customizer .customizer-header{background:var(--background-color);color:var(--text-dark)}.customizer .customizer-header .customizer-close{position:absolute;right:.6rem;top:.6rem;padding:7px;width:auto;z-index:10;color:var(--text-dark);cursor:pointer}.customizer .customizer-header .customizer-close .material-icon{font-size:1.5rem}.customizer .customizer-header .customizer-close:hover{color:var(--btn)}.customizer h4{font-size:var(--font-15);font-weight:600;color:var(--text-dark)}.customizer h6{font-size:var(--font-14);color:var(--text-dark)}.customizer p{font-size:var(--base-font-size);font-weight:400;color:var(--text-dark)}.customizer .customizer-toggle{background:var(--btn);color:var(--hover-text);box-shadow:-3px 0 8px #22292f1a;border-top-left-radius:6px;border-bottom-left-radius:6px;position:absolute;top:50%;width:38px;height:38px;left:-39px;text-align:center;line-height:40px;border-left:1px solid var(--checkbox-border);cursor:pointer}.customizer .customizer-toggle .fa-cog{font-size:var(--font-15)}.customizer .customizer-toggle:hover{text-decoration:none}.customizer .customizer-styling-skin.skin .custom-control .custom-control-label{position:relative;padding-left:25px}.customizer .custom-control:first-child .font-box{font-size:var(--font-21);font-weight:400}.customizer .custom-control:last-child .font-box{font-size:var(--font-26);font-weight:600}\n"], components: [{ type: AlertComponent, selector: "app-alert" }, { type: i6__namespace.Card, selector: "p-card", inputs: ["header", "subheader", "style", "styleClass"] }, { type: i7__namespace.Dialog, selector: "p-dialog", inputs: ["header", "draggable", "resizable", "positionLeft", "positionTop", "contentStyle", "contentStyleClass", "modal", "closeOnEscape", "dismissableMask", "rtl", "closable", "responsive", "appendTo", "breakpoints", "styleClass", "maskStyleClass", "showHeader", "breakpoint", "blockScroll", "autoZIndex", "baseZIndex", "minX", "minY", "focusOnShow", "maximizable", "keepInViewport", "focusTrap", "transitionOptions", "closeIcon", "closeAriaLabel", "closeTabindex", "minimizeIcon", "maximizeIcon", "visible", "style", "position"], outputs: ["onShow", "onHide", "visibleChange", "onResizeInit", "onResizeEnd", "onDragEnd", "onMaximize"] }, { type: i8__namespace.Checkbox, selector: "p-checkbox", inputs: ["value", "name", "disabled", "binary", "label", "ariaLabelledBy", "ariaLabel", "tabindex", "inputId", "style", "styleClass", "labelStyleClass", "formControl", "checkboxIcon", "readonly", "required", "trueValue", "falseValue"], outputs: ["onChange"] }, { type: i9__namespace.Dropdown, selector: "p-dropdown", inputs: ["scrollHeight", "filter", "name", "style", "panelStyle", "styleClass", "panelStyleClass", "readonly", "required", "editable", "appendTo", "tabindex", "placeholder", "filterPlaceholder", "filterLocale", "inputId", "selectId", "dataKey", "filterBy", "autofocus", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "autoDisplayFirst", "group", "showClear", "emptyFilterMessage", "emptyMessage", "virtualScroll", "itemSize", "autoZIndex", "baseZIndex", "showTransitionOptions", "hideTransitionOptions", "ariaFilterLabel", "ariaLabel", "ariaLabelledBy", "filterMatchMode", "maxlength", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "autofocusFilter", "disabled", "options", "filterValue"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onShow", "onHide", "onClear"] }], directives: [{ type: i2__namespace$1.NgControlStatusGroup, selector: "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]" }, { type: i2__namespace$1.FormGroupDirective, selector: "[formGroup]", inputs: ["formGroup"], outputs: ["ngSubmit"], exportAs: ["ngForm"] }, { type: i2__namespace$1.DefaultValueAccessor, selector: "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]" }, { type: i2__namespace$1.NgControlStatus, selector: "[formControlName],[ngModel],[formControl]" }, { type: i2__namespace$1.FormControlName, selector: "[formControlName]", inputs: ["disabled", "formControlName", "ngModel"], outputs: ["ngModelChange"] }, { type: i10__namespace.InputText, selector: "[pInputText]" }, { type: i2__namespace.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }] });
     i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigLoginSettingsComponent$1, decorators: [{
                 type: i0.Component,
                 args: [{
@@ -2038,7 +1361,7 @@
                         templateUrl: './config-login-settings.component.html',
                         styleUrls: ['./config-login-settings.component.scss']
                     }]
-            }], ctorParameters: function () { return [{ type: AuthService }, { type: AlertService }, { type: AttachmentsService }, { type: HttpService }, { type: i5__namespace.FormBuilder }, { type: ConfigurationSettingsService }, { type: DataStoreService }]; } });
+            }], ctorParameters: function () { return [{ type: AlertService }, { type: i2__namespace$1.FormBuilder }, { type: ConfigurationSettingsService }, { type: DataStoreService }]; } });
 
     var ConfigLoginSettingsComponent = /** @class */ (function () {
         function ConfigLoginSettingsComponent(permissionStore, _storeservice) {
@@ -2048,6 +1371,13 @@
         }
         ConfigLoginSettingsComponent.prototype.ngOnInit = function () {
             var _this = this;
+            this.COMMONSERVICE.subscribe(function (val) {
+                if (val) {
+                    _this._storeservice.setData('HTTPSERVICE', val.httpService);
+                    _this._storeservice.setData('AUTHSERVICE', val.authService);
+                    _this._storeservice.setData('ATTACHMENTSERVICE', val.attachmentService);
+                }
+            });
             this.configureEvent.subscribe(function (val) {
                 _this.RBACORG = val.RBACORG;
                 _this.PERMISSION = val.PERMISSION;
@@ -2058,7 +1388,7 @@
         return ConfigLoginSettingsComponent;
     }());
     ConfigLoginSettingsComponent.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigLoginSettingsComponent, deps: [{ token: PermissionStore }, { token: DataStoreService }], target: i0__namespace.ɵɵFactoryTarget.Component });
-    ConfigLoginSettingsComponent.ɵcmp = i0__namespace.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: ConfigLoginSettingsComponent, selector: "config-login-settings", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION", configureEvent: "configureEvent" }, ngImport: i0__namespace, template: "\n    <lib-config-login-settings></lib-config-login-settings>\n  ", isInline: true, components: [{ type: ConfigLoginSettingsComponent$1, selector: "lib-config-login-settings" }] });
+    ConfigLoginSettingsComponent.ɵcmp = i0__namespace.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: ConfigLoginSettingsComponent, selector: "config-login-settings", inputs: { RBACORG: "RBACORG", PERMISSION: "PERMISSION", configureEvent: "configureEvent", COMMONSERVICE: "COMMONSERVICE" }, ngImport: i0__namespace, template: "\n    <lib-config-login-settings></lib-config-login-settings>\n  ", isInline: true, components: [{ type: ConfigLoginSettingsComponent$1, selector: "lib-config-login-settings" }] });
     i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ConfigLoginSettingsComponent, decorators: [{
                 type: i0.Component,
                 args: [{
@@ -2071,6 +1401,8 @@
                 }], PERMISSION: [{
                     type: i0.Input
                 }], configureEvent: [{
+                    type: i0.Input
+                }], COMMONSERVICE: [{
                     type: i0.Input
                 }] } });
 
@@ -2215,6 +1547,64 @@
      */
     Logger.outputs = [];
 
+    var credentialsKey = 'jwt-token';
+    /**
+     * Provides storage for authentication credentials.
+     * The Credentials interface should be replaced with proper implementation.
+     */
+    var CredentialsService = /** @class */ (function () {
+        function CredentialsService() {
+            this.token = null;
+            var savedCredentials = sessionStorage.getItem(credentialsKey);
+            if (savedCredentials) {
+                this.token = savedCredentials;
+            }
+        }
+        /**
+         * Checks is the user is authenticated.
+         * @return True if the user is authenticated.
+         */
+        CredentialsService.prototype.isAuthenticated = function () {
+            return !!this.credentials;
+        };
+        Object.defineProperty(CredentialsService.prototype, "credentials", {
+            /**
+             * Gets the user credentials.
+             * @return The user credentials or null if the user is not authenticated.
+             */
+            get: function () {
+                return this.token;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        /**
+         * Sets the user credentials.
+         * The credentials may be persisted across sessions by setting the `remember` parameter to true.
+         * Otherwise, the credentials are only persisted for the current session.
+         * @param credentials The user credentials.
+         * @param remember True to remember credentials across sessions.
+         */
+        CredentialsService.prototype.setCredentials = function (credentials) {
+            this.token = credentials || null;
+            if (credentials) {
+                sessionStorage.setItem(credentialsKey, credentials);
+            }
+            else {
+                sessionStorage.clear();
+            }
+        };
+        return CredentialsService;
+    }());
+    CredentialsService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CredentialsService, deps: [], target: i0__namespace.ɵɵFactoryTarget.Injectable });
+    CredentialsService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CredentialsService, providedIn: 'root' });
+    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CredentialsService, decorators: [{
+                type: i0.Injectable,
+                args: [{
+                        providedIn: 'root'
+                    }]
+            }], ctorParameters: function () { return []; } });
+
     var log = new Logger('AuthenticationGuard');
     var AuthGuard = /** @class */ (function () {
         function AuthGuard(router, credentialsService) {
@@ -2295,6 +1685,56 @@
     LocalStorageService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalStorageService, deps: [], target: i0__namespace.ɵɵFactoryTarget.Injectable });
     LocalStorageService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalStorageService, providedIn: 'root' });
     i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalStorageService, decorators: [{
+                type: i0.Injectable,
+                args: [{
+                        providedIn: 'root'
+                    }]
+            }], ctorParameters: function () { return []; } });
+
+    var StorageService = /** @class */ (function () {
+        function StorageService(Storage) {
+            this.Storage = Storage;
+        }
+        StorageService.prototype.getItem = function (key) {
+            return this.Storage.getItem(key);
+        };
+        StorageService.prototype.setItem = function (key, item) {
+            return this.Storage.setItem(key, item);
+        };
+        StorageService.prototype.getObj = function (key, safe) {
+            if (safe === void 0) { safe = true; }
+            try {
+                var item = this.getItem(key);
+                return JSON.parse(item);
+            }
+            catch (e) {
+                if (!safe) {
+                    throw e;
+                }
+            }
+        };
+        StorageService.prototype.setObj = function (key, item) {
+            return this.setItem(key, JSON.stringify(item));
+        };
+        StorageService.prototype.removeItem = function (key) {
+            this.Storage.removeItem(key);
+        };
+        StorageService.prototype.clear = function () {
+            this.Storage.clear();
+        };
+        return StorageService;
+    }());
+
+    var LocalService = /** @class */ (function (_super) {
+        __extends(LocalService, _super);
+        function LocalService() {
+            return _super.call(this, window.sessionStorage) || this;
+        }
+        return LocalService;
+    }(StorageService));
+    LocalService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalService, deps: [], target: i0__namespace.ɵɵFactoryTarget.Injectable });
+    LocalService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalService, providedIn: 'root' });
+    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: LocalService, decorators: [{
                 type: i0.Injectable,
                 args: [{
                         providedIn: 'root'
@@ -2413,249 +1853,6 @@
                     }]
             }], ctorParameters: function () { return [{ type: i1__namespace$1.HttpClient }, { type: AlertService }, { type: PermissionStore }, { type: DataStoreService }]; } });
 
-    var themeList = [
-        {
-            name: 'Default',
-            image: '/assets/images/skin_default.svg',
-            key: 'default',
-            properties: {
-                '--background-color': '#f3f3f3',
-                '--header-bg': '#464185',
-                '--navigation': '#fff',
-                '--primary': '#3e397e',
-                '--checkbox-border': '#3e397e',
-                '--text-dark': '#000',
-                '--label-text': '#2c2863',
-                '--hover-text': '#fff',
-                '--bg-light': '#fff',
-                '--forms': '#fff',
-                '--nav-text': '#000',
-                '--light-gray': '#696969',
-                '--material-icons': '#2c2863',
-                '--highlight-list': '#E3F2FD',
-                '--table-header': '#f9f9f9',
-                '--table-odd': '#f7f7f7',
-                '--table-border': '#ddd',
-                '--table-hover': '#f6f5ff',
-                '--btn': '#3e397e',
-                '--menu-panel': '#2c2863',
-                '--border-trans': 'transparent',
-                '--btn-hover': '#2c2863',
-                '--btn-dark': '#2c2863',
-                '--dropdown-list': '#fff',
-                '--btncancel': '#3e397e',
-                '--primary-light': '#6e6b93',
-                '--primary-dark': '#282462 ',
-                '--light-d-light': '#fff',
-                '--ldl-text': '#fff',
-                '--light-d-accent': '#fff',
-                '--readonly-bg': 'rgb(229 229 229 / 45%)',
-                '--var-icon-font': '"FILL" 0, "wght" 200, "GRAD" 0, "opsz" 48',
-                '--rocket-icon': '/assets/images/rocket-ship.svg'
-            }
-        },
-        {
-            name: 'Light',
-            image: '/assets/images/skin_light.svg',
-            key: 'light',
-            properties: {
-                '--background-color': '#f3f3f3',
-                '--header-bg': '#f3f3f3',
-                '--navigation': '#fff',
-                '--primary': '#343344',
-                '--checkbox-border': '#343344',
-                '--text-dark': '#000',
-                '--label-text': '#000',
-                '--hover-text': '#fff',
-                '--bg-light': '#fff',
-                '--forms': '#fff',
-                '--nav-text': '#000',
-                '--light-gray': '#696969',
-                '--material-icons': '#2c2863',
-                '--highlight-list': '#E3F2FD',
-                '--table-header': '#f9f9f9',
-                '--table-odd': '#fff',
-                '--table-border': '#ddd',
-                '--table-hover': '#f5f5f5',
-                '--btn': '#343344',
-                '--menu-panel': '#fff',
-                '--border-trans': 'transparent',
-                '--btn-hover': '#2c2863',
-                '--btn-dark': '#343344',
-                '--dropdown-list': '#fff',
-                '--btncancel': '#343344',
-                '--primary-light': '#6e6b93',
-                '--primary-dark': '#f5f5f5',
-                '--light-d-light': '#343344',
-                '--ldl-text': '#000',
-                '--light-d-accent': '#343344',
-                '--readonly-bg': 'rgb(229 229 229 / 45%)',
-                '--var-icon-font': '"FILL" 0, "wght" 500, "GRAD" 0, "opsz" 48',
-                '--rocket-icon': '/assets/images/rocket-ship.svg'
-            }
-        },
-        {
-            name: 'Dark',
-            image: '/assets/images/skin_dark.svg',
-            key: 'dark',
-            properties: {
-                '--background-color': '#1a2035',
-                '--header-bg': '#1a2035',
-                '--navigation': '#272e46',
-                '--nav-text': '#fff',
-                '--light-gray': '#a3a3a3',
-                '--primary': '#f3266b',
-                '--checkbox-border': '#8b8989',
-                '--text-dark': '#ddd',
-                '--label-text': '#fff',
-                '--hover-text': '#fff',
-                '--bg-light': '#272e46',
-                '--material-icons': '#fff',
-                '--forms': '#272e46',
-                '--highlight-list': '#364060',
-                '--table-header': '#364060',
-                '--table-odd': '#2f364c',
-                '--table-border': '#3e414c',
-                '--table-hover': '#3f465e',
-                '--btn': '#f3266b',
-                '--menu-panel': '#272e46',
-                '--border-trans': 'transparent',
-                '--btn-hover': '#f3266b',
-                '--btn-dark': '#2c2863',
-                '--dropdown-list': '#29314a',
-                '--btncancel': 'transparent',
-                '--primary-light': '#a75872',
-                '--primary-dark': '#202534',
-                '--light-d-light': '#fff',
-                '--ldl-text': '#fff',
-                '--light-d-accent': '#a75872',
-                '--readonly-bg': 'rgb(96 96 96 / 45%)',
-                '--var-icon-font': '"FILL" 0, "wght" 200, "GRAD" 0, "opsz" 48',
-                '--rocket-icon': '/assets/images/rocket-ship_light.svg'
-            }
-        }
-    ];
-    var FontSetList = [
-        {
-            name: 'Medium',
-            key: 'medium',
-            properties: {
-                '--base-font-size': '13px',
-                '--font-11': '11px',
-                '--font-12': '12px',
-                '--font-13': '13px',
-                '--font-14': '14px',
-                '--font-15': '15px',
-                '--font-16': '16px',
-                '--font-17': '17px',
-                '--font-18': '18px',
-                '--font-19': '19px',
-                '--font-20': '20px',
-                '--font-21': '21px',
-                '--font-24': '24px',
-                '--font-26': '26px'
-            }
-        },
-        {
-            name: 'Large',
-            key: 'large',
-            properties: {
-                '--base-font-size': '15px',
-                '--font-11': '13px',
-                '--font-12': '14px',
-                '--font-13': '15px',
-                '--font-14': '16px',
-                '--font-15': '17px',
-                '--font-16': '18px',
-                '--font-17': '19px',
-                '--font-18': '20px',
-                '--font-19': '21px',
-                '--font-20': '22px',
-                '--font-21': '23px',
-                '--font-24': '28px',
-                '--font-26': '30px'
-            }
-        }
-    ];
-    var fontRangeSetList = [
-        {
-            name: '13',
-            key: '13',
-            properties: {
-                '--base-font-size': '13px',
-            }
-        },
-        {
-            name: '14',
-            key: '14',
-            properties: {
-                '--base-font-size': '14px',
-                '--font-14': '15px',
-                '--font-12': '13px',
-                '--font-18': '19px',
-            }
-        },
-        {
-            name: '15',
-            key: '15',
-            properties: {
-                '--base-font-size': '15px',
-                '--font-14': '16px',
-                '--font-12': '14px',
-                '--font-18': '20px',
-            }
-        },
-        {
-            name: '16',
-            key: '16',
-            properties: {
-                '--base-font-size': '16px',
-                '--font-14': '17px',
-                '--font-12': '15px',
-                '--font-18': '21px',
-            }
-        },
-        {
-            name: '17',
-            key: '17',
-            properties: {
-                '--base-font-size': '17px',
-                '--font-14': '18px',
-                '--font-12': '16px',
-                '--font-18': '22px',
-            }
-        },
-        {
-            name: '18',
-            key: '18',
-            properties: {
-                '--base-font-size': '18px',
-                '--font-14': '19px',
-                '--font-12': '17px',
-                '--font-18': '23px',
-            }
-        },
-        {
-            name: '19',
-            key: '19',
-            properties: {
-                '--base-font-size': '19px',
-                '--font-14': '20px',
-                '--font-12': '18px',
-                '--font-18': '24px',
-            }
-        },
-        {
-            name: '20',
-            key: '20',
-            properties: {
-                '--base-font-size': '20px',
-                '--font-14': '21px',
-                '--font-18': '24px',
-            }
-        }
-    ];
-
     var ThemeService = /** @class */ (function () {
         function ThemeService() {
             // This is intentional
@@ -2686,67 +1883,6 @@
                         providedIn: 'root'
                     }]
             }], ctorParameters: function () { return []; } });
-
-    var ProfileService = /** @class */ (function () {
-        function ProfileService(httpService, themeService, localstorage) {
-            this.httpService = httpService;
-            this.themeService = themeService;
-            this.localstorage = localstorage;
-            this.profileImage = new rxjs.Subject();
-        }
-        ProfileService.prototype.setUserPreference = function () {
-            var _this = this;
-            var user_id = this.localstorage.getItem('id');
-            if (user_id) {
-                this.getUserPreference(user_id).subscribe(function (res) {
-                    var _a;
-                    if (res.data && ((_a = res.data) === null || _a === void 0 ? void 0 : _a.config)) {
-                        var configArray = JSON.parse(res.data.config);
-                        _this.setTheme(configArray.theme);
-                        _this.setFont(configArray.font);
-                    }
-                });
-            }
-        };
-        ProfileService.prototype.setTheme = function (event) {
-            this.localstorage.setItem('SELECTED_THEME', event);
-            var selectedTheme = themeList.filter(function (theme) { return theme.key === event; })[0];
-            this.themeService.setActiveTheme(selectedTheme);
-            console.log('Selected Theme:', selectedTheme.key);
-        };
-        ProfileService.prototype.setFont = function (event) {
-            this.localstorage.setItem('SELECTED_FONT', event);
-            var selectedFont = FontSetList.filter(function (fontSet) { return fontSet.key === event; })[0];
-            this.themeService.setActiveFont(selectedFont);
-        };
-        ProfileService.prototype.getProfile = function (img) {
-            this.profileImage.next(img);
-        };
-        ProfileService.prototype.getAllUserList = function (key) {
-            return this.httpService.get(UserConfig.EndPoint.User.getAllUserList + "/" + key);
-        };
-        ProfileService.prototype.getAllUserOrgList = function (orgid) {
-            return this.httpService.get(UserConfig.EndPoint.User.getAllUserOrgList + orgid);
-        };
-        ProfileService.prototype.getUserPreference = function (id) {
-            return this.httpService.get(UserConfig.EndPoint.User.getUserConfig.replace('{id}', id));
-        };
-        ProfileService.prototype.updateUser = function (data, userid) {
-            return this.httpService.patch(UserConfig.EndPoint.User.getAllUserList + "/" + userid + "/updateUserDetails", data);
-        };
-        ProfileService.prototype.saveUserPreference = function (data) {
-            return this.httpService.post(UserConfig.EndPoint.User.saveUserConfig, data);
-        };
-        return ProfileService;
-    }());
-    ProfileService.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ProfileService, deps: [{ token: HttpService }, { token: ThemeService }, { token: LocalService }], target: i0__namespace.ɵɵFactoryTarget.Injectable });
-    ProfileService.ɵprov = i0__namespace.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ProfileService, providedIn: 'root' });
-    i0__namespace.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: ProfileService, decorators: [{
-                type: i0.Injectable,
-                args: [{
-                        providedIn: 'root'
-                    }]
-            }], ctorParameters: function () { return [{ type: HttpService }, { type: ThemeService }, { type: LocalService }]; } });
 
     var PermissionDirective = /** @class */ (function () {
         function PermissionDirective(renderer, elementRef, dataStore) {
@@ -2905,21 +2041,20 @@
     }());
     PicsConfigLoginSettingsModule.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: PicsConfigLoginSettingsModule, deps: [], target: i0__namespace.ɵɵFactoryTarget.NgModule });
     PicsConfigLoginSettingsModule.ɵmod = i0__namespace.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: PicsConfigLoginSettingsModule, declarations: [ConfigLoginSettingsComponent$1], imports: [i2.CommonModule,
-            i5.FormsModule,
-            i5.ReactiveFormsModule,
+            i2$1.FormsModule,
+            i2$1.ReactiveFormsModule,
             ngBootstrap.NgbModule,
             tabmenu.TabMenuModule,
             tabview.TabViewModule,
             treeselect.TreeSelectModule,
-            i1$1.HttpClientModule,
-            i11.CheckboxModule,
-            i12.DropdownModule,
-            i9.CardModule,
+            i8.CheckboxModule,
+            i9.DropdownModule,
+            i6.CardModule,
             confirmdialog.ConfirmDialogModule,
             accordion.AccordionModule,
             message.MessageModule,
             table.TableModule,
-            i13.InputTextModule,
+            i10.InputTextModule,
             calendar.CalendarModule,
             editor.EditorModule,
             fieldset.FieldsetModule,
@@ -2938,7 +2073,7 @@
             speeddial.SpeedDialModule,
             orderlist.OrderListModule,
             fileupload.FileUploadModule,
-            i10.DialogModule,
+            i7.DialogModule,
             password.PasswordModule,
             knob.KnobModule,
             sidebar.SidebarModule,
@@ -2948,21 +2083,20 @@
             AlertModule], exports: [ConfigLoginSettingsComponent$1] });
     PicsConfigLoginSettingsModule.ɵinj = i0__namespace.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: PicsConfigLoginSettingsModule, imports: [[
                 i2.CommonModule,
-                i5.FormsModule,
-                i5.ReactiveFormsModule,
+                i2$1.FormsModule,
+                i2$1.ReactiveFormsModule,
                 ngBootstrap.NgbModule,
                 tabmenu.TabMenuModule,
                 tabview.TabViewModule,
                 treeselect.TreeSelectModule,
-                i1$1.HttpClientModule,
-                i11.CheckboxModule,
-                i12.DropdownModule,
-                i9.CardModule,
+                i8.CheckboxModule,
+                i9.DropdownModule,
+                i6.CardModule,
                 confirmdialog.ConfirmDialogModule,
                 accordion.AccordionModule,
                 message.MessageModule,
                 table.TableModule,
-                i13.InputTextModule,
+                i10.InputTextModule,
                 calendar.CalendarModule,
                 editor.EditorModule,
                 fieldset.FieldsetModule,
@@ -2981,7 +2115,7 @@
                 speeddial.SpeedDialModule,
                 orderlist.OrderListModule,
                 fileupload.FileUploadModule,
-                i10.DialogModule,
+                i7.DialogModule,
                 password.PasswordModule,
                 knob.KnobModule,
                 sidebar.SidebarModule,
@@ -2998,21 +2132,20 @@
                         ],
                         imports: [
                             i2.CommonModule,
-                            i5.FormsModule,
-                            i5.ReactiveFormsModule,
+                            i2$1.FormsModule,
+                            i2$1.ReactiveFormsModule,
                             ngBootstrap.NgbModule,
                             tabmenu.TabMenuModule,
                             tabview.TabViewModule,
                             treeselect.TreeSelectModule,
-                            i1$1.HttpClientModule,
-                            i11.CheckboxModule,
-                            i12.DropdownModule,
-                            i9.CardModule,
+                            i8.CheckboxModule,
+                            i9.DropdownModule,
+                            i6.CardModule,
                             confirmdialog.ConfirmDialogModule,
                             accordion.AccordionModule,
                             message.MessageModule,
                             table.TableModule,
-                            i13.InputTextModule,
+                            i10.InputTextModule,
                             calendar.CalendarModule,
                             editor.EditorModule,
                             fieldset.FieldsetModule,
@@ -3031,7 +2164,7 @@
                             speeddial.SpeedDialModule,
                             orderlist.OrderListModule,
                             fileupload.FileUploadModule,
-                            i10.DialogModule,
+                            i7.DialogModule,
                             password.PasswordModule,
                             knob.KnobModule,
                             sidebar.SidebarModule,
@@ -3068,25 +2201,16 @@
     CardiConfigLoginSettingsModule.ɵfac = i0__namespace.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CardiConfigLoginSettingsModule, deps: [], target: i0__namespace.ɵɵFactoryTarget.NgModule });
     CardiConfigLoginSettingsModule.ɵmod = i0__namespace.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CardiConfigLoginSettingsModule, declarations: [ConfigLoginSettingsComponent], imports: [PicsConfigLoginSettingsModule], exports: [ConfigLoginSettingsComponent] });
     CardiConfigLoginSettingsModule.ɵinj = i0__namespace.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0__namespace, type: CardiConfigLoginSettingsModule, providers: [
-            AuthService,
-            AuthStore,
             AuthGuard,
-            ProfileService,
             AppService,
             CredentialsService,
-            DynamicTabPageService,
             LocalStorageService,
             LocalService,
             MicrostrategyService,
-            PageHeaderService,
             ThemeService,
-            i1$1.HttpClient,
-            HttpService,
             AlertService,
             api.ConfirmationService,
             ConfigurationSettingsService,
-            AttachmentsService,
-            PageHeaderService,
             PermissionStore,
             ShareDataService,
             DataStoreService
@@ -3106,25 +2230,16 @@
                             ConfigLoginSettingsComponent
                         ],
                         providers: [
-                            AuthService,
-                            AuthStore,
                             AuthGuard,
-                            ProfileService,
                             AppService,
                             CredentialsService,
-                            DynamicTabPageService,
                             LocalStorageService,
                             LocalService,
                             MicrostrategyService,
-                            PageHeaderService,
                             ThemeService,
-                            i1$1.HttpClient,
-                            HttpService,
                             AlertService,
                             api.ConfirmationService,
                             ConfigurationSettingsService,
-                            AttachmentsService,
-                            PageHeaderService,
                             PermissionStore,
                             ShareDataService,
                             DataStoreService
