@@ -1,3 +1,3 @@
-export * from './lib/profile.service';
-export * from './lib/profile.component';
-export * from './lib/profile.module';
+export * from './lib/masterdata.service';
+export * from './lib/masterdata.component';
+export * from './lib/masterdata.module';
