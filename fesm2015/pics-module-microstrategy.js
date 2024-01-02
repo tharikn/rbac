@@ -267,7 +267,7 @@ class MicrostrategyService {
     }
     getDossier(projectId, dossierId, pageNo) {
         projectId = 'DFC8E31E4EF39DE1113D1EACD5B30C9C';
-        dossierId = '4802DE4C4C18F434C75BFA84EC8A5E4B';
+        dossierId = 'EC9258B346017C2D961A2EA38010599D';
         pageNo = 'K53--K46/edit';
         const permissions = this.permissionStore.state;
         const projectUrl = `${this.environment.mstrURL}/app/${projectId}`;
