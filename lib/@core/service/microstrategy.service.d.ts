@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { AlertService } from './alert.service';
 import { DataStoreService } from './data-store.service';
 import { PermissionStore } from './../permissions/permission.store';
+import { AlertService } from './alert.service';
 import * as i0 from "@angular/core";
 export declare class MicrostrategyService {
     private http;

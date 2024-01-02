@@ -1,12 +1,6 @@
 {
-  "name": "@pics-core/masterdata",
-  "version": "1.0.1-OR.1",
-  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
-  "directories": {
-    "lib": "lib"
-  },
-  "author": "tulasireddy",
-  "license": "ISC",
+  "name": "@pics-module/microstrategy",
+  "version": "1.0.1",
   "peerDependencies": {
     "@angular/common": "^12.2.0",
     "@angular/core": "^12.2.0",
@@ -22,11 +16,17 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "main": "bundles/pics-core-masterdata.umd.js",
-  "module": "fesm2015/pics-core-masterdata.js",
-  "es2015": "fesm2015/pics-core-masterdata.js",
-  "esm2015": "esm2015/pics-core-masterdata.js",
-  "fesm2015": "fesm2015/pics-core-masterdata.js",
-  "typings": "pics-core-masterdata.d.ts",
-  "sideEffects": false
+  "main": "bundles/pics-module-microstrategy.umd.js",
+  "module": "fesm2015/pics-module-microstrategy.js",
+  "es2015": "fesm2015/pics-module-microstrategy.js",
+  "esm2015": "esm2015/pics-module-microstrategy.js",
+  "fesm2015": "fesm2015/pics-module-microstrategy.js",
+  "typings": "pics-module-microstrategy.d.ts",
+  "sideEffects": false,
+  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
+  "directories": {
+    "lib": "lib"
+  },
+  "author": "",
+  "license": "ISC"
 }
