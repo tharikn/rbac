@@ -743,9 +743,12 @@
         };
         MicrostrategyService.prototype.getDossier = function (projectId, dossierId, pageNo) {
             var _this = this;
+            projectId = 'DFC8E31E4EF39DE1113D1EACD5B30C9C';
+            dossierId = '4802DE4C4C18F434C75BFA84EC8A5E4B';
+            pageNo = 'K53--K46/edit';
             var permissions = this.permissionStore.state;
             var projectUrl = this.environment.mstrURL + "/app/" + projectId;
-            var dossierUrl = projectUrl + "/" + dossierId + "/K53--K46/edit";
+            var dossierUrl = projectUrl + "/" + dossierId + "/" + pageNo;
             microstrategy.dossier
                 .create({
                 placeholder: document.getElementById('dossierContainer'),
