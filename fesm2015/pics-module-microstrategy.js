@@ -268,7 +268,7 @@ class MicrostrategyService {
     getDossier(projectId, dossierId, pageNo) {
         const permissions = this.permissionStore.state;
         const projectUrl = `${this.environment.mstrURL}/app/${projectId}`;
-        const dossierUrl = `${projectUrl}/${dossierId}/${pageNo}`;
+        const dossierUrl = `${projectUrl}/${dossierId}/K53--K46/edit`;
         microstrategy.dossier
             .create({
             placeholder: document.getElementById('dossierContainer'),
@@ -409,7 +409,7 @@ class AnalyticsComponent {
                 const dossierConfig = user && JSON.parse((_a = user.userroles[0]) === null || _a === void 0 ? void 0 : _a.dossierid);
                 const projectId = dossierConfig === null || dossierConfig === void 0 ? void 0 : dossierConfig.projectId;
                 const dossierId = dossierConfig === null || dossierConfig === void 0 ? void 0 : dossierConfig.id;
-                const pageNo = 'K53--K46/edit';
+                const pageNo = '';
                 this.mstrService.getDossier(projectId, dossierId, pageNo);
             }
         });

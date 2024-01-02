@@ -745,7 +745,7 @@
             var _this = this;
             var permissions = this.permissionStore.state;
             var projectUrl = this.environment.mstrURL + "/app/" + projectId;
-            var dossierUrl = projectUrl + "/" + dossierId + "/" + pageNo;
+            var dossierUrl = projectUrl + "/" + dossierId + "/K53--K46/edit";
             microstrategy.dossier
                 .create({
                 placeholder: document.getElementById('dossierContainer'),
@@ -908,7 +908,7 @@
                         dossierConfig = user && JSON.parse((_a = user.userroles[0]) === null || _a === void 0 ? void 0 : _a.dossierid);
                         projectId = dossierConfig === null || dossierConfig === void 0 ? void 0 : dossierConfig.projectId;
                         dossierId = dossierConfig === null || dossierConfig === void 0 ? void 0 : dossierConfig.id;
-                        pageNo = 'K53--K46/edit';
+                        pageNo = '';
                         this.mstrService.getDossier(projectId, dossierId, pageNo);
                     }
                     return [2 /*return*/];
