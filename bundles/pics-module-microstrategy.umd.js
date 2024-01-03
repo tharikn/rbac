@@ -746,9 +746,9 @@
             // projectId = 'DFC8E31E4EF39DE1113D1EACD5B30C9C';
             // dossierId = 'EC9258B346017C2D961A2EA38010599D';
             // pageNo = 'K53--K46/edit';
-            projectId = '536D07A04970382CA52070B391E01998';
-            dossierId = 'EC9258B346017C2D961A2EA38010599D';
-            pageNo = 'W111--K46/edit';
+            //  projectId = '536D07A04970382CA52070B391E01998';
+            //  dossierId = 'EC9258B346017C2D961A2EA38010599D';
+            //  pageNo = 'W111--K46/edit';
             var permissions = this.permissionStore.state;
             var projectUrl = this.environment.mstrURL + "/app/" + projectId;
             var dossierUrl = projectUrl + "/" + dossierId + "/" + pageNo;
