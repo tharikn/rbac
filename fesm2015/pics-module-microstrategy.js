@@ -266,45 +266,45 @@ class MicrostrategyService {
         });
     }
     getDossier(projectId, dossierId, pageNo) {
-        // projectId = 'DFC8E31E4EF39DE1113D1EACD5B30C9C';
-        // dossierId = 'EC9258B346017C2D961A2EA38010599D';
-        // pageNo = 'K53--K46/edit';
-        //  projectId = '536D07A04970382CA52070B391E01998';
-        //  dossierId = 'EC9258B346017C2D961A2EA38010599D';
-        //  pageNo = 'W111--K46/edit';
-        const permissions = this.permissionStore.state;
-        const projectUrl = `${this.environment.mstrURL}/app/${projectId}`;
-        const dossierUrl = `${projectUrl}/${dossierId}/${pageNo}`;
-        microstrategy.dossier
-            .create({
-            placeholder: document.getElementById('dossierContainer'),
-            url: dossierUrl,
-            navigationBar: {
-                enabled: true,
-                gotoLibrary: permissions === null || permissions === void 0 ? void 0 : permissions.ANA_LIBRARY,
-                title: true,
-                toc: true,
-                reset: true,
-                reprompt: true,
-                share: true,
-                comment: true,
-                notification: true,
-                filter: true,
-                options: true,
-                search: true,
-                bookmark: true
-            },
-            enableCustomAuthentication: true,
-            enableResponsive: false,
-            containerWidth: 400,
-            containerHeight: 400,
-            customAuthenticationType: microstrategy.dossier.CustomAuthenticationType.AUTH_TOKEN,
-            getLoginToken: () => __awaiter(this, void 0, void 0, function* () {
-                const response = yield this.getAuthToken().toPromise();
-                return response.headers.get('x-mstr-authtoken');
+        return __awaiter(this, void 0, void 0, function* () {
+            const permissions = this.permissionStore.state;
+            const projectUrl = `${this.environment.mstrURL}/app/${projectId}`;
+            const dossierUrl = `${projectUrl}/${dossierId}/${pageNo}`;
+            microstrategy.dossier
+                .create({
+                placeholder: document.getElementById('dossierContainer'),
+                url: dossierUrl,
+                dossierFeature: {
+                    readonly: false
+                },
+                navigationBar: {
+                    edit: true,
+                    enabled: true,
+                    gotoLibrary: permissions === null || permissions === void 0 ? void 0 : permissions.ANA_LIBRARY,
+                    title: true,
+                    toc: true,
+                    reset: true,
+                    reprompt: true,
+                    share: true,
+                    comment: true,
+                    notification: true,
+                    filter: true,
+                    options: true,
+                    search: true,
+                    bookmark: true
+                },
+                enableCustomAuthentication: true,
+                enableResponsive: false,
+                containerWidth: 400,
+                containerHeight: 400,
+                customAuthenticationType: microstrategy.dossier.CustomAuthenticationType.IDENTITY_TOKEN,
+                getLoginToken: () => __awaiter(this, void 0, void 0, function* () {
+                    const response = yield this.getAuthToken().toPromise();
+                    return response.headers.get('x-mstr-authtoken');
+                })
             })
-        })
-            .catch((_err) => this.alertService.error(`Failed to connect ${this.environment.mstrURL}`));
+                .catch(_err => this.alertService.error(`Failed to connect ${this.environment.mstrURL}`));
+        });
     }
     getLibraryDetails() {
         return __awaiter(this, void 0, void 0, function* () {
