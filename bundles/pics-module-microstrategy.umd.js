@@ -742,57 +742,51 @@
             });
         };
         MicrostrategyService.prototype.getDossier = function (projectId, dossierId, pageNo) {
-            return __awaiter(this, void 0, void 0, function () {
-                var permissions, projectUrl, dossierUrl;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    permissions = this.permissionStore.state;
-                    projectUrl = this.environment.mstrURL + "/app/" + projectId;
-                    dossierUrl = projectUrl + "/" + dossierId + "/" + pageNo;
-                    microstrategy.dossier
-                        .create({
-                        placeholder: document.getElementById('dossierContainer'),
-                        url: dossierUrl,
-                        dossierFeature: {
-                            readonly: false
-                        },
-                        navigationBar: {
-                            edit: true,
-                            enabled: true,
-                            gotoLibrary: permissions === null || permissions === void 0 ? void 0 : permissions.ANA_LIBRARY,
-                            title: true,
-                            toc: true,
-                            reset: true,
-                            reprompt: true,
-                            share: true,
-                            comment: true,
-                            notification: true,
-                            filter: true,
-                            options: true,
-                            search: true,
-                            bookmark: true
-                        },
-                        enableCustomAuthentication: true,
-                        enableResponsive: false,
-                        containerWidth: 400,
-                        containerHeight: 400,
-                        customAuthenticationType: microstrategy.dossier.CustomAuthenticationType.IDENTITY_TOKEN,
-                        getLoginToken: function () { return __awaiter(_this, void 0, void 0, function () {
-                            var response;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0: return [4 /*yield*/, this.getAuthToken().toPromise()];
-                                    case 1:
-                                        response = _a.sent();
-                                        return [2 /*return*/, response.headers.get('x-mstr-authtoken')];
-                                }
-                            });
-                        }); }
-                    })
-                        .catch(function (_err) { return _this.alertService.error("Failed to connect " + _this.environment.mstrURL); });
-                    return [2 /*return*/];
-                });
-            });
+            var _this = this;
+            var permissions = this.permissionStore.state;
+            var projectUrl = this.environment.mstrURL + "/app/" + projectId;
+            var dossierUrl = projectUrl + "/" + dossierId + "/" + pageNo;
+            microstrategy.dossier
+                .create({
+                placeholder: document.getElementById('dossierContainer'),
+                url: dossierUrl,
+                dossierFeature: {
+                    readonly: false
+                },
+                navigationBar: {
+                    edit: true,
+                    enabled: true,
+                    gotoLibrary: permissions === null || permissions === void 0 ? void 0 : permissions.ANA_LIBRARY,
+                    title: true,
+                    toc: true,
+                    reset: true,
+                    reprompt: true,
+                    share: true,
+                    comment: true,
+                    notification: true,
+                    filter: true,
+                    options: true,
+                    search: true,
+                    bookmark: true
+                },
+                enableCustomAuthentication: true,
+                enableResponsive: false,
+                containerWidth: 400,
+                containerHeight: 400,
+                customAuthenticationType: microstrategy.dossier.CustomAuthenticationType.AUTH_TOKEN,
+                getLoginToken: function () { return __awaiter(_this, void 0, void 0, function () {
+                    var response;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.getAuthToken().toPromise()];
+                            case 1:
+                                response = _a.sent();
+                                return [2 /*return*/, response.headers.get('x-mstr-authtoken')];
+                        }
+                    });
+                }); }
+            })
+                .catch(function (_err) { return _this.alertService.error("Failed to connect " + _this.environment.mstrURL); });
         };
         MicrostrategyService.prototype.getLibraryDetails = function () {
             return __awaiter(this, void 0, void 0, function () {
