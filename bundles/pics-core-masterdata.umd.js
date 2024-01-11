@@ -1361,7 +1361,7 @@
             // this.mastersService.getLookup(event.node.id).subscribe((item: any) => {
             //   const lookup = item['data'];
             this.mastersService.getLookupBycategoryID(event.node.data).subscribe(function (nodes) {
-                var lookup = nodes.data;
+                var lookup = nodes.data.lookup;
                 // });
                 // Assume this.lookupForm is your existing form instance created using the FormBuilder
                 console.log('lookup', lookup);

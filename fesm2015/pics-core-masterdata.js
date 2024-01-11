@@ -851,7 +851,7 @@ class MasterdataComponent$1 {
         // this.mastersService.getLookup(event.node.id).subscribe((item: any) => {
         //   const lookup = item['data'];
         this.mastersService.getLookupBycategoryID(event.node.data).subscribe((nodes) => {
-            const lookup = nodes.data;
+            const lookup = nodes.data.lookup;
             // });
             // Assume this.lookupForm is your existing form instance created using the FormBuilder
             console.log('lookup', lookup);
