@@ -696,14 +696,17 @@ class MasterdataComponent$1 {
             description: [''],
             readonly: [false],
             isenabled: [true],
-            lookup: this.formBuilder.group({
-                id: [0],
-                parentid: [null],
-                lookupdata: this.formBuilder.array([this.addlookupdata()]),
-                readonly: [false],
-                global: [true],
-                isenabled: [true]
-            })
+            lookup: this.formBuilder.array([this.initializeLookupDataForm()])
+        });
+    }
+    initializeLookupDataForm() {
+        return this.formBuilder.group({
+            id: [0],
+            parentid: [null],
+            lookupdata: this.formBuilder.array([this.addlookupdata()]),
+            readonly: [false],
+            global: [true],
+            isenabled: [true]
         });
     }
     // get datarules() {

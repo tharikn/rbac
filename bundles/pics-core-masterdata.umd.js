@@ -1200,14 +1200,17 @@
                 description: [''],
                 readonly: [false],
                 isenabled: [true],
-                lookup: this.formBuilder.group({
-                    id: [0],
-                    parentid: [null],
-                    lookupdata: this.formBuilder.array([this.addlookupdata()]),
-                    readonly: [false],
-                    global: [true],
-                    isenabled: [true]
-                })
+                lookup: this.formBuilder.array([this.initializeLookupDataForm()])
+            });
+        };
+        MasterdataComponent.prototype.initializeLookupDataForm = function () {
+            return this.formBuilder.group({
+                id: [0],
+                parentid: [null],
+                lookupdata: this.formBuilder.array([this.addlookupdata()]),
+                readonly: [false],
+                global: [true],
+                isenabled: [true]
             });
         };
         Object.defineProperty(MasterdataComponent.prototype, "lookupdata", {

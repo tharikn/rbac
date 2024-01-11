@@ -44,6 +44,7 @@ export declare class MasterdataComponent implements OnInit {
     ngOnInit(): void;
     ngOnDestroy(): void;
     initializeLookupForm(): void;
+    initializeLookupDataForm(): FormGroup;
     get lookupdata(): FormArray;
     addRule(): FormGroup;
     addlookupdata(): FormGroup;
