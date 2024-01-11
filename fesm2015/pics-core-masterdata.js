@@ -869,6 +869,16 @@ class MasterdataComponent$1 {
             //   });
             this.lookupForm.patchValue(lookup);
             console.log('lookupFormValue', this.lookupForm.value);
+            const lookupDataFormArray = this.lookupForm.get('lookup.lookupdata');
+            // Clear existing form array values
+            while (lookupDataFormArray.length !== 0) {
+                lookupDataFormArray.removeAt(0);
+            }
+            // Patch the form array with new values
+            lookup.lookupdata.forEach(data => {
+                lookupDataFormArray.push(this.formBuilder.group(data));
+            });
+            console.log('lookupdataformarray', lookupDataFormArray);
             // Patch values for the nested form array (lookupdata)
             // const lookupdataArray = this.lookupForm.get('lookupdata') as FormArray;
             // lookupdataArray.clear(); // Clear existing form array

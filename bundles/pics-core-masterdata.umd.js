@@ -1379,6 +1379,16 @@
                 //   });
                 _this.lookupForm.patchValue(lookup);
                 console.log('lookupFormValue', _this.lookupForm.value);
+                var lookupDataFormArray = _this.lookupForm.get('lookup.lookupdata');
+                // Clear existing form array values
+                while (lookupDataFormArray.length !== 0) {
+                    lookupDataFormArray.removeAt(0);
+                }
+                // Patch the form array with new values
+                lookup.lookupdata.forEach(function (data) {
+                    lookupDataFormArray.push(_this.formBuilder.group(data));
+                });
+                console.log('lookupdataformarray', lookupDataFormArray);
                 // Patch values for the nested form array (lookupdata)
                 // const lookupdataArray = this.lookupForm.get('lookupdata') as FormArray;
                 // lookupdataArray.clear(); // Clear existing form array
