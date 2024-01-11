@@ -1,3 +1,3 @@
-export * from './lib/microstrategy.service';
-export * from './lib/microstrategy.component';
-export * from './lib/microstrategy.module';
+export * from './lib/masterdata.service';
+export * from './lib/masterdata.component';
+export * from './lib/masterdata.module';
