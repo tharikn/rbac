@@ -1,5 +1,5 @@
 import { OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, AbstractControl } from '@angular/forms';
+import { FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
 import { TreeNode, MenuItem, ConfirmationService } from 'primeng/api';
 import { PermissionStore } from '../@core/permissions/permission.store';
 import { AlertService } from '../@core/service/alert.service';
@@ -45,7 +45,6 @@ export declare class MasterdataComponent implements OnInit {
     ngOnDestroy(): void;
     initializeLookupForm(): void;
     initializeLookupDataForm(): FormGroup;
-    get lookupdata(): FormArray;
     addRule(): FormGroup;
     addlookupdata(): FormGroup;
     onAddLookUpData(): void;

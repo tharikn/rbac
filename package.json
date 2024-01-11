@@ -1,6 +1,6 @@
 {
   "name": "@pics-core/masterdata",
-  "version": "1.0.1-OR.20.4",
+  "version": "1.0.1-OR.20.5",
   "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
   "directories": {
     "lib": "lib"
