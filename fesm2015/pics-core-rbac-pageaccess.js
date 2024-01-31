@@ -2552,21 +2552,21 @@ class PageaccessComponent {
     getPageLevelByArray(pageLevelData) {
         var _a;
         this.fullArray = (_a = pageLevelData === null || pageLevelData === void 0 ? void 0 : pageLevelData.controls) === null || _a === void 0 ? void 0 : _a.map(x => {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+            var _a, _b, _c, _d, _e, _f, _g, _h;
             return {
                 page: (_a = x === null || x === void 0 ? void 0 : x.value) === null || _a === void 0 ? void 0 : _a.pageid,
                 readwrite: ((_b = x === null || x === void 0 ? void 0 : x.value) === null || _b === void 0 ? void 0 : _b.pageAccess) === '2' ? true : false,
                 read: ((_c = x === null || x === void 0 ? void 0 : x.value) === null || _c === void 0 ? void 0 : _c.pageAccess) === '3' ? true : false,
                 none: ((_d = x === null || x === void 0 ? void 0 : x.value) === null || _d === void 0 ? void 0 : _d.pageAccess) === '4' ? true : false,
                 full: ((_e = x === null || x === void 0 ? void 0 : x.value) === null || _e === void 0 ? void 0 : _e.pageAccess) === '5' ? true : false,
-                touched: (_f = x === null || x === void 0 ? void 0 : x.value) === null || _f === void 0 ? void 0 : _f.touched,
-                conditions: ((_g = x === null || x === void 0 ? void 0 : x.value) === null || _g === void 0 ? void 0 : _g.condition) !== 'always'
+                touched: x === null || x === void 0 ? void 0 : x.touched,
+                conditions: ((_f = x === null || x === void 0 ? void 0 : x.value) === null || _f === void 0 ? void 0 : _f.condition) !== 'always'
                     ? {
                         attribute: 'created',
                         condition: 'lte',
-                        value: (_h = x === null || x === void 0 ? void 0 : x.value) === null || _h === void 0 ? void 0 : _h.validity,
+                        value: (_g = x === null || x === void 0 ? void 0 : x.value) === null || _g === void 0 ? void 0 : _g.validity,
                         value_type: 'variable',
-                        fallbackTo: (_j = x === null || x === void 0 ? void 0 : x.value) === null || _j === void 0 ? void 0 : _j.fallbackTo,
+                        fallbackTo: (_h = x === null || x === void 0 ? void 0 : x.value) === null || _h === void 0 ? void 0 : _h.fallbackTo,
                         type: 'timestamp'
                     }
                     : null

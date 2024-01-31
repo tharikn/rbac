@@ -2794,8 +2794,8 @@
                 this.selectedId = role;
                 if (role.rolePolicygroups && role.rolePolicygroups.length) {
                     role.rolePolicygroups.forEach(function (policyGroup) {
-                        _this.pageAccessService.getPolicyGroupPage(policyGroup.policygroupid).subscribe(function (_k) {
-                            var data = _k.data;
+                        _this.pageAccessService.getPolicyGroupPage(policyGroup.policygroupid).subscribe(function (_j) {
+                            var data = _j.data;
                             _this.policyGroupCondition(data, policyGroup);
                         });
                     });
@@ -3187,10 +3187,10 @@
             }
         };
         PageaccessComponent.prototype.getAccessByAsset = function (accessArray) {
-            var e_1, _k;
+            var e_1, _j;
             try {
-                for (var _l = __values(this.mergedAsset), _m = _l.next(); !_m.done; _m = _l.next()) {
-                    var asset = _m.value;
+                for (var _k = __values(this.mergedAsset), _l = _k.next(); !_l.done; _l = _k.next()) {
+                    var asset = _l.value;
                     var assetAccess = this.pageAccessService.getAccess(asset);
                     accessArray.push(new i1$2.FormGroup({
                         fieldName: new i1$2.FormControl(asset['displayname']),
@@ -3206,14 +3206,14 @@
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
             finally {
                 try {
-                    if (_m && !_m.done && (_k = _l.return)) _k.call(_l);
+                    if (_l && !_l.done && (_j = _k.return)) _j.call(_k);
                 }
                 finally { if (e_1) throw e_1.error; }
             }
         };
         PageaccessComponent.prototype.mergeAsset = function (arr1, arr2) {
             return arr1.map(function (item, _i) {
-                var e_2, _k;
+                var e_2, _j;
                 try {
                     for (var arr2_1 = __values(arr2), arr2_1_1 = arr2_1.next(); !arr2_1_1.done; arr2_1_1 = arr2_1.next()) {
                         var value = arr2_1_1.value;
@@ -3225,7 +3225,7 @@
                 catch (e_2_1) { e_2 = { error: e_2_1 }; }
                 finally {
                     try {
-                        if (arr2_1_1 && !arr2_1_1.done && (_k = arr2_1.return)) _k.call(arr2_1);
+                        if (arr2_1_1 && !arr2_1_1.done && (_j = arr2_1.return)) _j.call(arr2_1);
                     }
                     finally { if (e_2) throw e_2.error; }
                 }
@@ -3289,21 +3289,21 @@
         PageaccessComponent.prototype.getPageLevelByArray = function (pageLevelData) {
             var _a;
             this.fullArray = (_a = pageLevelData === null || pageLevelData === void 0 ? void 0 : pageLevelData.controls) === null || _a === void 0 ? void 0 : _a.map(function (x) {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+                var _a, _b, _c, _d, _e, _f, _g, _h;
                 return {
                     page: (_a = x === null || x === void 0 ? void 0 : x.value) === null || _a === void 0 ? void 0 : _a.pageid,
                     readwrite: ((_b = x === null || x === void 0 ? void 0 : x.value) === null || _b === void 0 ? void 0 : _b.pageAccess) === '2' ? true : false,
                     read: ((_c = x === null || x === void 0 ? void 0 : x.value) === null || _c === void 0 ? void 0 : _c.pageAccess) === '3' ? true : false,
                     none: ((_d = x === null || x === void 0 ? void 0 : x.value) === null || _d === void 0 ? void 0 : _d.pageAccess) === '4' ? true : false,
                     full: ((_e = x === null || x === void 0 ? void 0 : x.value) === null || _e === void 0 ? void 0 : _e.pageAccess) === '5' ? true : false,
-                    touched: (_f = x === null || x === void 0 ? void 0 : x.value) === null || _f === void 0 ? void 0 : _f.touched,
-                    conditions: ((_g = x === null || x === void 0 ? void 0 : x.value) === null || _g === void 0 ? void 0 : _g.condition) !== 'always'
+                    touched: x === null || x === void 0 ? void 0 : x.touched,
+                    conditions: ((_f = x === null || x === void 0 ? void 0 : x.value) === null || _f === void 0 ? void 0 : _f.condition) !== 'always'
                         ? {
                             attribute: 'created',
                             condition: 'lte',
-                            value: (_h = x === null || x === void 0 ? void 0 : x.value) === null || _h === void 0 ? void 0 : _h.validity,
+                            value: (_g = x === null || x === void 0 ? void 0 : x.value) === null || _g === void 0 ? void 0 : _g.validity,
                             value_type: 'variable',
-                            fallbackTo: (_j = x === null || x === void 0 ? void 0 : x.value) === null || _j === void 0 ? void 0 : _j.fallbackTo,
+                            fallbackTo: (_h = x === null || x === void 0 ? void 0 : x.value) === null || _h === void 0 ? void 0 : _h.fallbackTo,
                             type: 'timestamp'
                         }
                         : null
