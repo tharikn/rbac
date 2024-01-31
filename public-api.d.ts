@@ -1,3 +1,3 @@
-export * from './lib/masterdata.service';
-export * from './lib/masterdata.component';
-export * from './lib/masterdata.module';
+export * from './lib/rbac-pageaccess.service';
+export * from './lib/rbac-pageaccess.component';
+export * from './lib/rbac-pageaccess.module';
