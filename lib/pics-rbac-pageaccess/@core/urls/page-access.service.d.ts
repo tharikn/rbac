@@ -49,7 +49,7 @@ export declare class PageAccessService {
     getMostFrequentEle(arr: any): string;
     getAccessArrayOnClick(pagesFromField: any, pageData: any, selectedFieldData: any, savedPageAccessPatching: any, existingValue: any): any;
     checkFieldLevelExist(fieldLevelExist: any, savedPageAccessPatching: any, pagesFromField: any, existingValue: any, i: any): any;
-    getAccess(access: any): any;
+    getAccess(access: any, pageReadAccess?: any): any;
     getOrganizationPage(orgId: any): any;
     getAssetByPageId(pId: any): any;
     createAsset(selectedAccess: any, selectedId: any, asset: any): any;

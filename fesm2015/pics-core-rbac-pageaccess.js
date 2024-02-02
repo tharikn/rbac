@@ -1739,9 +1739,10 @@ class PageAccessService {
         }
         return pageAccessValue;
     }
-    getAccess(access) {
+    getAccess(access, pageReadAccess) {
         let accessField;
-        accessField = '2';
+        // accessField = '2';
+        accessField = pageReadAccess ? '3' : '2';
         if (access === null || access === void 0 ? void 0 : access.isreadwrite) {
             accessField = '2';
         }
@@ -2473,8 +2474,10 @@ class PageaccessComponent {
         }
     }
     getAccessByAsset(accessArray) {
+        var _a;
+        const readAccessForField = (_a = this.selectedPageLevelData) === null || _a === void 0 ? void 0 : _a.filter(x => x.pageid == this.pId && x.pageAccess == '3')[0];
         for (const asset of this.mergedAsset) {
-            const assetAccess = this.pageAccessService.getAccess(asset);
+            const assetAccess = this.pageAccessService.getAccess(asset, readAccessForField);
             accessArray.push(new FormGroup({
                 fieldName: new FormControl(asset['displayname']),
                 access: new FormControl(assetAccess ? assetAccess : '2'),

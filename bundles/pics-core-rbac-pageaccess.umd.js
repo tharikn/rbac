@@ -2428,9 +2428,10 @@
             }
             return pageAccessValue;
         };
-        PageAccessService.prototype.getAccess = function (access) {
+        PageAccessService.prototype.getAccess = function (access, pageReadAccess) {
             var accessField;
-            accessField = '2';
+            // accessField = '2';
+            accessField = pageReadAccess ? '3' : '2';
             if (access === null || access === void 0 ? void 0 : access.isreadwrite) {
                 accessField = '2';
             }
@@ -3188,10 +3189,13 @@
         };
         PageaccessComponent.prototype.getAccessByAsset = function (accessArray) {
             var e_1, _j;
+            var _this = this;
+            var _a;
+            var readAccessForField = (_a = this.selectedPageLevelData) === null || _a === void 0 ? void 0 : _a.filter(function (x) { return x.pageid == _this.pId && x.pageAccess == '3'; })[0];
             try {
                 for (var _k = __values(this.mergedAsset), _l = _k.next(); !_l.done; _l = _k.next()) {
                     var asset = _l.value;
-                    var assetAccess = this.pageAccessService.getAccess(asset);
+                    var assetAccess = this.pageAccessService.getAccess(asset, readAccessForField);
                     accessArray.push(new i1$2.FormGroup({
                         fieldName: new i1$2.FormControl(asset['displayname']),
                         access: new i1$2.FormControl(assetAccess ? assetAccess : '2'),
