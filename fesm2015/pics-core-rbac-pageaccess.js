@@ -2316,7 +2316,6 @@ class PageaccessComponent {
         }
     }
     getPageAccessArray(pId, i, accessArray, pageName, setAccess, pageConfig) {
-        console.log('FORMCONTROL', pageName);
         accessArray.push(new FormGroup({
             pageName: new FormControl(pageName[0]['pagename']),
             pageid: new FormControl(pId[i]),
@@ -2497,9 +2496,11 @@ class PageaccessComponent {
         });
     }
     submitAlert() {
+        var _a;
         event.stopPropagation();
         const pageLevelAccessFormControl = this.rbacForm.get('pageLevelData');
-        if (!this.fieldLevelAccess && (pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.touched)) {
+        const pagesChanged = (_a = pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.controls) === null || _a === void 0 ? void 0 : _a.filter(control => control.touched)[0];
+        if (!this.fieldLevelAccess && pagesChanged) {
             $('#submitAlert').modal('show');
         }
         else {

@@ -3025,7 +3025,6 @@
             }
         };
         PageaccessComponent.prototype.getPageAccessArray = function (pId, i, accessArray, pageName, setAccess, pageConfig) {
-            console.log('FORMCONTROL', pageName);
             accessArray.push(new i1$2.FormGroup({
                 pageName: new i1$2.FormControl(pageName[0]['pagename']),
                 pageid: new i1$2.FormControl(pId[i]),
@@ -3233,9 +3232,11 @@
             });
         };
         PageaccessComponent.prototype.submitAlert = function () {
+            var _a;
             event.stopPropagation();
             var pageLevelAccessFormControl = this.rbacForm.get('pageLevelData');
-            if (!this.fieldLevelAccess && (pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.touched)) {
+            var pagesChanged = (_a = pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.controls) === null || _a === void 0 ? void 0 : _a.filter(function (control) { return control.touched; })[0];
+            if (!this.fieldLevelAccess && pagesChanged) {
                 $('#submitAlert').modal('show');
             }
             else {
