@@ -3235,7 +3235,7 @@
         PageaccessComponent.prototype.submitAlert = function () {
             event.stopPropagation();
             var pageLevelAccessFormControl = this.rbacForm.get('pageLevelData');
-            if (!this.fieldLevelAccess || (pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.touched)) {
+            if (!this.fieldLevelAccess && (pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.touched)) {
                 $('#submitAlert').modal('show');
             }
             else {
