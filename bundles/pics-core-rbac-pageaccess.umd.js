@@ -3191,8 +3191,8 @@
             var e_1, _j;
             var _this = this;
             var _a;
-            var pageAccessFormControl = this.rbacForm.get('pageLevelData');
-            var isPageReadAccess = (_a = pageAccessFormControl === null || pageAccessFormControl === void 0 ? void 0 : pageAccessFormControl.value) === null || _a === void 0 ? void 0 : _a.filter(function (x) { return x.pageid == _this.pId && x.pageAccess == '3'; })[0];
+            var pageAccessFormControl = this.rbacForm.getRawValue();
+            var isPageReadAccess = (_a = pageAccessFormControl === null || pageAccessFormControl === void 0 ? void 0 : pageAccessFormControl.pageLevelData) === null || _a === void 0 ? void 0 : _a.filter(function (x) { return x.pageid == _this.pId && x.pageAccess == '3'; })[0];
             try {
                 for (var _k = __values(this.mergedAsset), _l = _k.next(); !_l.done; _l = _k.next()) {
                     var asset = _l.value;

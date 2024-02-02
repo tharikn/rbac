@@ -2475,8 +2475,8 @@ class PageaccessComponent {
     }
     getAccessByAsset(accessArray) {
         var _a;
-        const pageAccessFormControl = this.rbacForm.get('pageLevelData');
-        const isPageReadAccess = (_a = pageAccessFormControl === null || pageAccessFormControl === void 0 ? void 0 : pageAccessFormControl.value) === null || _a === void 0 ? void 0 : _a.filter(x => x.pageid == this.pId && x.pageAccess == '3')[0];
+        const pageAccessFormControl = this.rbacForm.getRawValue();
+        const isPageReadAccess = (_a = pageAccessFormControl === null || pageAccessFormControl === void 0 ? void 0 : pageAccessFormControl.pageLevelData) === null || _a === void 0 ? void 0 : _a.filter(x => x.pageid == this.pId && x.pageAccess == '3')[0];
         for (const asset of this.mergedAsset) {
             const assetAccess = this.pageAccessService.getAccess(asset, isPageReadAccess);
             accessArray.push(new FormGroup({
