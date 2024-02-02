@@ -1711,19 +1711,19 @@ class PageAccessService {
         return Object.keys(hashMap).reduce((a, b) => (hashMap[a] > hashMap[b] ? a : b));
     }
     getAccessArrayOnClick(pagesFromField, pageData, selectedFieldData, savedPageAccessPatching, existingValue) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         const accessArray = [];
         for (let i = 0; i < (pagesFromField === null || pagesFromField === void 0 ? void 0 : pagesFromField.length); i++) {
             const pageName = pageData.filter(key => key.id === pagesFromField[i]);
             const fieldLevelExist = selectedFieldData.filter(ele => ele.pageId == pagesFromField[i]);
             const pageAccessValue = this.checkFieldLevelExist(fieldLevelExist, savedPageAccessPatching, pagesFromField, existingValue, i);
             accessArray.push(new FormGroup({
-                pageName: new FormControl(pageName[0]['pagename']),
+                pageName: new FormControl((_a = pageName[0]) === null || _a === void 0 ? void 0 : _a.pagename),
                 pageid: new FormControl(pagesFromField[i]),
                 pageAccess: new FormControl(pageAccessValue ? pageAccessValue : '2'),
-                validity: new FormControl((((_a = existingValue[i]) === null || _a === void 0 ? void 0 : _a.validity) && String(existingValue[i].validity)) || '0'),
-                condition: new FormControl((((_b = existingValue[i]) === null || _b === void 0 ? void 0 : _b.condition) && existingValue[i].condition) || 'always'),
-                fallbackTo: new FormControl((((_c = existingValue[i]) === null || _c === void 0 ? void 0 : _c.condition) && existingValue[i].fallbackTo) || 'n')
+                validity: new FormControl((((_b = existingValue[i]) === null || _b === void 0 ? void 0 : _b.validity) && String(existingValue[i].validity)) || '0'),
+                condition: new FormControl((((_c = existingValue[i]) === null || _c === void 0 ? void 0 : _c.condition) && existingValue[i].condition) || 'always'),
+                fallbackTo: new FormControl((((_d = existingValue[i]) === null || _d === void 0 ? void 0 : _d.condition) && existingValue[i].fallbackTo) || 'n')
             }));
         }
         return accessArray;
@@ -2499,7 +2499,7 @@ class PageaccessComponent {
     submitAlert() {
         event.stopPropagation();
         const pageLevelAccessFormControl = this.rbacForm.get('pageLevelData');
-        if (!this.fieldLevelAccess || !(pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.touched)) {
+        if (!this.fieldLevelAccess || (pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.touched)) {
             $('#submitAlert').modal('show');
         }
         else {

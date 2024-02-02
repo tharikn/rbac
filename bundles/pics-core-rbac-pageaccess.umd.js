@@ -1920,7 +1920,7 @@
          * @childFunction of saveRbac
          */
         PageAccessService.prototype.accessByPolicy = function (access, id, policyGroupData, selectedFieldData, pageData) {
-            var e_1, _d;
+            var e_1, _e;
             var fullArray = [];
             var _loop_1 = function (value) {
                 var selectedData = policyGroupData.filter(function (key) { return key.id === value; });
@@ -1948,7 +1948,7 @@
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
             finally {
                 try {
-                    if (id_1_1 && !id_1_1.done && (_d = id_1.return)) _d.call(id_1);
+                    if (id_1_1 && !id_1_1.done && (_e = id_1.return)) _e.call(id_1);
                 }
                 finally { if (e_1) throw e_1.error; }
             }
@@ -1961,7 +1961,7 @@
          * @childFunction of saveRbac
          */
         PageAccessService.prototype.accessByPersona = function (access, personaId, id, roleAddedData, selectedFieldData, pageData) {
-            var e_2, _d;
+            var e_2, _e;
             var fullArray = [];
             // const personaId = this.rbacForm.get('roleid').value;
             // const personaId = this.rbacForm.get('roleid').value;
@@ -1994,7 +1994,7 @@
             catch (e_2_1) { e_2 = { error: e_2_1 }; }
             finally {
                 try {
-                    if (personaId_1_1 && !personaId_1_1.done && (_d = personaId_1.return)) _d.call(personaId_1);
+                    if (personaId_1_1 && !personaId_1_1.done && (_e = personaId_1.return)) _e.call(personaId_1);
                 }
                 finally { if (e_2) throw e_2.error; }
             }
@@ -2007,7 +2007,7 @@
          * @childFunction of saveRbac
          */
         PageAccessService.prototype.accessByUser = function (access, userId, id, roleids, userList, selectedFieldData, pageData) {
-            var e_3, _d;
+            var e_3, _e;
             var fullArray = [];
             var _loop_3 = function (item) {
                 var selectedData = userList.filter(function (key) { return key.id === item; });
@@ -2036,7 +2036,7 @@
             catch (e_3_1) { e_3 = { error: e_3_1 }; }
             finally {
                 try {
-                    if (userId_1_1 && !userId_1_1.done && (_d = userId_1.return)) _d.call(userId_1);
+                    if (userId_1_1 && !userId_1_1.done && (_e = userId_1.return)) _e.call(userId_1);
                 }
                 finally { if (e_3) throw e_3.error; }
             }
@@ -2050,7 +2050,7 @@
          * @param id
          */
         PageAccessService.prototype.loadAccessForPage = function (access, selectedData, formObj, id, pageData) {
-            var e_4, _d;
+            var e_4, _e;
             var existPageConfigs = selectedData[0]['pageConfigs'];
             var _loop_4 = function (item) {
                 var selectedModule = pageData.filter(function (key) { return key.id === item['pageid']; });
@@ -2093,15 +2093,15 @@
             };
             var this_4 = this;
             try {
-                for (var _e = __values(access.pageLevelData), _f = _e.next(); !_f.done; _f = _e.next()) {
-                    var item = _f.value;
+                for (var _f = __values(access.pageLevelData), _g = _f.next(); !_g.done; _g = _f.next()) {
+                    var item = _g.value;
                     _loop_4(item);
                 }
             }
             catch (e_4_1) { e_4 = { error: e_4_1 }; }
             finally {
                 try {
-                    if (_f && !_f.done && (_d = _e.return)) _d.call(_e);
+                    if (_g && !_g.done && (_e = _f.return)) _e.call(_f);
                 }
                 finally { if (e_4) throw e_4.error; }
             }
@@ -2134,7 +2134,7 @@
             formObj.policygroupname = selectedData[0]['policygroupname'];
         };
         PageAccessService.prototype.loadAccessForFields = function (access, selectedData, formObj, id, selectedFieldData, pageData) {
-            var e_5, _d;
+            var e_5, _e;
             // console.log(selectedData)
             var assetConfigs = selectedData[0]['assetConfigs'].filter(function (key) { return key.modulekey !== null; });
             // console.log('------------')
@@ -2186,7 +2186,7 @@
             catch (e_5_1) { e_5 = { error: e_5_1 }; }
             finally {
                 try {
-                    if (selectedFieldData_1_1 && !selectedFieldData_1_1.done && (_d = selectedFieldData_1.return)) _d.call(selectedFieldData_1);
+                    if (selectedFieldData_1_1 && !selectedFieldData_1_1.done && (_e = selectedFieldData_1.return)) _e.call(selectedFieldData_1);
                 }
                 finally { if (e_5) throw e_5.error; }
             }
@@ -2215,7 +2215,7 @@
             }
         };
         PageAccessService.prototype.setRoleObj = function (formObj, selectedData, roleid, policyid) {
-            var e_6, _d;
+            var e_6, _e;
             formObj.id = roleid;
             formObj.rolekey = selectedData[0]['rolekey'];
             formObj.rolename = selectedData[0]['rolename'];
@@ -2252,7 +2252,7 @@
             catch (e_6_1) { e_6 = { error: e_6_1 }; }
             finally {
                 try {
-                    if (id_2_1 && !id_2_1.done && (_d = id_2.return)) _d.call(id_2);
+                    if (id_2_1 && !id_2_1.done && (_e = id_2.return)) _e.call(id_2);
                 }
                 finally { if (e_6) throw e_6.error; }
             }
@@ -2266,7 +2266,7 @@
             }
         };
         PageAccessService.prototype.setUserObj = function (formObj, selectedData, userId, id, roleids) {
-            var e_7, _d, e_8, _e;
+            var e_7, _e, e_8, _f;
             // loop the policy group
             var existRolePolicyConfig = selectedData[0]['policyGroupConfigs'];
             this.getCheckPolicyConfig(id, userId, existRolePolicyConfig, formObj);
@@ -2307,7 +2307,7 @@
             catch (e_7_1) { e_7 = { error: e_7_1 }; }
             finally {
                 try {
-                    if (existRoleId_1_1 && !existRoleId_1_1.done && (_d = existRoleId_1.return)) _d.call(existRoleId_1);
+                    if (existRoleId_1_1 && !existRoleId_1_1.done && (_e = existRoleId_1.return)) _e.call(existRoleId_1);
                 }
                 finally { if (e_7) throw e_7.error; }
             }
@@ -2330,14 +2330,14 @@
                 catch (e_8_1) { e_8 = { error: e_8_1 }; }
                 finally {
                     try {
-                        if (roleids_1_1 && !roleids_1_1.done && (_e = roleids_1.return)) _e.call(roleids_1);
+                        if (roleids_1_1 && !roleids_1_1.done && (_f = roleids_1.return)) _f.call(roleids_1);
                     }
                     finally { if (e_8) throw e_8.error; }
                 }
             }
         };
         PageAccessService.prototype.getCheckPolicyConfig = function (id, userId, existRolePolicyConfig, formObj) {
-            var e_9, _d;
+            var e_9, _e;
             try {
                 for (var id_3 = __values(id), id_3_1 = id_3.next(); !id_3_1.done; id_3_1 = id_3.next()) {
                     var item = id_3_1.value;
@@ -2366,7 +2366,7 @@
             catch (e_9_1) { e_9 = { error: e_9_1 }; }
             finally {
                 try {
-                    if (id_3_1 && !id_3_1.done && (_d = id_3.return)) _d.call(id_3);
+                    if (id_3_1 && !id_3_1.done && (_e = id_3.return)) _e.call(id_3);
                 }
                 finally { if (e_9) throw e_9.error; }
             }
@@ -2396,19 +2396,19 @@
             return Object.keys(hashMap).reduce(function (a, b) { return (hashMap[a] > hashMap[b] ? a : b); });
         };
         PageAccessService.prototype.getAccessArrayOnClick = function (pagesFromField, pageData, selectedFieldData, savedPageAccessPatching, existingValue) {
-            var _a, _b, _c;
+            var _a, _b, _c, _d;
             var accessArray = [];
             var _loop_5 = function (i) {
                 var pageName = pageData.filter(function (key) { return key.id === pagesFromField[i]; });
                 var fieldLevelExist = selectedFieldData.filter(function (ele) { return ele.pageId == pagesFromField[i]; });
                 var pageAccessValue = this_5.checkFieldLevelExist(fieldLevelExist, savedPageAccessPatching, pagesFromField, existingValue, i);
                 accessArray.push(new i1$2.FormGroup({
-                    pageName: new i1$2.FormControl(pageName[0]['pagename']),
+                    pageName: new i1$2.FormControl((_a = pageName[0]) === null || _a === void 0 ? void 0 : _a.pagename),
                     pageid: new i1$2.FormControl(pagesFromField[i]),
                     pageAccess: new i1$2.FormControl(pageAccessValue ? pageAccessValue : '2'),
-                    validity: new i1$2.FormControl((((_a = existingValue[i]) === null || _a === void 0 ? void 0 : _a.validity) && String(existingValue[i].validity)) || '0'),
-                    condition: new i1$2.FormControl((((_b = existingValue[i]) === null || _b === void 0 ? void 0 : _b.condition) && existingValue[i].condition) || 'always'),
-                    fallbackTo: new i1$2.FormControl((((_c = existingValue[i]) === null || _c === void 0 ? void 0 : _c.condition) && existingValue[i].fallbackTo) || 'n')
+                    validity: new i1$2.FormControl((((_b = existingValue[i]) === null || _b === void 0 ? void 0 : _b.validity) && String(existingValue[i].validity)) || '0'),
+                    condition: new i1$2.FormControl((((_c = existingValue[i]) === null || _c === void 0 ? void 0 : _c.condition) && existingValue[i].condition) || 'always'),
+                    fallbackTo: new i1$2.FormControl((((_d = existingValue[i]) === null || _d === void 0 ? void 0 : _d.condition) && existingValue[i].fallbackTo) || 'n')
                 }));
             };
             var this_5 = this;
@@ -3235,7 +3235,7 @@
         PageaccessComponent.prototype.submitAlert = function () {
             event.stopPropagation();
             var pageLevelAccessFormControl = this.rbacForm.get('pageLevelData');
-            if (!this.fieldLevelAccess || !(pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.touched)) {
+            if (!this.fieldLevelAccess || (pageLevelAccessFormControl === null || pageLevelAccessFormControl === void 0 ? void 0 : pageLevelAccessFormControl.touched)) {
                 $('#submitAlert').modal('show');
             }
             else {
