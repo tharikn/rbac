@@ -3191,11 +3191,12 @@
             var e_1, _j;
             var _this = this;
             var _a;
-            var readAccessForField = (_a = this.selectedPageLevelData) === null || _a === void 0 ? void 0 : _a.filter(function (x) { return x.pageid == _this.pId && x.pageAccess == '3'; })[0];
+            var pageAccessFormControl = this.rbacForm.get('pageLevelData');
+            var isPageReadAccess = (_a = pageAccessFormControl === null || pageAccessFormControl === void 0 ? void 0 : pageAccessFormControl.value) === null || _a === void 0 ? void 0 : _a.filter(function (x) { return function (x) { return x.pageid == _this.pId && x.pageAccess == '3'; }; })[0];
             try {
                 for (var _k = __values(this.mergedAsset), _l = _k.next(); !_l.done; _l = _k.next()) {
                     var asset = _l.value;
-                    var assetAccess = this.pageAccessService.getAccess(asset, readAccessForField);
+                    var assetAccess = this.pageAccessService.getAccess(asset, isPageReadAccess);
                     accessArray.push(new i1$2.FormGroup({
                         fieldName: new i1$2.FormControl(asset['displayname']),
                         access: new i1$2.FormControl(assetAccess ? assetAccess : '2'),
