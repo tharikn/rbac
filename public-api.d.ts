@@ -1,3 +1,3 @@
-export * from './lib/profile.service';
-export * from './lib/profile.component';
-export * from './lib/profile.module';
+export * from './lib/login.service';
+export * from './lib/login.component';
+export * from './lib/login.module';
