@@ -1691,13 +1691,13 @@
             configurable: true
         });
         ProfileComponent.prototype.passwordValidator = function (group) {
-            var _d = group.value, newpassword = _d.newpassword, conformpassword = _d.conformpassword;
+            var _g = group.value, newpassword = _g.newpassword, conformpassword = _g.conformpassword;
             if (!newpassword)
                 return null;
             return newpassword !== conformpassword ? { NoPassswordMatch: 'Password does not match' } : null;
         };
         ProfileComponent.prototype.passwordMatchValidator = function (group) {
-            var _d = group.value, currentpassword = _d.currentpassword, newpassword = _d.newpassword;
+            var _g = group.value, currentpassword = _g.currentpassword, newpassword = _g.newpassword;
             if (!currentpassword)
                 return null;
             return currentpassword === newpassword ? { newPasswordSame: 'New Password same as Current Password' } : null;
@@ -1705,9 +1705,9 @@
         ProfileComponent.prototype.getUserInfo = function () {
             var _this = this;
             this.profileService.getAllUserList(this.userid).subscribe(function (res) {
-                var _a, _b, _c;
+                var _a, _b, _c, _d, _e, _f;
                 var patchValuedata = res.data;
-                var providerData = patchValuedata.provider[0];
+                var personData = patchValuedata.person;
                 _this.thumbnail = ((_b = (_a = patchValuedata.additionalinfo) === null || _a === void 0 ? void 0 : _a.thumbnail) === null || _b === void 0 ? void 0 : _b.url) || '';
                 _this.userForm.patchValue({
                     firstname: patchValuedata.firstname,
@@ -1716,11 +1716,11 @@
                     // username: patchValuedata.username,
                     // dob: patchValuedata.dob ? new Date(patchValuedata.dob) : null,
                     email: patchValuedata.email,
-                    alternate_email: providerData.alternate_email,
-                    HomePhone: providerData.homephone,
+                    alternate_email: (_d = (_c = personData.email) === null || _c === void 0 ? void 0 : _c.find(function (e) { return e && e.emailtype.includes('alternate_email'); })) === null || _d === void 0 ? void 0 : _d.email,
+                    HomePhone: personData.homephone,
                 });
-                if (providerData.phone.length == 10) {
-                    var value = providerData.phone;
+                if (((_e = personData === null || personData === void 0 ? void 0 : personData.phone_numbers) === null || _e === void 0 ? void 0 : _e.length) == 10) {
+                    var value = personData.phone_numbers;
                     var mobile = "(" + value.slice(0, 3) + ") " + value.slice(3, 6) + "-" + value.slice(6);
                     _this.userForm.patchValue({
                         phone: mobile
@@ -1728,12 +1728,12 @@
                 }
                 else {
                     _this.userForm.patchValue({
-                        phone: providerData.phone
+                        phone: personData.phone_numbers
                     });
                 }
                 var control = _this.userForm.controls['contactData'];
                 control.controls = [];
-                (_c = providerData === null || providerData === void 0 ? void 0 : providerData.phone_numbers) === null || _c === void 0 ? void 0 : _c.forEach(function (x) {
+                (_f = personData === null || personData === void 0 ? void 0 : personData.phone_numbers) === null || _f === void 0 ? void 0 : _f.forEach(function (x) {
                     control.push(_this.createRow(x));
                 });
             });

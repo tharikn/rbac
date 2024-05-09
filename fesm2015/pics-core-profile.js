@@ -1176,9 +1176,9 @@ class ProfileComponent$1 {
     }
     getUserInfo() {
         this.profileService.getAllUserList(this.userid).subscribe((res) => {
-            var _a, _b, _c;
+            var _a, _b, _c, _d, _e, _f;
             const patchValuedata = res.data;
-            const providerData = patchValuedata.provider[0];
+            const personData = patchValuedata.person;
             this.thumbnail = ((_b = (_a = patchValuedata.additionalinfo) === null || _a === void 0 ? void 0 : _a.thumbnail) === null || _b === void 0 ? void 0 : _b.url) || '';
             this.userForm.patchValue({
                 firstname: patchValuedata.firstname,
@@ -1187,11 +1187,11 @@ class ProfileComponent$1 {
                 // username: patchValuedata.username,
                 // dob: patchValuedata.dob ? new Date(patchValuedata.dob) : null,
                 email: patchValuedata.email,
-                alternate_email: providerData.alternate_email,
-                HomePhone: providerData.homephone,
+                alternate_email: (_d = (_c = personData.email) === null || _c === void 0 ? void 0 : _c.find(e => e && e.emailtype.includes('alternate_email'))) === null || _d === void 0 ? void 0 : _d.email,
+                HomePhone: personData.homephone,
             });
-            if (providerData.phone.length == 10) {
-                const value = providerData.phone;
+            if (((_e = personData === null || personData === void 0 ? void 0 : personData.phone_numbers) === null || _e === void 0 ? void 0 : _e.length) == 10) {
+                const value = personData.phone_numbers;
                 const mobile = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6)}`;
                 this.userForm.patchValue({
                     phone: mobile
@@ -1199,12 +1199,12 @@ class ProfileComponent$1 {
             }
             else {
                 this.userForm.patchValue({
-                    phone: providerData.phone
+                    phone: personData.phone_numbers
                 });
             }
             const control = this.userForm.controls['contactData'];
             control.controls = [];
-            (_c = providerData === null || providerData === void 0 ? void 0 : providerData.phone_numbers) === null || _c === void 0 ? void 0 : _c.forEach(x => {
+            (_f = personData === null || personData === void 0 ? void 0 : personData.phone_numbers) === null || _f === void 0 ? void 0 : _f.forEach(x => {
                 control.push(this.createRow(x));
             });
         });
