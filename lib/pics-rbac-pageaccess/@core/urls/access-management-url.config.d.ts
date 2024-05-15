@@ -9,7 +9,6 @@ export declare class AccessManagementConfig {
         };
         Asset: {
             getAsset: string;
-            getAssetDeselect: string;
             getPageAsset: string;
             getUserAsset: string;
             getRoleAsset: string;
