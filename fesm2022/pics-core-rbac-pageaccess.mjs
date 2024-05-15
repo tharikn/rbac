@@ -2,14 +2,14 @@ import * as i0 from '@angular/core';
 import { Injectable, Directive, Input, EventEmitter, Component, Output, ViewChild, NgModule, Pipe, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { BehaviorSubject, of, Subject, forkJoin } from 'rxjs';
 import * as i1$2 from '@angular/forms';
-import { FormControl, FormGroup, FormArray, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormControl, FormArray, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { map, tap, mergeMap } from 'rxjs/operators';
 import * as i1 from '@angular/common/http';
 import { HttpHeaders, HttpClientModule, HttpClient } from '@angular/common/http';
 import * as i1$1 from 'ngxf-uploader';
 import { NgxfUploaderModule } from 'ngxf-uploader';
 import 'rxjs/add/operator/map';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import { map, tap, mergeMap } from 'rxjs/operators';
 import * as i3 from '@angular/router';
 import { NavigationStart } from '@angular/router';
 import * as i5 from '@angular/common';
@@ -1072,6 +1072,7 @@ class AccessManagementConfig {
         },
         Asset: {
             getAsset: 'asset',
+            getAssetDeselect: 'assetDeselect',
             getPageAsset: '/platform/page-designer/asset/getpagebyid',
             getUserAsset: '/platform/page-designer/asset/getUserAssets',
             getRoleAsset: '/platform/page-designer/asset/getRoleAssets',
@@ -1092,6 +1093,570 @@ class AccessManagementConfig {
         }
     };
 }
+
+class PageAccessService {
+    _storeservice;
+    isfull = false;
+    ishide = false;
+    isread = false;
+    isreadwrite = false;
+    // constructor(private httpService: HttpService) {
+    //    // This is intentional
+    // }
+    httpService;
+    constructor(_storeservice) {
+        this._storeservice = _storeservice;
+        this._storeservice.currentStore.subscribe((res) => {
+            if (res) {
+                this.httpService = res['HTTPSERVICE'];
+            }
+        });
+    }
+    /**
+     * when user selected policy
+     * @param access Raw valur of RBac form
+     * @returns form array of DA
+     * @childFunction of saveRbac
+     */
+    accessByPolicy(access, id, policyGroupData, selectedFieldData, pageData) {
+        const fullArray = [];
+        for (const value of id) {
+            const selectedData = policyGroupData.filter(key => key.id === value);
+            const formObj = {
+                id: '',
+                description: '',
+                policygroupname: '',
+                pageConfigs: [],
+                assetConfigs: []
+            };
+            this.setPolicyObj(formObj, selectedData, value);
+            this.loadAccessForPage(access, selectedData, formObj, value, pageData);
+            if (access.fieldLevelData.length) {
+                this.loadAccessForFields(access, selectedData, formObj, value, selectedFieldData, pageData);
+            }
+            fullArray.push(formObj);
+        }
+        return fullArray;
+    }
+    /**
+     * when user selected Persona
+     * @param access Raw valur of RBac form
+     * @returns form array of DA
+     * @childFunction of saveRbac
+     */
+    accessByPersona(access, personaId, id, roleAddedData, selectedFieldData, pageData) {
+        const fullArray = [];
+        // const personaId = this.rbacForm.get('roleid').value;
+        // const personaId = this.rbacForm.get('roleid').value;
+        const formObj = {
+            id: '',
+            rolekey: '',
+            rolename: '',
+            description: '',
+            effectivedate: '',
+            pageConfigs: [],
+            assetConfigs: [],
+            rolePolicyGroupConfigs: []
+        };
+        for (const item of personaId) {
+            const selectedData = roleAddedData.filter(key => key.id === item);
+            this.setRoleObj(formObj, selectedData, item, id);
+            this.loadAccessForPage(access, selectedData, formObj, item, pageData);
+            if (access.fieldLevelData.length) {
+                this.loadAccessForFields(access, selectedData, formObj, item, selectedFieldData, pageData);
+            }
+            fullArray.push(formObj);
+        }
+        return fullArray;
+    }
+    /**
+     * when user selected User
+     * @param access Raw valur of RBac form
+     * @returns form array of DA
+     * @childFunction of saveRbac
+     */
+    accessByUser(access, userId, id, roleids, userList, selectedFieldData, pageData) {
+        const fullArray = [];
+        for (const item of userId) {
+            const selectedData = userList.filter(key => key.id === item);
+            const formObj = { ...selectedData[0] };
+            formObj.pageConfigs = [];
+            formObj.assetConfigs = [];
+            formObj.policyGroupConfigs = [];
+            formObj.roleConfigs = [];
+            console.log('======');
+            this.setUserObj(formObj, selectedData, item, id, roleids);
+            console.log('======1');
+            this.loadAccessForPage(access, selectedData, formObj, item, pageData);
+            console.log('======2');
+            if (access.fieldLevelData.length) {
+                this.loadAccessForFields(access, selectedData, formObj, item, selectedFieldData, pageData);
+            }
+            fullArray.push(formObj);
+        }
+        return fullArray;
+    }
+    /**
+     * Fetch access list for dashboard access
+     * @param access
+     * @param assetDashBoardConfigs
+     * @param formObj
+     * @param id
+     */
+    loadAccessForPage(access, selectedData, formObj, id, pageData) {
+        const existPageConfigs = selectedData[0]['pageConfigs'];
+        for (const item of access.pageLevelData) {
+            const selectedModule = pageData.filter(key => key.id === item['pageid']);
+            const pageAccess = access.pageLevelData.filter(key => key.pageid === item['pageid']);
+            this.pageAccessCheck(pageAccess);
+            const pageKey = {
+                id: null,
+                isactive: true,
+                isfull: this.isfull,
+                ishide: this.ishide,
+                isread: this.isread,
+                isreadwrite: this.isreadwrite,
+                pageid: item['pageid'],
+                policygroupid: id,
+                modulekey: selectedModule[0]['modulekey'],
+                submodulekey: selectedModule[0]['submodulekey']
+            };
+            // check exist page length
+            if (existPageConfigs.length) {
+                const existIds = existPageConfigs.map(p => p.pageid);
+                const chkPage = existIds.includes(item['pageid']);
+                if (chkPage) {
+                    const index = existIds.indexOf(item['pageid']);
+                    if (index > -1) {
+                        //if found
+                        pageKey.id = existPageConfigs[index]['id'];
+                        pageKey.isactive = false;
+                        formObj.pageConfigs.push(pageKey);
+                        existPageConfigs.splice(index, 1);
+                    }
+                }
+                const d = { ...pageKey };
+                d.id = null;
+                d.isactive = true;
+                formObj.pageConfigs.push(d);
+            }
+            else {
+                formObj.pageConfigs.push(pageKey);
+            }
+        }
+        // still existconfig length
+        if (existPageConfigs.length) {
+            existPageConfigs.map(t => {
+                t.isactive = false;
+                formObj.pageConfigs.push(t);
+                return t;
+            });
+        }
+    }
+    pageAccessCheck(pageAccess) {
+        if (pageAccess[0].pageAccess === '1') {
+            this.isfull = true;
+        }
+        else if (pageAccess[0].pageAccess === '4') {
+            this.ishide = true;
+        }
+        else if (pageAccess[0].pageAccess === '3') {
+            this.isread = true;
+        }
+        else if (pageAccess[0].pageAccess === '2') {
+            this.isreadwrite = true;
+        }
+    }
+    setPolicyObj(formObj, selectedData, id) {
+        formObj.id = id;
+        formObj.description = selectedData[0]['description'];
+        formObj.policygroupname = selectedData[0]['policygroupname'];
+    }
+    loadAccessForFields(access, selectedData, formObj, id, selectedFieldData, pageData) {
+        // console.log(selectedData)
+        const assetConfigs = selectedData[0]['assetConfigs'].filter(key => key.modulekey !== null);
+        // console.log('------------')
+        const selectedModule = pageData.filter(key => key.id === access.fpages[0]['id']);
+        // console.log(access.fieldLevelData)
+        selectedFieldData =
+            access.fieldLevelData !== null ? this.setSelectedFieldPage(access.fieldLevelData, selectedFieldData) : [];
+        // console.log(selectedData, assetConfigs)
+        for (const selectedField of selectedFieldData) {
+            if (selectedField.access === null) {
+                // continue;
+            }
+            console.log(selectedField);
+            let isfull = false;
+            let ishide = false;
+            let isread = false;
+            let isreadwrite = false;
+            if (selectedField.access === '2' || selectedField.access === '1') {
+                isfull = true;
+            }
+            else if (selectedField.access === '4') {
+                ishide = true;
+            }
+            else if (selectedField.access === '3') {
+                isread = true;
+            }
+            else if (selectedField.access === '2') {
+                isreadwrite = true;
+            }
+            const aConfigs = {
+                id: selectedField['id'] ? selectedField['id'] : null,
+                isactive: true,
+                isfull: isfull,
+                ishide: ishide,
+                isread: isread,
+                isreadwrite: isreadwrite,
+                assetid: selectedField['assetid'],
+                policygroupid: id,
+                pageid: selectedField['pageId'] ? selectedField['pageId'] : access.fpages[0]['id'],
+                modulekey: selectedModule[0]['modulekey'],
+                submodulekey: selectedModule[0]['submodulekey']
+            };
+            // check exist page length
+            this.checkExistAsset(assetConfigs, selectedField, aConfigs, formObj);
+        }
+    }
+    checkExistAsset(assetConfigs, selectedField, aConfigs, formObj) {
+        if (assetConfigs.length) {
+            const existIds = assetConfigs.map(p => p.assetid);
+            const chkPage = existIds.includes(selectedField['assetid']);
+            if (chkPage) {
+                const index = existIds.indexOf(selectedField['assetid']);
+                if (index > -1) {
+                    //if found
+                    aConfigs.id = assetConfigs[index]['id'];
+                    aConfigs.isactive = false;
+                    formObj.assetConfigs.push(aConfigs);
+                    assetConfigs.splice(index, 1);
+                }
+            }
+            const d = { ...aConfigs };
+            d.isactive = true;
+            d.id = null;
+            formObj.assetConfigs.push(d);
+        }
+        else {
+            formObj.assetConfigs.push(aConfigs);
+        }
+    }
+    setRoleObj(formObj, selectedData, roleid, policyid) {
+        formObj.id = roleid;
+        formObj.rolekey = selectedData[0]['rolekey'];
+        formObj.rolename = selectedData[0]['rolename'];
+        formObj.effectivedate = selectedData[0]['effectivedate'];
+        formObj.description = selectedData[0]['description'];
+        // loop the policy group
+        const id = policyid;
+        const existRolePolicyConfig = selectedData[0]['rolePolicyGroupConfigs'];
+        for (const item of id) {
+            const rpolicyConfig = {
+                id: null,
+                isactive: true,
+                policygroupid: item,
+                roleid: roleid // role id
+            };
+            // check exist page length
+            if (existRolePolicyConfig.length) {
+                const existIds = existRolePolicyConfig.map(p => p.policygroupid);
+                const chkPage = existIds.includes(item);
+                if (chkPage) {
+                    const index = existIds.indexOf(item);
+                    if (index > -1) {
+                        //if found
+                        rpolicyConfig.id = existRolePolicyConfig[index]['id'];
+                        existRolePolicyConfig.splice(index, 1);
+                    }
+                }
+            }
+            formObj.rolePolicyGroupConfigs.push(rpolicyConfig);
+        }
+        // still existconfig length
+        if (existRolePolicyConfig.length) {
+            existRolePolicyConfig.map(t => {
+                t.isactive = false;
+                formObj.rolePolicyGroupConfigs.push(t);
+                return t;
+            });
+        }
+    }
+    setUserObj(formObj, selectedData, userId, id, roleids) {
+        // loop the policy group
+        const existRolePolicyConfig = selectedData[0]['policyGroupConfigs'];
+        this.getCheckPolicyConfig(id, userId, existRolePolicyConfig, formObj);
+        // still existconfig length
+        if (existRolePolicyConfig.length) {
+            existRolePolicyConfig.map(t => {
+                t.isactive = false;
+                formObj.policyGroupConfigs.push(t);
+                return t;
+            });
+        }
+        // loop the role group
+        // const roleids = this.rbacForm.get('roleid').value;
+        const existRoleId = selectedData[0]['roleConfigs'];
+        for (const role of existRoleId) {
+            const chkRoleData = roleids.includes(role['roleid']);
+            const roleGrp = {
+                id: role['id'],
+                isactive: false,
+                isdefaultrole: role['isdefaultrole'],
+                userid: userId,
+                roleid: role['roleid'],
+                effectivedate: role['effectivedate']
+            };
+            if (chkRoleData) {
+                const index1 = roleids.indexOf(role['roleid']);
+                if (index1 > -1) {
+                    //if found
+                    roleids.splice(index1, 1);
+                }
+                roleGrp.isactive = true;
+            }
+            formObj.roleConfigs.push(roleGrp);
+        }
+        // check new roles group ids
+        if (roleids.length) {
+            for (const roleId of roleids) {
+                const roleGrp = {
+                    id: null,
+                    isactive: true,
+                    isdefaultrole: false,
+                    userid: userId,
+                    roleid: roleId,
+                    effectivedate: new Date()
+                };
+                formObj.roleConfigs.push(roleGrp);
+            }
+        }
+    }
+    getCheckPolicyConfig(id, userId, existRolePolicyConfig, formObj) {
+        for (const item of id) {
+            const rpolicyConfig = {
+                id: null,
+                isactive: true,
+                policygroupid: item,
+                userid: userId // user id
+            };
+            // check exist page length
+            if (existRolePolicyConfig.length) {
+                const existIds = existRolePolicyConfig.map(p => p.policygroupid);
+                const chkPage = existIds.includes(item);
+                if (chkPage) {
+                    const index = existIds.indexOf(item);
+                    if (index > -1) {
+                        //if found
+                        rpolicyConfig.id = existRolePolicyConfig[index]['id'];
+                        existRolePolicyConfig.splice(index, 1);
+                    }
+                }
+            }
+            formObj.policyGroupConfigs.push(rpolicyConfig);
+        }
+    }
+    setSelectedFieldPage(updateArray, selectedFieldData) {
+        // console.log('=========>', updateArray, selectedFieldData)
+        if (updateArray?.length) {
+            if (selectedFieldData?.length >= updateArray.length) {
+                selectedFieldData = this.updateDuplicatesinArray([...selectedFieldData], [...updateArray]);
+                return selectedFieldData;
+            }
+            else {
+                selectedFieldData = [...updateArray];
+                return selectedFieldData;
+            }
+        }
+    }
+    updateDuplicatesinArray(origArr, updatingArr) {
+        const updatingArrids = new Set(updatingArr.map(ele => ele.assetid));
+        return [...updatingArr, ...origArr.filter(ele => !updatingArrids.has(ele.assetid))];
+    }
+    getMostFrequentEle(arr) {
+        const hashMap = arr.reduce((acc, val) => {
+            acc[String(val)] = (acc[val] || 0) + 1;
+            return acc;
+        }, {});
+        return Object.keys(hashMap).reduce((a, b) => (hashMap[a] > hashMap[b] ? a : b));
+    }
+    getAccessArrayOnClick(pagesFromField, pageData, selectedFieldData, savedPageAccessPatching, existingValue) {
+        const accessArray = [];
+        for (let i = 0; i < pagesFromField?.length; i++) {
+            const pageName = pageData.filter(key => key.id === pagesFromField[i]);
+            const fieldLevelExist = selectedFieldData.filter(ele => ele.pageId == pagesFromField[i]);
+            const pageAccessValue = this.checkFieldLevelExist(fieldLevelExist, savedPageAccessPatching, pagesFromField, existingValue, i);
+            accessArray.push(new FormGroup({
+                pageName: new FormControl(pageName[0]?.pagename),
+                pageid: new FormControl(pagesFromField[i]),
+                pageAccess: new FormControl(pageAccessValue ? pageAccessValue : '2'),
+                validity: new FormControl((existingValue[i]?.validity && String(existingValue[i].validity)) || '0'),
+                condition: new FormControl((existingValue[i]?.condition && existingValue[i].condition) || 'always'),
+                fallbackTo: new FormControl((existingValue[i]?.condition && existingValue[i].fallbackTo) || 'n')
+            }));
+        }
+        return accessArray;
+    }
+    checkFieldLevelExist(fieldLevelExist, savedPageAccessPatching, pagesFromField, existingValue, i) {
+        let pageAccessValue;
+        if (fieldLevelExist?.length && savedPageAccessPatching) {
+            pageAccessValue = this.getMostFrequentEle(fieldLevelExist?.filter(ele => (ele.pageId = pagesFromField[i]))?.map(e => (e.access ? Number(e.access) : 0)));
+        }
+        else {
+            pageAccessValue = existingValue?.find(ele => ele.pageid === pagesFromField[i])?.pageAccess;
+        }
+        return pageAccessValue;
+    }
+    // This function for field level access
+    getAccess(access, fieldPageLevel) {
+        let accessField;
+        if (fieldPageLevel.length === 0) {
+            accessField = '3'; // accessfield is 3 for read level access
+        }
+        else {
+            accessField = '2'; // accessfield is 2 for readwrite level access
+        }
+        ;
+        if (fieldPageLevel.length > 0 && access?.isreadwrite) {
+            accessField = '2';
+        }
+        else if (access?.ishide) {
+            accessField = '4'; // accessfield is 4 for hide level access
+        }
+        else if (access?.isread) {
+            accessField = '3';
+        }
+        else if (access?.isfull) {
+            accessField = '3'; // accessfield is 5 for full level access
+        }
+        else if (fieldPageLevel.length === 0 && access?.isreadwrite) {
+            accessField = '3';
+        }
+        return accessField;
+    }
+    // This function for page level access
+    getPageAccess(access) {
+        let accessField;
+        accessField = '2';
+        if (access?.isreadwrite) {
+            accessField = '2';
+        }
+        else if (access?.ishide) {
+            accessField = '4';
+        }
+        else if (access?.isread) {
+            accessField = '3';
+        }
+        else if (access?.isfull) {
+            accessField = '5';
+        }
+        return accessField;
+    }
+    getOrganizationPage(orgId) {
+        return this.httpService.get(AccessManagementConfig.EndPoint.Organization.getOrganization.replace('{orgId}', orgId));
+    }
+    getAssetByPageId(pId) {
+        return this.httpService.get(`${AccessManagementConfig.EndPoint.Asset.getPageAsset}/${pId}`);
+    }
+    createAsset(selectedAccess, selectedId, asset) {
+        let url;
+        if (selectedAccess === 'user') {
+            url = `org/user/${selectedId}`;
+        }
+        else if (selectedAccess === 'role') {
+            url = `access-control/role/${selectedId}`;
+        }
+        else {
+            url = `platform/page-designer/policygroup/${selectedId}`;
+        }
+        return this.httpService.post(`/${url}/${AccessManagementConfig.EndPoint.Asset.getAsset}`, asset);
+    }
+    updateAssetOnDeselect(selectedAccess, selectedId, asset) {
+        let url;
+        if (selectedAccess === 'user') {
+            url = `org/user/${selectedId}`;
+        }
+        else if (selectedAccess === 'role') {
+            url = `access-control/role/${selectedId}`;
+        }
+        else {
+            url = `platform/page-designer/policygroup/${selectedId}`;
+        }
+        return this.httpService.patch(`/${url}/${AccessManagementConfig.EndPoint.Asset.getAssetDeselect}`, asset);
+    }
+    getAssetById(selectedAccess, selectedId) {
+        let url;
+        if (selectedAccess === 'user') {
+            url = AccessManagementConfig.EndPoint.Asset.getUserAsset;
+        }
+        else if (selectedAccess === 'role') {
+            url = AccessManagementConfig.EndPoint.Asset.getRoleAsset;
+        }
+        else {
+            url = AccessManagementConfig.EndPoint.Asset.getPolicyGroupAsset;
+        }
+        return this.httpService.get(`${url}/${selectedId}`);
+    }
+    getPolicyGroupPage(policygroupid) {
+        return this.httpService.get(`/policygroup/${policygroupid}${AccessManagementConfig.EndPoint.Page.getPage}`);
+    }
+    getDynamicPage(selectedAccess, selectedId) {
+        let url;
+        if (selectedAccess === 'user') {
+            url = 'org/user';
+        }
+        else if (selectedAccess === 'role') {
+            url = 'access-control/role';
+        }
+        else {
+            url = 'platform/page-designer/policygroup';
+        }
+        return this.httpService.get(`/${url}/${selectedId}${AccessManagementConfig.EndPoint.Page.getPage}`);
+    }
+    updateDynamicPage(selectedAccess, selectedId, pageData) {
+        let url;
+        if (selectedAccess === 'user') {
+            url = 'org/user';
+        }
+        else if (selectedAccess === 'role') {
+            url = 'access-control/role';
+        }
+        else {
+            url = 'platform/page-designer/policygroup';
+        }
+        return this.httpService.put(`/${url}/${selectedId}${AccessManagementConfig.EndPoint.Page.getPage}`, pageData);
+    }
+    createAccess(fieldLevelAccess, accessBy, payload, userId, roleId, policyId) {
+        let url;
+        const createUrl = fieldLevelAccess
+            ? AccessManagementConfig.EndPoint.Asset.getAsset
+            : AccessManagementConfig.EndPoint.Page.getPage;
+        // check only policy group
+        if (accessBy === '3') {
+            url = `${AccessManagementConfig.EndPoint.PolicyGroup.getPolicyGroup}${policyId ? policyId : '0'}${createUrl}`;
+        }
+        // check persona with policy group
+        if (accessBy === '2') {
+            url = `${AccessManagementConfig.EndPoint.Role.getRole}${roleId ? roleId : '0'}${createUrl}`;
+        }
+        // check user, persona with policy group
+        if (accessBy === '1') {
+            url = `${AccessManagementConfig.EndPoint.User.getUser}${userId ? userId : '0'}${createUrl}`;
+        }
+        return this.httpService.post(url, payload);
+    }
+    getApplicationAccess() {
+        return this.httpService.get('/applicationaccess/');
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.2.12", ngImport: i0, type: PageAccessService, deps: [{ token: DataStoreService }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "16.2.12", ngImport: i0, type: PageAccessService, providedIn: 'root' });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.2.12", ngImport: i0, type: PageAccessService, decorators: [{
+            type: Injectable,
+            args: [{
+                    providedIn: 'root'
+                }]
+        }], ctorParameters: function () { return [{ type: DataStoreService }]; } });
 
 class AccessManagementCommonService {
     httpService;
@@ -1466,520 +2031,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.2.12", ngImpo
                 type: Input
             }] } });
 
-class PageAccessService {
-    httpService;
-    isfull = false;
-    ishide = false;
-    isread = false;
-    isreadwrite = false;
-    constructor(httpService) {
-        this.httpService = httpService;
-        // This is intentional
-    }
-    /**
-     * when user selected policy
-     * @param access Raw valur of RBac form
-     * @returns form array of DA
-     * @childFunction of saveRbac
-     */
-    accessByPolicy(access, id, policyGroupData, selectedFieldData, pageData) {
-        const fullArray = [];
-        for (const value of id) {
-            const selectedData = policyGroupData.filter(key => key.id === value);
-            const formObj = {
-                id: '',
-                description: '',
-                policygroupname: '',
-                pageConfigs: [],
-                assetConfigs: []
-            };
-            this.setPolicyObj(formObj, selectedData, value);
-            this.loadAccessForPage(access, selectedData, formObj, value, pageData);
-            if (access.fieldLevelData.length) {
-                this.loadAccessForFields(access, selectedData, formObj, value, selectedFieldData, pageData);
-            }
-            fullArray.push(formObj);
-        }
-        return fullArray;
-    }
-    /**
-     * when user selected Persona
-     * @param access Raw valur of RBac form
-     * @returns form array of DA
-     * @childFunction of saveRbac
-     */
-    accessByPersona(access, personaId, id, roleAddedData, selectedFieldData, pageData) {
-        const fullArray = [];
-        // const personaId = this.rbacForm.get('roleid').value;
-        // const personaId = this.rbacForm.get('roleid').value;
-        const formObj = {
-            id: '',
-            rolekey: '',
-            rolename: '',
-            description: '',
-            effectivedate: '',
-            pageConfigs: [],
-            assetConfigs: [],
-            rolePolicyGroupConfigs: []
-        };
-        for (const item of personaId) {
-            const selectedData = roleAddedData.filter(key => key.id === item);
-            this.setRoleObj(formObj, selectedData, item, id);
-            this.loadAccessForPage(access, selectedData, formObj, item, pageData);
-            if (access.fieldLevelData.length) {
-                this.loadAccessForFields(access, selectedData, formObj, item, selectedFieldData, pageData);
-            }
-            fullArray.push(formObj);
-        }
-        return fullArray;
-    }
-    /**
-     * when user selected User
-     * @param access Raw valur of RBac form
-     * @returns form array of DA
-     * @childFunction of saveRbac
-     */
-    accessByUser(access, userId, id, roleids, userList, selectedFieldData, pageData) {
-        const fullArray = [];
-        for (const item of userId) {
-            const selectedData = userList.filter(key => key.id === item);
-            const formObj = { ...selectedData[0] };
-            formObj.pageConfigs = [];
-            formObj.assetConfigs = [];
-            formObj.policyGroupConfigs = [];
-            formObj.roleConfigs = [];
-            console.log('======');
-            this.setUserObj(formObj, selectedData, item, id, roleids);
-            console.log('======1');
-            this.loadAccessForPage(access, selectedData, formObj, item, pageData);
-            console.log('======2');
-            if (access.fieldLevelData.length) {
-                this.loadAccessForFields(access, selectedData, formObj, item, selectedFieldData, pageData);
-            }
-            fullArray.push(formObj);
-        }
-        return fullArray;
-    }
-    /**
-     * Fetch access list for dashboard access
-     * @param access
-     * @param assetDashBoardConfigs
-     * @param formObj
-     * @param id
-     */
-    loadAccessForPage(access, selectedData, formObj, id, pageData) {
-        const existPageConfigs = selectedData[0]['pageConfigs'];
-        for (const item of access.pageLevelData) {
-            const selectedModule = pageData.filter(key => key.id === item['pageid']);
-            const pageAccess = access.pageLevelData.filter(key => key.pageid === item['pageid']);
-            this.pageAccessCheck(pageAccess);
-            const pageKey = {
-                id: null,
-                isactive: true,
-                isfull: this.isfull,
-                ishide: this.ishide,
-                isread: this.isread,
-                isreadwrite: this.isreadwrite,
-                pageid: item['pageid'],
-                policygroupid: id,
-                modulekey: selectedModule[0]['modulekey'],
-                submodulekey: selectedModule[0]['submodulekey']
-            };
-            // check exist page length
-            if (existPageConfigs.length) {
-                const existIds = existPageConfigs.map(p => p.pageid);
-                const chkPage = existIds.includes(item['pageid']);
-                if (chkPage) {
-                    const index = existIds.indexOf(item['pageid']);
-                    if (index > -1) {
-                        //if found
-                        pageKey.id = existPageConfigs[index]['id'];
-                        pageKey.isactive = false;
-                        formObj.pageConfigs.push(pageKey);
-                        existPageConfigs.splice(index, 1);
-                    }
-                }
-                const d = { ...pageKey };
-                d.id = null;
-                d.isactive = true;
-                formObj.pageConfigs.push(d);
-            }
-            else {
-                formObj.pageConfigs.push(pageKey);
-            }
-        }
-        // still existconfig length
-        if (existPageConfigs.length) {
-            existPageConfigs.map(t => {
-                t.isactive = false;
-                formObj.pageConfigs.push(t);
-                return t;
-            });
-        }
-    }
-    pageAccessCheck(pageAccess) {
-        if (pageAccess[0].pageAccess === '1') {
-            this.isfull = true;
-        }
-        else if (pageAccess[0].pageAccess === '4') {
-            this.ishide = true;
-        }
-        else if (pageAccess[0].pageAccess === '3') {
-            this.isread = true;
-        }
-        else if (pageAccess[0].pageAccess === '2') {
-            this.isreadwrite = true;
-        }
-    }
-    setPolicyObj(formObj, selectedData, id) {
-        formObj.id = id;
-        formObj.description = selectedData[0]['description'];
-        formObj.policygroupname = selectedData[0]['policygroupname'];
-    }
-    loadAccessForFields(access, selectedData, formObj, id, selectedFieldData, pageData) {
-        // console.log(selectedData)
-        const assetConfigs = selectedData[0]['assetConfigs'].filter(key => key.modulekey !== null);
-        // console.log('------------')
-        const selectedModule = pageData.filter(key => key.id === access.fpages[0]['id']);
-        // console.log(access.fieldLevelData)
-        selectedFieldData =
-            access.fieldLevelData !== null ? this.setSelectedFieldPage(access.fieldLevelData, selectedFieldData) : [];
-        // console.log(selectedData, assetConfigs)
-        for (const selectedField of selectedFieldData) {
-            if (selectedField.access === null) {
-                // continue;
-            }
-            console.log(selectedField);
-            let isfull = false;
-            let ishide = false;
-            let isread = false;
-            let isreadwrite = false;
-            if (selectedField.access === '2' || selectedField.access === '1') {
-                isfull = true;
-            }
-            else if (selectedField.access === '4') {
-                ishide = true;
-            }
-            else if (selectedField.access === '3') {
-                isread = true;
-            }
-            else if (selectedField.access === '2') {
-                isreadwrite = true;
-            }
-            const aConfigs = {
-                id: selectedField['id'] ? selectedField['id'] : null,
-                isactive: true,
-                isfull: isfull,
-                ishide: ishide,
-                isread: isread,
-                isreadwrite: isreadwrite,
-                assetid: selectedField['assetid'],
-                policygroupid: id,
-                pageid: selectedField['pageId'] ? selectedField['pageId'] : access.fpages[0]['id'],
-                modulekey: selectedModule[0]['modulekey'],
-                submodulekey: selectedModule[0]['submodulekey']
-            };
-            // check exist page length
-            this.checkExistAsset(assetConfigs, selectedField, aConfigs, formObj);
-        }
-    }
-    checkExistAsset(assetConfigs, selectedField, aConfigs, formObj) {
-        if (assetConfigs.length) {
-            const existIds = assetConfigs.map(p => p.assetid);
-            const chkPage = existIds.includes(selectedField['assetid']);
-            if (chkPage) {
-                const index = existIds.indexOf(selectedField['assetid']);
-                if (index > -1) {
-                    //if found
-                    aConfigs.id = assetConfigs[index]['id'];
-                    aConfigs.isactive = false;
-                    formObj.assetConfigs.push(aConfigs);
-                    assetConfigs.splice(index, 1);
-                }
-            }
-            const d = { ...aConfigs };
-            d.isactive = true;
-            d.id = null;
-            formObj.assetConfigs.push(d);
-        }
-        else {
-            formObj.assetConfigs.push(aConfigs);
-        }
-    }
-    setRoleObj(formObj, selectedData, roleid, policyid) {
-        formObj.id = roleid;
-        formObj.rolekey = selectedData[0]['rolekey'];
-        formObj.rolename = selectedData[0]['rolename'];
-        formObj.effectivedate = selectedData[0]['effectivedate'];
-        formObj.description = selectedData[0]['description'];
-        // loop the policy group
-        const id = policyid;
-        const existRolePolicyConfig = selectedData[0]['rolePolicyGroupConfigs'];
-        for (const item of id) {
-            const rpolicyConfig = {
-                id: null,
-                isactive: true,
-                policygroupid: item,
-                roleid: roleid // role id
-            };
-            // check exist page length
-            if (existRolePolicyConfig.length) {
-                const existIds = existRolePolicyConfig.map(p => p.policygroupid);
-                const chkPage = existIds.includes(item);
-                if (chkPage) {
-                    const index = existIds.indexOf(item);
-                    if (index > -1) {
-                        //if found
-                        rpolicyConfig.id = existRolePolicyConfig[index]['id'];
-                        existRolePolicyConfig.splice(index, 1);
-                    }
-                }
-            }
-            formObj.rolePolicyGroupConfigs.push(rpolicyConfig);
-        }
-        // still existconfig length
-        if (existRolePolicyConfig.length) {
-            existRolePolicyConfig.map(t => {
-                t.isactive = false;
-                formObj.rolePolicyGroupConfigs.push(t);
-                return t;
-            });
-        }
-    }
-    setUserObj(formObj, selectedData, userId, id, roleids) {
-        // loop the policy group
-        const existRolePolicyConfig = selectedData[0]['policyGroupConfigs'];
-        this.getCheckPolicyConfig(id, userId, existRolePolicyConfig, formObj);
-        // still existconfig length
-        if (existRolePolicyConfig.length) {
-            existRolePolicyConfig.map(t => {
-                t.isactive = false;
-                formObj.policyGroupConfigs.push(t);
-                return t;
-            });
-        }
-        // loop the role group
-        // const roleids = this.rbacForm.get('roleid').value;
-        const existRoleId = selectedData[0]['roleConfigs'];
-        for (const role of existRoleId) {
-            const chkRoleData = roleids.includes(role['roleid']);
-            const roleGrp = {
-                id: role['id'],
-                isactive: false,
-                isdefaultrole: role['isdefaultrole'],
-                userid: userId,
-                roleid: role['roleid'],
-                effectivedate: role['effectivedate']
-            };
-            if (chkRoleData) {
-                const index1 = roleids.indexOf(role['roleid']);
-                if (index1 > -1) {
-                    //if found
-                    roleids.splice(index1, 1);
-                }
-                roleGrp.isactive = true;
-            }
-            formObj.roleConfigs.push(roleGrp);
-        }
-        // check new roles group ids
-        if (roleids.length) {
-            for (const roleId of roleids) {
-                const roleGrp = {
-                    id: null,
-                    isactive: true,
-                    isdefaultrole: false,
-                    userid: userId,
-                    roleid: roleId,
-                    effectivedate: new Date()
-                };
-                formObj.roleConfigs.push(roleGrp);
-            }
-        }
-    }
-    getCheckPolicyConfig(id, userId, existRolePolicyConfig, formObj) {
-        for (const item of id) {
-            const rpolicyConfig = {
-                id: null,
-                isactive: true,
-                policygroupid: item,
-                userid: userId // user id
-            };
-            // check exist page length
-            if (existRolePolicyConfig.length) {
-                const existIds = existRolePolicyConfig.map(p => p.policygroupid);
-                const chkPage = existIds.includes(item);
-                if (chkPage) {
-                    const index = existIds.indexOf(item);
-                    if (index > -1) {
-                        //if found
-                        rpolicyConfig.id = existRolePolicyConfig[index]['id'];
-                        existRolePolicyConfig.splice(index, 1);
-                    }
-                }
-            }
-            formObj.policyGroupConfigs.push(rpolicyConfig);
-        }
-    }
-    setSelectedFieldPage(updateArray, selectedFieldData) {
-        // console.log('=========>', updateArray, selectedFieldData)
-        if (updateArray?.length) {
-            if (selectedFieldData?.length >= updateArray.length) {
-                selectedFieldData = this.updateDuplicatesinArray([...selectedFieldData], [...updateArray]);
-                return selectedFieldData;
-            }
-            else {
-                selectedFieldData = [...updateArray];
-                return selectedFieldData;
-            }
-        }
-    }
-    updateDuplicatesinArray(origArr, updatingArr) {
-        const updatingArrids = new Set(updatingArr.map(ele => ele.assetid));
-        return [...updatingArr, ...origArr.filter(ele => !updatingArrids.has(ele.assetid))];
-    }
-    getMostFrequentEle(arr) {
-        const hashMap = arr.reduce((acc, val) => {
-            acc[String(val)] = (acc[val] || 0) + 1;
-            return acc;
-        }, {});
-        return Object.keys(hashMap).reduce((a, b) => (hashMap[a] > hashMap[b] ? a : b));
-    }
-    getAccessArrayOnClick(pagesFromField, pageData, selectedFieldData, savedPageAccessPatching, existingValue) {
-        const pageAccessValue = null;
-        const accessArray = [];
-        for (let i = 0; i < pagesFromField?.length; i++) {
-            const pageName = pageData.filter(key => key.id === pagesFromField[i]);
-            const fieldLevelExist = selectedFieldData.filter(ele => ele.pageId == pagesFromField[i]);
-            this.checkFieldLevelExist(fieldLevelExist, savedPageAccessPatching, pageAccessValue, pagesFromField, existingValue, i);
-            accessArray.push(new FormGroup({
-                pageName: new FormControl(pageName[0]['pagename']),
-                pageid: new FormControl(pagesFromField[i]),
-                pageAccess: new FormControl(pageAccessValue ? pageAccessValue : '2'),
-                validity: new FormControl((existingValue[i]?.validity && String(existingValue[i].validity)) || '0'),
-                condition: new FormControl((existingValue[i]?.condition && existingValue[i].condition) || 'always'),
-                fallbackTo: new FormControl((existingValue[i]?.condition && existingValue[i].fallbackTo) || 'n')
-            }));
-        }
-        return accessArray;
-    }
-    checkFieldLevelExist(fieldLevelExist, savedPageAccessPatching, _pageAccessValue, pagesFromField, existingValue, i) {
-        if (fieldLevelExist?.length && savedPageAccessPatching) {
-            _pageAccessValue = this.getMostFrequentEle(fieldLevelExist?.filter(ele => (ele.pageId = pagesFromField[i]))?.map(e => (e.access ? Number(e.access) : 0)));
-        }
-        else {
-            _pageAccessValue = existingValue?.find(ele => ele.pageid === pagesFromField[i])?.pageAccess;
-        }
-    }
-    getAccess(access) {
-        let accessField;
-        accessField = '2';
-        if (access?.isreadwrite) {
-            accessField = '2';
-        }
-        else if (access?.ishide) {
-            accessField = '4';
-        }
-        else if (access?.isread) {
-            accessField = '3';
-        }
-        else if (access?.isfull) {
-            accessField = '5';
-        }
-        return accessField;
-    }
-    getOrganizationPage(orgId) {
-        return this.httpService.get(AccessManagementConfig.EndPoint.Organization.getOrganization.replace('{orgId}', orgId));
-    }
-    getAssetByPageId(pId) {
-        return this.httpService.get(`${AccessManagementConfig.EndPoint.Asset.getPageAsset}/${pId}`);
-    }
-    createAsset(selectedAccess, selectedId, asset) {
-        let url;
-        if (selectedAccess === 'user') {
-            url = `org/user/${selectedId}`;
-        }
-        else if (selectedAccess === 'role') {
-            url = `access-control/role/${selectedId}`;
-        }
-        else {
-            url = `platform/page-designer/policygroup/${selectedId}`;
-        }
-        return this.httpService.post(`/${url}/${AccessManagementConfig.EndPoint.Asset.getAsset}`, asset);
-    }
-    getAssetById(selectedAccess, selectedId) {
-        let url;
-        if (selectedAccess === 'user') {
-            url = AccessManagementConfig.EndPoint.Asset.getUserAsset;
-        }
-        else if (selectedAccess === 'role') {
-            url = AccessManagementConfig.EndPoint.Asset.getRoleAsset;
-        }
-        else {
-            url = AccessManagementConfig.EndPoint.Asset.getPolicyGroupAsset;
-        }
-        return this.httpService.get(`${url}/${selectedId}`);
-    }
-    getPolicyGroupPage(policygroupid) {
-        return this.httpService.get(`/policygroup/${policygroupid}${AccessManagementConfig.EndPoint.Page.getPage}`);
-    }
-    getDynamicPage(selectedAccess, selectedId) {
-        let url;
-        if (selectedAccess === 'user') {
-            url = 'org/user';
-        }
-        else if (selectedAccess === 'role') {
-            url = 'access-control/role';
-        }
-        else {
-            url = 'platform/page-designer/policygroup';
-        }
-        return this.httpService.get(`/${url}/${selectedId}${AccessManagementConfig.EndPoint.Page.getPage}`);
-    }
-    updateDynamicPage(selectedAccess, selectedId, pageData) {
-        let url;
-        if (selectedAccess === 'user') {
-            url = 'org/user';
-        }
-        else if (selectedAccess === 'role') {
-            url = 'access-control/role';
-        }
-        else {
-            url = 'platform/page-designer/policygroup';
-        }
-        return this.httpService.put(`/${url}/${selectedId}${AccessManagementConfig.EndPoint.Page.getPage}`, pageData);
-    }
-    createAccess(fieldLevelAccess, accessBy, payload, userId, roleId, policyId) {
-        let url;
-        const createUrl = fieldLevelAccess
-            ? AccessManagementConfig.EndPoint.Asset.getAsset
-            : AccessManagementConfig.EndPoint.Page.getPage;
-        // check only policy group
-        if (accessBy === '3') {
-            url = `${AccessManagementConfig.EndPoint.PolicyGroup.getPolicyGroup}${policyId ? policyId : '0'}${createUrl}`;
-        }
-        // check persona with policy group
-        if (accessBy === '2') {
-            url = `${AccessManagementConfig.EndPoint.Role.getRole}${roleId ? roleId : '0'}${createUrl}`;
-        }
-        // check user, persona with policy group
-        if (accessBy === '1') {
-            url = `${AccessManagementConfig.EndPoint.User.getUser}${userId ? userId : '0'}${createUrl}`;
-        }
-        return this.httpService.post(url, payload);
-    }
-    getApplicationAccess() {
-        return this.httpService.get('/applicationaccess/');
-    }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.2.12", ngImport: i0, type: PageAccessService, deps: [{ token: HttpService }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "16.2.12", ngImport: i0, type: PageAccessService, providedIn: 'root' });
-}
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.2.12", ngImport: i0, type: PageAccessService, decorators: [{
-            type: Injectable,
-            args: [{
-                    providedIn: 'root'
-                }]
-        }], ctorParameters: function () { return [{ type: HttpService }]; } });
-
 const DISPLAY_IN_SECONDS = 8;
 class AlertComponent {
     alertService;
@@ -2044,6 +2095,7 @@ class PageaccessComponent {
     subModuleList = [];
     pageData = [];
     pagesList = [];
+    loadedPagesList = [];
     selectedPageData = [];
     fData = [];
     moduleDropdownSettings = {};
@@ -2065,8 +2117,10 @@ class PageaccessComponent {
     selectedAccess;
     updatePage;
     selectedId;
+    selectedName;
     assetList;
     policyGroupPages = [];
+    policyGroupRolePages = [];
     selectedRole = '';
     conditions = [];
     permissions = [];
@@ -2081,7 +2135,25 @@ class PageaccessComponent {
     pId;
     fullArray;
     mergedAsset;
+    httpService;
+    permissionUpdatedPages = [];
+    fieldPageLevel;
     fieldLevelCheckCount;
+    pagelevelaccesssavedisable = true;
+    pagelevelaccesscount;
+    selectedPages = [];
+    previousSelection = [];
+    isPageDeselectSave = false;
+    deselectedItemIds = [];
+    isRemoveAllFields = false;
+    deselectAssetIds = [];
+    enablesave = true;
+    pagelevelaccesscountdisable = true;
+    showFieldGrid = true;
+    getPageList = false;
+    disabledPages = [];
+    oldPageAccessValues = [];
+    grantedPages = [];
     constructor(injector, formBuilder, cdRef, _storeservice, router, alert) {
         this.formBuilder = formBuilder;
         this.cdRef = cdRef;
@@ -2116,35 +2188,8 @@ class PageaccessComponent {
                 key: 'n'
             }
         ];
-        this.pageDropdownSettings = {
-            singleSelection: false,
-            text: 'Select Pages',
-            selectAllText: 'Select All',
-            unSelectAllText: 'UnSelect All',
-            enableSearchFilter: true,
-            classes: 'myclass custom-class',
-            labelKey: 'pagename',
-            searchBy: ['pagename']
-        };
-        this.pageAccessDropdownSettings = {
-            singleSelection: false,
-            text: 'Select Pages',
-            selectAllText: 'Select All',
-            unSelectAllText: 'UnSelect All',
-            enableSearchFilter: true,
-            labelKey: 'pagename',
-            searchBy: ['pagename']
-        };
-        this.fieldAccessDropdownSettings = {
-            singleSelection: true,
-            text: 'Select Page',
-            selectAllText: 'Select All',
-            unSelectAllText: 'UnSelect All',
-            enableSearchFilter: true,
-            labelKey: 'pagename',
-            searchBy: ['pagename']
-        };
         this.fieldLevelCheckCount = [];
+        this.pagelevelaccesscount = [];
         // this.orgSubs = this.authService.orgInfo.subscribe(org => {
         //   this.orgId = org;
         //   if (this.orgId) {
@@ -2159,6 +2204,7 @@ class PageaccessComponent {
                 console.log(this.RBACORG, 'RBACORG Event Scheduler');
                 this.environment = this.RBACORG['environment'];
                 this.orgId = parseInt(this.RBACORG['orgID']);
+                this.httpService = res['HTTPSERVICE'];
                 if (this.environment) {
                     this.getOrganizationPage();
                     this.loadRbacForm();
@@ -2189,7 +2235,8 @@ class PageaccessComponent {
         });
     }
     accessBy(evt) {
-        this.rbacForm.get('accessBy').setValue(evt);
+        this.pagesList = [];
+        this.rbacForm.patchValue({ accessBy: evt });
         this.resetForm(evt);
     }
     userDropdown(evt) {
@@ -2202,12 +2249,16 @@ class PageaccessComponent {
         this.policyGroupData = evt;
     }
     dropDownSelectedValues(evt) {
+        this.disabledPages = [];
+        this.getPageList = true;
+        this.enablesave = false;
         this.selectedRole = '';
         this.updatePage = false;
         this.selectedAccess = evt.from;
-        this.rbacForm.get('userid').setValue(evt.userid);
-        this.rbacForm.get('roleid').setValue(evt.roleid);
-        this.rbacForm.get('policyid').setValue(evt.policyid);
+        this.selectedName = evt.name;
+        this.rbacForm.patchValue({ userid: evt.userid });
+        this.rbacForm.patchValue({ roleid: evt.roleid });
+        this.rbacForm.patchValue({ policyid: evt.policyid });
         if (this.pagesList.length === 0) {
             this.getOrganizationPage();
         }
@@ -2222,11 +2273,12 @@ class PageaccessComponent {
                 const data = res['data'];
                 if (data && data?.length) {
                     this.pageData = data?.filter(a => a.activeVersion);
-                    this.pagesList = this.pageData.map(x => {
+                    this.loadedPagesList = this.pageData.map(x => {
                         return {
-                            id: x.pageid,
-                            pagename: x.pagename || x.fisrtversion_pagename,
-                            activeVersion: x.activeVersion
+                            id: x.activeVersion.pageid,
+                            pagename: x.activeVersion.pagename,
+                            activeVersion: x.activeVersion,
+                            disabled: false
                         };
                     });
                 }
@@ -2242,48 +2294,160 @@ class PageaccessComponent {
         }
     }
     getSelectedPages(_selectedPages, _pageConfig, _assetconfig) {
-        this.updatePage = false;
         this.policyGroupPages = [];
+        this.updatePage = false;
         if (this.selectedAccess === 'user') {
             this.selectedId = this.rbacForm.getRawValue().userid;
         }
         else if (this.selectedAccess === 'role') {
-            const role = this.rbacForm.getRawValue().roleid;
-            this.selectedId = role;
-            if (role.rolePolicygroups && role.rolePolicygroups.length) {
-                role.rolePolicygroups.forEach(policyGroup => {
-                    this.pageAccessService.getPolicyGroupPage(policyGroup.policygroupid).subscribe(({ data }) => {
-                        this.policyGroupCondition(data, policyGroup);
-                    });
-                });
-            }
+            this.selectedId = this.rbacForm.getRawValue().roleid;
         }
         else {
             this.selectedId = this.rbacForm.getRawValue().policyid;
             this.selectedAccess = 'policygroup';
         }
-        this.getConfiguredAssetData(this.selectedAccess, this.selectedId);
-        this.pageAccessService.getDynamicPage(this.selectedAccess, this.selectedId).subscribe(res => {
-            this.loadPages([], null, [], [], this.assetList);
-            if (res && res['data'].length) {
-                this.updatePage = true;
-                const pageData = res['data'].map(a => a.page);
-                pageData.forEach(x => (x.pagename = x?.activeVersion?.pagename));
-                const uniquePageData = [...new Map(pageData.map(item => [item['id'], item])).values()];
-                const pageIDs = uniquePageData.map(a => a['id']);
-                const pageConfigData = res['data'].map(a => {
-                    return {
-                        id: a.id,
-                        isfull: a.full,
-                        ishide: a.hide,
-                        isread: a.read,
-                        isreadwrite: a.readwrite,
-                        conditions: a.conditions
-                    };
+        this.getGrantedPages();
+    }
+    getGrantedPages() {
+        if (this.getPageList) {
+            this.pageAccessService.getDynamicPage(this.selectedAccess, this.selectedId).subscribe(res => {
+                this.grantedPages = [];
+                this.getPageList = false;
+                if (this.selectedAccess === 'role') {
+                    this.grantedPages = res['data'].rolePages;
+                    this.policyGroupPages = res['data'].policyGroupPages;
+                    const selectedPages = this.checkExistingGrantedPolicyPages(this.grantedPages, this.policyGroupPages);
+                    this.pagesList = [...this.loadedPagesList.map(page => {
+                            return {
+                                ...page,
+                                disabled: this.disabledPages.some(id => id === page.id),
+                            };
+                        })];
+                    this.rbacForm.patchValue({ pageList: selectedPages });
+                }
+                else if (this.selectedAccess === 'policygroup') {
+                    this.grantedPages = res['data'].policyGroupPages;
+                    this.policyGroupRolePages = res['data'].policyGroupRolePages;
+                    const selectedPages = this.checkExistingGrantedRolePages(this.grantedPages, this.policyGroupRolePages);
+                    this.pagesList = this.loadedPagesList.map(page => ({
+                        ...page,
+                        disabled: this.disabledPages.some(id => id === page.id),
+                    }));
+                    this.rbacForm.patchValue({ pageList: selectedPages });
+                }
+                else {
+                    this.grantedPages = res['data'];
+                    this.pagesList = this.loadedPagesList;
+                }
+                // this.loadPages([], null, [], [], this.assetList);
+                if (this.grantedPages.length) {
+                    this.updatePage = true;
+                    const pageData = this.grantedPages.filter(page => page.page).map(a => a.page);
+                    pageData.forEach(x => (x.pagename = x?.activeVersion?.pagename || ''));
+                    const uniquePageData = [...new Map(pageData.map(item => [item['id'], item])).values()];
+                    const pageIDs = uniquePageData.map(a => a['id']);
+                    const pageConfigData = this.grantedPages.map(a => {
+                        return {
+                            id: a.id,
+                            isfull: a.full,
+                            ishide: a.hide,
+                            isread: a.read,
+                            isreadwrite: a.readwrite,
+                            conditions: a.conditions,
+                            page: a.page
+                        };
+                    });
+                    this.loadPages(uniquePageData, null, pageIDs, pageConfigData, this.assetList);
+                    this.onControlChanges();
+                    this.oldPageAccessValues = this.rbacForm.get('pageLevelData').value.map(x => ({ ...x }));
+                }
+            });
+        }
+        else {
+            this.updatePage = true;
+            const pageLevelData = this.rbacForm.get('pageLevelData');
+            if (pageLevelData && pageLevelData.controls.length > 0) {
+                pageLevelData.controls.forEach((control, index) => {
+                    const currentId = control.value.pageid;
+                    const originalEntry = this.oldPageAccessValues.find(o => o.pageid === currentId);
+                    if (originalEntry) {
+                        control.patchValue({
+                            pageAccess: originalEntry.pageAccess,
+                            fallbackTo: originalEntry.fallbackTo,
+                            condition: originalEntry.condition,
+                            validity: originalEntry.validity
+                        });
+                    }
+                    else {
+                        control.patchValue({
+                            pageAccess: '2',
+                            fallbackTo: 'n',
+                            condition: 'always',
+                            validity: '1'
+                        });
+                    }
                 });
-                this.loadPages(uniquePageData, null, pageIDs, pageConfigData, this.assetList);
             }
+            else {
+                this.pageLevelAccess = false;
+            }
+        }
+    }
+    removeValue(e, item) {
+        e.stopPropagation();
+        const filteredPages = this.rbacForm.value.pageList.filter((s) => s.id !== Number(item.id));
+        this.rbacForm.patchValue({
+            pageList: filteredPages
         });
+        this.populatePage('click', true, null);
+        this.selectedPageData = this.rbacForm.value.pageList.filter(page => !page.disabled);
+    }
+    onControlChanges() {
+        const pageLevelAccessFormControl = this.rbacForm.get('pageLevelData');
+        pageLevelAccessFormControl.controls.forEach(control => {
+            control.valueChanges.pipe(map((value) => {
+                console.log('Value Changed');
+                if (this.permissionUpdatedPages.some(pageId => pageId === value.pageid)) {
+                    this.permissionUpdatedPages = this.permissionUpdatedPages.filter(pageId => pageId !== value.pageid);
+                    this.permissionUpdatedPages.push(value.pageid);
+                }
+                else {
+                    this.permissionUpdatedPages.push(value.pageid);
+                }
+            })).subscribe();
+        });
+    }
+    checkExistingGrantedPolicyPages(rolePages, policyGroupPages) {
+        let selectedPages;
+        const rolePageIds = rolePages.map(page => page.page.id);
+        selectedPages = this.loadedPagesList.filter(key => rolePageIds.includes(key.id));
+        for (const page of this.loadedPagesList) {
+            for (const policyGroups of policyGroupPages) {
+                for (const pages of policyGroups.policygrouppage) {
+                    if (pages.page[0].id === page.id) {
+                        this.disabledPages.push(pages.page[0].id);
+                        selectedPages.push({ ...page, disabled: true });
+                    }
+                }
+            }
+        }
+        return selectedPages;
+    }
+    checkExistingGrantedRolePages(policyPages, policyGroupRolePages) {
+        let selectedPages;
+        const policyPageIds = policyPages.map(page => page.page.id);
+        selectedPages = this.loadedPagesList.filter(key => policyPageIds.includes(key.id));
+        for (const page of this.loadedPagesList) {
+            for (const policyGroups of policyGroupRolePages) {
+                for (const pages of policyGroups.rolepage) {
+                    if (pages.page[0].id === page.id) {
+                        this.disabledPages.push(pages.page[0].id);
+                        selectedPages.push({ ...page, disabled: true });
+                    }
+                }
+            }
+        }
+        return selectedPages;
     }
     policyGroupCondition(data, policyGroup) {
         const policyGroupPages = data?.data && data?.data.length ? data?.data : [];
@@ -2313,37 +2477,57 @@ class PageaccessComponent {
     loadPages(tempPageData, action, pageids, pageConfig, fieldConfig) {
         this.pageData = tempPageData || [];
         this.pageData.forEach(a => (a.pagename = tempPageData.length && tempPageData.filter(b => b.id === a.id)[0]?.activeVersion?.pagename));
-        const pl = this.rbacForm.get('pageList').value;
-        if (pageids !== null) {
-            const newPages = pl && pl?.length ? pl.map(key => key.id) : [];
-            const pId = newPages?.length ? [...new Set(newPages.concat(pageids))] : pageids;
-            const pList = this.pageData.filter(key => pId.includes(key.id));
-            const pagesList = pList.map(x => {
-                return {
-                    id: x.id,
-                    pagename: x.pagename,
-                    activeVersion: x.activeVersion
-                };
-            });
-            this.rbacForm.get('pageList').setValue(pagesList);
-        }
-        this.populatePage(action, pageConfig, fieldConfig, pageids);
+        this.populatePage(action, true, null, pageConfig, fieldConfig, pageids);
     }
-    populatePage(action = null, pageConfig = null, fieldConfig = null, pageids = null) {
+    populatePage(action, selected, event, pageConfig, fieldConfig, pageids) {
+        // if (event) {
+        //   if (Array.isArray(event) && selected) {
+        //     this.permissionUpdatedPages = event.map(page => page.id)
+        //   }
+        //   else if (!Array.isArray(event) && selected) {
+        //     this.permissionUpdatedPages.push(event.id);
+        //   }
+        //   else {
+        //     this.permissionUpdatedPages = this.permissionUpdatedPages.filter(id => id !== event.id);
+        //   }
+        // }
+        if (event && event.value.length) {
+            this.rbacForm.patchValue({ pageList: event.value });
+        }
         const pageIds = this.rbacForm.get('pageList').value;
         const id = pageIds.map(key => key.id);
         let provideAccess = this.rbacForm.get('provideAccess').value;
+        // Logic to handle the deselected item of Pages field
+        if (!selected) {
+            this.isPageDeselectSave = true;
+            const newlyDeselected = this.previousSelection.filter(item => !id.includes(item));
+            this.deselectedItemIds = [...new Set([...this.deselectedItemIds, ...newlyDeselected])];
+            const fpagesValue = this.rbacForm.get('fpages').value;
+            if (fpagesValue && newlyDeselected.includes(fpagesValue)) {
+                this.rbacForm.controls['fpages'].setValue(null);
+                this.showFieldGrid = false;
+            }
+        }
+        else {
+            this.isPageDeselectSave = false;
+        }
+        this.previousSelection = [...id];
         if (id?.length) {
+            this.isRemoveAllFields = false;
             if (!provideAccess) {
-                this.rbacForm.get('provideAccess').setValue('1');
+                this.rbacForm.patchValue({ provideAccess: '1' });
                 this.pageLevelAccess = this.multiPageAccess = true;
                 this.fieldLevelAccess = false;
                 provideAccess = '1';
             }
             // Pageids from api
-            this.selectedPageData = pageIds;
+            this.selectedPageData = pageIds.filter(page => !page.disabled);
+            this.pagelevelaccesscount = pageIds;
+            if ((this.pagelevelaccesscount || this.pagelevelaccesscount.length > 0) && !this.enablesave) {
+                this.pagelevelaccesscountdisable = false;
+            }
             if (provideAccess === '1') {
-                this.rbacForm.get('ppages').setValue(pageIds);
+                this.rbacForm.patchValue({ ppages: pageIds });
                 if (fieldConfig?.length) {
                     this.selectedFieldData = this.pageAccessService.setSelectedFieldPage(fieldConfig?.map(ele => {
                         return {
@@ -2354,29 +2538,32 @@ class PageaccessComponent {
                         };
                     }), this.selectedFieldData);
                 }
-                this.getPageLevelList(action, pageConfig);
             }
-            else if (provideAccess === '2') {
+            else if (provideAccess === '2' && pageids && pageids.length) {
                 if (fieldConfig !== null) {
                     const pList = this.pageData.filter(key => key.id === pageids[0]);
-                    this.rbacForm.get('fpages').setValue(pList);
+                    this.rbacForm.patchValue({ fpages: pList });
                     this.getFieldLevelList(action, fieldConfig);
                 }
                 else {
                     const pId = this.selectedPageData.filter(ele => ele.id === pageIds[0]?.id);
-                    this.rbacForm.get('fpages').setValue(pId);
+                    this.rbacForm.patchValue({ fpages: pId });
                     this.getFieldLevelList(action, fieldConfig);
                 }
             }
+            this.getPageLevelList(action, pageConfig);
         }
         else {
             this.removeAllPopulatePage();
+            this.isRemoveAllFields = true;
         }
     }
     removeAllPopulatePage() {
         this.selectedPageData = [];
         this.pageLevelAccess = false;
         this.fieldLevelAccess = false;
+        this.pagelevelaccesscount = [];
+        this.pagelevelaccesssavedisable = true;
         const f = this.rbacForm.controls['fieldLevelData'];
         f.controls = [];
         const p = this.rbacForm.controls['pageLevelData'];
@@ -2394,39 +2581,38 @@ class PageaccessComponent {
         }
         f.controls = [];
         const pageIds = this.rbacForm.get('pageList').value;
-        if (id === '1') {
-            this.pageLevelAccess = true;
-            this.multiPageAccess = true;
-            this.fieldLevelAccess = false;
-            if (pageIds?.length) {
-                setTimeout(() => {
+        if (pageIds != null) {
+            if (id === '1') {
+                this.pageLevelAccess = true;
+                this.multiPageAccess = true;
+                this.fieldLevelAccess = false;
+                this.pagelevelaccesscount = pageIds;
+                if (pageIds?.length) {
+                    this.pagelevelaccesssavedisable = false;
                     if (!this.rbacForm.get('ppages').value) {
                         this.rbacForm.get('ppages').patchValue(pageIds);
                     }
-                    this.getPageLevelList('click');
-                    if (this.isRunCond) {
-                        this.isRunCond = false;
-                    }
-                }, 200);
+                }
+                this.getSelectedPages();
             }
-        }
-        else {
-            this.pageLevelAccess = false;
-            this.multiPageAccess = false;
-            this.fieldLevelAccess = true;
-            const fpages = this.rbacForm.get('fpages').value;
-            this.fPagesCheckLength(fpages, pageIds);
-            this.fieldLevelCheckCount = [];
-            this.selectedPageLevelData = this.rbacForm.get('pageLevelData').value;
-            if (this.fieldLevelCheckCount && this.fieldLevelCheckCount?.length > 0) {
-                this.getFieldLevelList('click');
+            else {
+                this.getConfiguredAssetData(this.selectedAccess, this.selectedId);
+                this.pageLevelAccess = false;
+                this.multiPageAccess = false;
+                this.fieldLevelAccess = true;
+                this.fieldLevelCheckCount = [];
+                const fpages = this.rbacForm.get('fpages').value;
+                this.fPagesCheckLength(fpages, pageIds);
+                if (this.fieldLevelCheckCount && this.fieldLevelCheckCount?.length > 0) {
+                    this.getFieldLevelList('click');
+                }
             }
         }
     }
     fPagesCheckLength(fpages, pageIds) {
         if (!fpages || !fpages?.length) {
             if (pageIds?.length) {
-                const p = [pageIds[0]];
+                const p = [pageIds];
                 this.rbacForm.get('fpages').setValue(p);
             }
         }
@@ -2434,19 +2620,22 @@ class PageaccessComponent {
     getPageLevelList(action = null, pageConfig = null) {
         const accessArray = this.rbacForm.get('pageLevelData');
         const formValue = this.rbacForm.getRawValue();
-        const pAccessId = this.rbacForm.get('ppages').value;
-        const pId = pAccessId.map(key => key.pageid || key.id);
+        const pAccessId = this.rbacForm.get('pageList').value.filter(page => !page.disabled);
+        const pId = pAccessId?.map(key => key.pageid || key.id);
         // first check exist page config
         if (pageConfig !== null) {
             // check selected value length
             let existSelectedPageId = [];
             if (formValue.pageLevelData.length) {
-                existSelectedPageId = formValue.pageLevelData.map(id => id.id);
+                existSelectedPageId = formValue.pageLevelData.map(page => page.pageid);
             }
+            const filterdPageConfigArray = pId
+                .map(id => pageConfig.find(key => key?.page?.id === id))
+                .filter(config => config !== undefined);
             for (let i = 0; i < pId.length; i++) {
                 let setAccess = '';
-                setAccess = this.pageAccessService.getAccess(pageConfig[i]);
-                const pageName = this.pageData.filter(key => key.id === pId[i]);
+                setAccess = this.pageAccessService.getPageAccess(filterdPageConfigArray[i]);
+                const pageName = this.loadedPagesList.filter(key => key.id === pId[i]);
                 if (existSelectedPageId.length) {
                     this.getVersionAccessArray(existSelectedPageId, pId, i, accessArray, pageName, setAccess, pageConfig);
                 }
@@ -2464,9 +2653,9 @@ class PageaccessComponent {
                 pageName: new FormControl(pageName[0]['activeVersion']['pagename']),
                 pageid: new FormControl(pId[i]),
                 pageAccess: new FormControl(setAccess),
-                validity: new FormControl((pageConfig[i].conditions && pageConfig[i].conditions.value) || '1'),
-                condition: new FormControl(pageConfig[i].conditions ? 'days' : 'always'),
-                fallbackTo: new FormControl((pageConfig[i].conditions && pageConfig[i].conditions.fallbackTo) || 'n')
+                validity: new FormControl((pageConfig[i]?.conditions && pageConfig[i].conditions.value) || '1'),
+                condition: new FormControl(pageConfig[i]?.conditions ? 'days' : 'always'),
+                fallbackTo: new FormControl((pageConfig[i]?.conditions && pageConfig[i].conditions.fallbackTo) || 'n')
             }));
         }
     }
@@ -2492,6 +2681,10 @@ class PageaccessComponent {
                 accessArray.controls = this.pageAccessService.getAccessArrayOnClick(pagesFromField, this.pagesList, this.selectedFieldData, this.savedPageAccessPatching, existingValue);
                 this.savedPageAccessPatching = false;
             }
+            else {
+                this.savedPageAccessPatching = false;
+                accessArray.controls = [];
+            }
         }
     }
     checkAccessType(data) {
@@ -2513,8 +2706,18 @@ class PageaccessComponent {
         const formValue = this.rbacForm.getRawValue();
         const pAccessId = this.rbacForm.get('fpages').value;
         const pageIds = this.rbacForm.get('pageList').value;
-        const fieldLevel = pageIds.filter(x => x.id === pAccessId);
+        // Fieldpagelevel is a variable is the length of the form page and all page other than grid page
         this.fieldLevelCheckCount = pageIds.filter(x => (x.id === (pAccessId && pAccessId[0]?.id)) || x.id === pAccessId);
+        const fieldLevel = pageIds.filter(x => (x.id === (pAccessId && pAccessId[0]?.id)) || x.id === pAccessId);
+        this.fieldPageLevel = fieldLevel.filter(a => a.activeVersion !== null && a.activeVersion.gridconfig == null)
+            .map(a => {
+            return {
+                id: a.activeVersion.pageid,
+                pagename: a.activeVersion.pagename,
+                activeVersion: a.activeVersion
+            };
+        });
+        console.log(this.fieldPageLevel);
         this.checkFieldLevelCondition(fieldLevel, pAccessId);
         this.fieldConfigCheck(fieldConfig, accessArray);
         if (action === 'click') {
@@ -2524,6 +2727,7 @@ class PageaccessComponent {
                 this.getAccessArrayCheck(data, formValue, accessArray);
             });
         }
+        this.showFieldGrid = true;
     }
     checkFieldLevelCondition(fieldLevel, pAccessId) {
         if (fieldLevel.length > 0) {
@@ -2581,7 +2785,7 @@ class PageaccessComponent {
     }
     getMergedAsset(accessArray) {
         for (let i = 0; i < this.mergedAsset.length; i++) {
-            const access = this.pageAccessService.getAccess(this.mergedAsset[i]);
+            const access = this.pageAccessService.getAccess(this.mergedAsset[i], this.fieldPageLevel);
             accessArray.push(new FormGroup({
                 fieldName: new FormControl(access[i]['displayname']),
                 access: new FormControl('2'),
@@ -2630,7 +2834,7 @@ class PageaccessComponent {
     }
     getAccessByAsset(accessArray) {
         for (const asset of this.mergedAsset) {
-            const assetAccess = this.pageAccessService.getAccess(asset);
+            const assetAccess = this.pageAccessService.getAccess(asset, this.fieldPageLevel);
             accessArray.push(new FormGroup({
                 fieldName: new FormControl(asset['displayname']),
                 access: new FormControl(assetAccess ? assetAccess : '2'),
@@ -2651,21 +2855,22 @@ class PageaccessComponent {
             }
         });
     }
+    submitAlert() {
+        if (!this.fieldLevelAccess && this.permissionUpdatedPages.length) {
+            $('#submitAlert').modal('show');
+        }
+        else {
+            this.saveRbac();
+        }
+    }
     saveRbac() {
+        this.getPageList = true;
         const access = this.rbacForm.getRawValue();
-        const _url = '';
+        const pageAccessFormControl = this.rbacForm.get('pageLevelData');
         const userid = this.rbacForm.get('userid').value;
         const roleId = this.rbacForm.get('roleid').value;
         const policyId = this.rbacForm.get('policyid').value;
-        const pageLevelData = access.pageLevelData;
-        const fieldLevelData = access.fieldLevelData;
-        if (this.fieldLevelAccess === false) {
-            this.getPageLevelByArray(pageLevelData);
-        }
-        else {
-            this.getFieldLevelByAsset(fieldLevelData);
-        }
-        if (this.fieldLevelAccess) {
+        if ((this.isPageDeselectSave && this.deselectedItemIds.length > 0) || this.isRemoveAllFields) {
             let selectedId;
             if (this.selectedAccess === 'user') {
                 selectedId = this.rbacForm.getRawValue().userid;
@@ -2677,44 +2882,75 @@ class PageaccessComponent {
                 selectedId = this.rbacForm.getRawValue().policyid;
                 this.selectedAccess = 'policygroup';
             }
-            this.pageAccessService.createAsset(this.selectedAccess, selectedId, this.fullArray).subscribe(_res => {
-                this.getConfiguredAssetData(this.selectedAccess, selectedId);
-                this.alert.success('Field Access Updated Successfully');
+            // Collect asset id's for all deselected page id's
+            const deselectedAssets = forkJoin(this.deselectedItemIds.map(id => this.pageAccessService.getAssetByPageId(id).pipe(map(res => res['data'].map(item => ({ assetid: item.id }))))));
+            // Make a single API call with all deselected asset IDs
+            deselectedAssets.pipe(map(assetIdResponses => [].concat(...assetIdResponses))).subscribe(allDeselectedAssetIds => {
+                this.pageAccessService.updateAssetOnDeselect(this.selectedAccess, selectedId, allDeselectedAssetIds).subscribe(() => {
+                    this.getConfiguredAssetData(this.selectedAccess, selectedId);
+                    this.deselectedItemIds = [];
+                });
             });
         }
+        const fieldLevelData = access.fieldLevelData;
+        this.getFieldLevelByAsset(fieldLevelData);
+        let selectedId;
+        if (this.selectedAccess === 'user') {
+            selectedId = this.rbacForm.getRawValue().userid;
+        }
+        else if (this.selectedAccess === 'role') {
+            selectedId = this.rbacForm.getRawValue().roleid;
+        }
         else {
-            if (this.updatePage) {
-                if (this.selectedAccess === 'policy') {
-                    this.selectedAccess = 'policygroup';
-                }
-                this.pageAccessService.updateDynamicPage(this.selectedAccess, this.selectedId, this.fullArray).subscribe(_res => {
+            selectedId = this.rbacForm.getRawValue().policyid;
+            this.selectedAccess = 'policygroup';
+        }
+        this.pageAccessService.createAsset(this.selectedAccess, selectedId, this.fullArray).subscribe(_res => {
+            if (this.fieldLevelAccess) {
+                this.getConfiguredAssetData(this.selectedAccess, selectedId);
+                this.alert.success('Field Access Updated Successfully');
+            }
+        });
+        this.getPageLevelByArray(pageAccessFormControl);
+        if (this.updatePage) {
+            if (this.selectedAccess === 'policy') {
+                this.selectedAccess = 'policygroup';
+            }
+            this.pageAccessService.updateDynamicPage(this.selectedAccess, this.selectedId, this.fullArray).subscribe(_res => {
+                this.permissionUpdatedPages = [];
+                if (!this.fieldLevelAccess) {
+                    this.getSelectedPages();
                     this.alert.success('Access Updated Successfully');
-                }, _err => this.alert.error(AppConstants.errorMessage));
-            }
-            else {
-                this.pageAccessService
-                    .createAccess(this.fieldLevelAccess, access.accessBy, this.fullArray, userid, roleId, policyId)
-                    .subscribe(_result => {
-                    this.alert.success('Access Saved Successfully');
-                }, _error => this.alert.error(AppConstants.errorMessage));
-            }
+                }
+            }, _err => this.alert.error(AppConstants.errorMessage));
+        }
+        else {
+            this.pageAccessService
+                .createAccess(this.fieldLevelAccess, access.accessBy, this.fullArray, userid, roleId, policyId)
+                .subscribe(_result => {
+                this.permissionUpdatedPages = [];
+                this.getSelectedPages();
+                this.alert.success('Access Saved Successfully');
+            }, _error => this.alert.error(AppConstants.errorMessage));
         }
     }
     getPageLevelByArray(pageLevelData) {
-        this.fullArray = pageLevelData.map(x => {
+        this.fullArray = pageLevelData?.controls?.map(x => {
             return {
-                page: x.pageid,
-                readwrite: x?.pageAccess === '2' ? true : false,
-                read: x?.pageAccess === '3' ? true : false,
-                none: x?.pageAccess === '4' ? true : false,
-                full: x?.pageAccess === '5' ? true : false,
-                conditions: x.condition !== 'always'
+                page: x?.value?.pageid,
+                overrideAssetPermissions: this.permissionUpdatedPages.some(pageId => pageId === x?.value?.pageid) || false,
+                readwrite: x?.value?.pageAccess === '2' ? true : false,
+                read: x?.value?.pageAccess === '3' ? true : false,
+                none: x?.value?.pageAccess === '4' ? true : false,
+                full: x?.value?.pageAccess === '5' ? true : false,
+                touched: x?.touched,
+                conditions: x?.value?.condition !== 'always'
                     ? {
                         attribute: 'created',
                         condition: 'lte',
-                        value: x.validity,
+                        value: x?.value?.validity,
                         value_type: 'variable',
-                        fallbackTo: x.fallbackTo,
+                        fallbackTo: x?.value?.fallbackTo,
                         type: 'timestamp'
                     }
                     : null
@@ -2750,7 +2986,7 @@ class PageaccessComponent {
         const selectedModules = [];
         const uniquePage = [...new Set(pageIds)];
         const selectedPages = uniquePage;
-        this.rbacForm.get('provideAccess').setValue('1');
+        this.rbacForm.patchValue({ provideAccess: '1' });
         this.pageLevelAccess = this.multiPageAccess = true;
         this.fieldLevelAccess = false;
         const m = this.rbacForm.get('module').value;
@@ -2760,7 +2996,7 @@ class PageaccessComponent {
             this.rbacForm.get('module').setValue(uniqueNewModule);
         }
         else {
-            this.rbacForm.get('module').setValue(selectedModules);
+            this.rbacForm.patchValue({ module: selectedModules });
         }
         this.getSelectedPages(selectedPages, pageConfig, assetconfig);
     }
@@ -2774,7 +3010,7 @@ class PageaccessComponent {
         selectedModules = [...new Set(modules)];
         const uniquePage = [...new Set(pageIds)];
         const selectedPages = uniquePage;
-        this.rbacForm.get('provideAccess').setValue('2');
+        this.rbacForm.patchValue({ provideAccess: '2' });
         this.pageLevelAccess = this.multiPageAccess = false;
         this.fieldLevelAccess = true;
         if (from === 'field') {
@@ -2782,15 +3018,15 @@ class PageaccessComponent {
             if (m !== '') {
                 const mk = selectedModules.concat(m);
                 selectedModules = mk;
-                this.rbacForm.get('module').setValue(selectedModules);
+                this.rbacForm.patchValue({ module: selectedModules });
             }
             const sm = this.rbacForm.get('submodule').value;
             if (sm !== '') {
-                this.rbacForm.get('module').setValue(selectedModules);
+                this.rbacForm.patchValue({ module: selectedModules });
             }
         }
         else {
-            this.rbacForm.get('module').setValue(selectedModules);
+            this.rbacForm.patchValue({ module: selectedModules });
         }
         this.getSelectedPages(selectedPages, pageConfig, assetconfig);
     }
@@ -2822,7 +3058,7 @@ class PageaccessComponent {
         }
         else {
             this.resetForm('3');
-            this.rbacForm.get('accessBy').setValue('3');
+            this.rbacForm.patchValue({ accessBy: '3' });
         }
     }
     getCheckPageConfig(pageConfig) {
@@ -2867,7 +3103,7 @@ class PageaccessComponent {
         }
         else {
             this.resetForm('2');
-            this.rbacForm.get('accessBy').setValue('2');
+            this.rbacForm.patchValue({ accessBy: '2' });
         }
     }
     getOrgId(pageConfig) {
@@ -2915,7 +3151,7 @@ class PageaccessComponent {
         }
         else {
             this.resetForm('1');
-            this.rbacForm.get('accessBy').setValue('1');
+            this.rbacForm.patchValue({ accessBy: '1' });
         }
     }
     getCheckPolicyLevelField(pageConfig) {
@@ -2932,14 +3168,22 @@ class PageaccessComponent {
     resetForm(id = null, clear = null) {
         this.subModuleList = this.pageData = this.selectedPageData = [];
         this.fieldLevelCheckCount = [];
+        this.pagelevelaccesscount = [];
+        this.pagelevelaccesssavedisable = true;
         this.pageLevelAccess = this.fieldLevelAccess = false;
+        this.enablesave = true;
+        this.pagelevelaccesscountdisable = true;
         const f = this.rbacForm.controls['fieldLevelData'];
         f.controls = [];
         const p = this.rbacForm.controls['pageLevelData'];
         p.controls = [];
+        this.policyGroupPages = [];
+        this.selectedAccess = '';
+        this.selectedName = '';
+        this.permissionUpdatedPages = [];
         this.rbacForm.reset();
         if (id !== null) {
-            this.rbacForm.get('accessBy').setValue(id);
+            this.rbacForm.patchValue({ accessBy: id });
         }
         else if (clear !== null) {
             this.AddComponent.resetForm();
@@ -2984,7 +3228,10 @@ class PageaccessComponent {
             accessArray.push(new FormGroup({
                 pageName: new FormControl(this.rbacForm.get('pageLevelData').value[pageIndex].pageName),
                 pageid: new FormControl(this.rbacForm.get('pageLevelData').value[pageIndex].pageid),
-                pageAccess: new FormControl(maxOcc.element ? maxOcc.element : '2')
+                pageAccess: new FormControl(this.rbacForm.get('pageLevelData').value[pageIndex].pageAccess),
+                validity: new FormControl(this.rbacForm.get('pageLevelData').value[pageIndex].validity),
+                fallbackTo: new FormControl(this.rbacForm.get('pageLevelData').value[pageIndex].fallbackTo),
+                condition: new FormControl(this.rbacForm.get('pageLevelData').value[pageIndex].condition)
             }));
             accessArray.removeAt(pageIndex);
             const isExist = this.selectedPageAccessChanges.findIndex(el => el.pageid === this.rbacForm.get('pageLevelData').value[pageIndex].pageid);
@@ -2995,6 +3242,7 @@ class PageaccessComponent {
     }
     changePageAccess(index) {
         const selectedValue = this.rbacForm.get('pageLevelData').value[index];
+        const pageLevelData = this.rbacForm.get('pageLevelData');
         const isExist = this.selectedPageAccessChanges?.findIndex(el => el?.pageid === selectedValue.pageid);
         if (isExist > -1) {
             this.selectedPageAccessChanges[isExist].pageAccess = selectedValue.pageAccess;
@@ -3002,22 +3250,17 @@ class PageaccessComponent {
         else {
             this.selectedPageAccessChanges.push(selectedValue);
         }
-    }
-    removeValue(e, item) {
-        e.stopPropagation();
-        const filteredPages = this.rbacForm.value.pageList.filter((s) => s.id !== Number(item.id));
-        this.rbacForm.patchValue({
-            pageList: filteredPages
-        });
-        this.populatePage('click', true, null);
-        this.selectedPageData = this.rbacForm.value.pageList.filter(page => !page.disabled);
+        if (selectedValue.pageAccess === '4') {
+            const conditionControl = pageLevelData.at(index).get('condition');
+            conditionControl.setValue('always');
+        }
     }
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.2.12", ngImport: i0, type: PageaccessComponent, deps: [{ token: i0.Injector }, { token: i1$2.FormBuilder }, { token: i0.ChangeDetectorRef }, { token: DataStoreService }, { token: i3.Router }, { token: AlertService }], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "16.2.12", type: PageaccessComponent, selector: "lib-pageaccess", viewQueries: [{ propertyName: "AddComponent", first: true, predicate: ManageAccessRadioComponent, descendants: true }], ngImport: i0, template: "<app-alert></app-alert>\r\n<div class=\"row rbac page-access rbac-card mt-2\">\r\n  <div class=\"col-12\">\r\n    <mat-card class=\"mat-card\">\r\n      <mat-card-content class=\"p-2\">\r\n        <form [formGroup]=\"rbacForm\">\r\n          <app-manage-access-radio (accessBy)=\"accessBy($event)\" (userDropdown)=\"userDropdown($event)\"\r\n            (roleDropdown)=\"roleDropdown($event)\" (policyDropdown)=\"policyDropdown($event)\"\r\n            (dropDownSelectedValues)=\"dropDownSelectedValues($event)\"></app-manage-access-radio>\r\n\r\n          <h3 class=\"radio-title mb-2\">Page Access Management</h3>\r\n          <mat-card class=\"mat-card\">\r\n            <mat-card-content class=\"p-2\">\r\n              <div class=\"row\">\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"moduleList\" [settings]=\"moduleDropdownSettings\"\r\n                    onSelect=\"loadSubModule('click')\" onDeSelect=\"removeSubModule($event)\"\r\n                    onSelectAll=\"loadSubModule('click')\" onDeSelectAll=\"removeAllSubModule()\"\r\n                    formControlName=\"module\"></angular2-multiselect> -->\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Sub Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"subModuleList\" [settings]=\"submoduleDropdownSettings\"\r\n                    onSelect=\"loadSubModulePage('click')\" onDeSelect=\"removeSubModulePage($event, 'submodule')\"\r\n                    onSelectAll=\"loadSubModulePage('click')\" onDeSelectAll=\"removeAllSubModulePage()\"\r\n                    formControlName=\"submodule\">\r\n                  </angular2-multiselect> -->\r\n                </div>\r\n\r\n                <div class=\"col-lg-6 mb-3\">\r\n                  <p-accordion class=\"w-full policygroup-accordion\" iconPos=\"endVal\">\r\n                    <p-accordionTab>\r\n                      <ng-template pTemplate=\"header\">\r\n                        <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                          <span class=\"font-bold\">\r\n                            <label aria-labelledby=\"policyGroupList\" for=\"policyGroupList\"\r\n                              class=\"mb-0 referral-form-labels\">Pages\r\n\r\n                              <span *ngIf=\"selectedPageData.length > 0\"\r\n                                class=\"pg-count ml-2\">{{selectedPageData.length}}</span>\r\n                            </label>\r\n                          </span>\r\n                        </span>\r\n                      </ng-template>\r\n                      <!-- <angular2-multiselect [data]=\"pagesList\" [settings]=\"pageDropdownSettings\"\r\n                        (onSelect)=\"populatePage('click',true,$event)\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        (onDeSelect)=\"populatePage('click',false,$event)\"\r\n                        (onSelectAll)=\"populatePage('click',true,$event)\" (onDeSelectAll)=\"removeAllPopulatePage()\"\r\n                        formControlName=\"pageList\"></angular2-multiselect> -->\r\n                        <p-multiSelect [options]=\"pagesList\" formControlName=\"pageList\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        defaultLabel=\"Select Pages\" display=\"chip\" optionLabel=\"pagename\" [autoDisplayFirst]=\"false\"         \r\n                        styleClass=\"policygroup-v2 w-100\" (onChange)=\"populatePage('click',true,$event)\"\r\n                        >\r\n                        <ng-template let-value pTemplate=\"selectedItems\">\r\n                          <div *ngFor=\"let option of value\">\r\n                              <div #selectedpg class=\"p-multiselect-token\"  [ngClass]=\"option.disabled ? 'disabled' : '' \"\r\n                                id=\"{{option.id}}\">\r\n                                <span class=\"policygroupname\" >\r\n                                  {{ option.pagename }}\r\n                                </span>\r\n                                <em class=\"pi pi-times-circle ml-2 clear-icon right-sec\" *ngIf=\"!option.disabled\"\r\n                                role=\"button\" (click)=\"removeValue($event, selectedpg)\"></em>\r\n                              </div>\r\n                          </div>\r\n                          <div *ngIf=\"!value || value.length === 0\">Select Pages</div>\r\n                        </ng-template>\r\n                      </p-multiSelect>\r\n                    </p-accordionTab>\r\n                  </p-accordion>\r\n                </div>\r\n\r\n                <div class=\"col-lg-3 col-md-12 col-12 mb-3\">\r\n                  <label class=\"radio-title d-block required\">Provide Access by </label>\r\n                  <mat-radio-group formControlName=\"provideAccess\" (change)=\"showLevelAccess($event.value)\">\r\n                    <mat-radio-button value=\"1\" fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL\">Page\r\n                      Level&nbsp;&nbsp;</mat-radio-button>\r\n                    <mat-radio-button value=\"2\" fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL\">Field\r\n                      Level</mat-radio-button>\r\n                  </mat-radio-group>\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"fieldLevelAccess\">\r\n                  <label class=\"radio-title\">Select Page</label>\r\n                  <br />\r\n                  <p-dropdown id=\"selectpage\" ariaLabelledBy=\"selectpage\" [options]=\"selectedPageData\"\r\n                    fieldKey=\"SETTINGS_PAG_ACC_PAGE\" [filter]=\"true\"\r\n                    [showClear]=\"fieldLevelCheckCount && fieldLevelCheckCount?.length\" [resetFilterOnHide]=\"true\"\r\n                    (onChange)=\"getFieldLevelList('click')\" formControlName=\"fpages\" optionLabel=\"pagename\"\r\n                    optionValue=\"id\" placeholder=\"Select a page\" class=\"dd-stand-size\">\r\n                    <ng-template let-item pTemplate=\"selectedItem\">\r\n                      <div pTooltip=\"{{item?.pagename}}\" tooltipPosition=\"top\" class=\"text-truncate\"> {{ item?.pagename\r\n                        }}</div>\r\n                    </ng-template>\r\n                    <ng-template let-object pTemplate=\"item\">\r\n                      {{ object.pagename }}\r\n                    </ng-template>\r\n                  </p-dropdown>\r\n                </div>\r\n              </div>\r\n\r\n              <div *ngIf=\"pageLevelAccess\" class=\"row\">\r\n                <div class=\"col-12 mt-3 pageLevelAccessTable\">\r\n                  <table aria-describedby=\"pageLevelAccessTable\" class=\"table table-bordered\">\r\n                    <col />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <thead>\r\n                      <th class=\"text-left\">Page Name</th>\r\n                      <th class=\"text-center\">R</th>\r\n                      <th class=\"text-center\">RW</th>\r\n                      <th class=\"text-center\">RWD</th>\r\n                      <th class=\"text-center\">None</th>\r\n                      <th class=\"text-center\">Validity</th>\r\n                    </thead>\r\n                    <tbody>\r\n                      <ng-container formArrayName=\"pageLevelData\"\r\n                        *ngFor=\"let fAccess of rbacForm.get('pageLevelData')['controls']; let i = index\">\r\n                        <tr [formGroup]=\"rbacForm.get('pageLevelData')['controls'][i]\">\r\n                          <td class=\"text-left\">\r\n                            <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                              formControlName=\"pageName\" placeholder=\"pageleveldata\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\" type=\"radio\" value=\"3\"\r\n                              title=\"pageradio{{ i }}\" fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE\" type=\"radio\" value=\"2\"\r\n                              title=\"pageradio{{ i }}\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE_DELETE\" type=\"radio\" value=\"5\"\r\n                              title=\"pageradio{{ i }}\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_NONE\" type=\"radio\" value=\"4\"\r\n                              title=\"pageradio{{ i }}\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <ng-container *ngIf=\"\r\n                                  rbacForm.get('pageList')?.value[i]?.activeVersion?.gridconfig ||\r\n                                  rbacForm.get('pageList')?.value[i]?.gridconfig\r\n                                \">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" [disabled]=\"fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <p-inputNumber type=\"number\" class=\"validity\"\r\n                                *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [readonly]=\"fAccess?.value?.pageAccess === '4'\" [min]=\"1\"\r\n                                fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_VALIDITY\" formControlName=\"validity\"\r\n                                mode=\"decimal\"></p-inputNumber>\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.pageAccess === '3' || fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </ng-container>\r\n                          </td>\r\n                        </tr>\r\n                      </ng-container>\r\n                    </tbody>\r\n                  </table>\r\n                </div>\r\n              </div>\r\n              <div class=\"row\" *ngIf=\"fieldLevelAccess\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <thead>\r\n                        <th class=\"text-left\">Field Name</th>\r\n                        <th class=\"text-center\">Read</th>\r\n                        <th class=\"text-center\">Write</th>\r\n                        <th class=\"text-center\">None</th>\r\n                        <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" title=\"accessRadio{{ i }}\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"2\" title=\"accessRadio{{ i }}\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" title=\"accessRadio{{ i }}\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n            </mat-card-content>\r\n          </mat-card>\r\n        </form>\r\n        <!-- <div class=\"mt-3\" *ngIf=\"!fieldLevelAccess && selectedAccess === 'role'\">\r\n            <h3 class=\"radio-title mb-2\">Policy Groups associated with {{ selectedRole }}</h3>\r\n            <mat-card class=\"mt-2\">\r\n              <mat-card-content>\r\n                <div class=\"row\">\r\n                  <div class=\"col-12 mt-1\" *ngFor=\"let policyGroupPage of policyGroupPages\">\r\n                    <div class=\"radio-title mb-2\">Policy Group: {{ policyGroupPage.name }}</div>\r\n                    <div class=\"table-responsive\">\r\n                      <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                        <col />\r\n                        <col style=\"width: 120px\" />\r\n                        <col style=\"width: 120px\" />\r\n                        <col style=\"width: 120px\" />\r\n                        <thead>\r\n                          <tr>\r\n                            <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                            <th scope=\"col\" class=\"text-center\">Read</th>\r\n                            <th scope=\"col\" class=\"text-center\">Write</th>\r\n                            <th scope=\"col\" class=\"text-center\">None</th>\r\n                          </tr>\r\n                        </thead>\r\n                        <tbody>\r\n                          <ng-container *ngFor=\"let page of policyGroupPage?.data\">\r\n                            <tr>\r\n                              <td class=\"text-left\">\r\n                                <input\r\n                                  style=\"border: none; pointer-events: none; width: 360px\"\r\n                                  type=\"text\"\r\n                                  title=\"page?.page?.activeVersion?.pagename\"\r\n                                  [value]=\"page?.page?.activeVersion?.pagename\" />\r\n                              </td>\r\n\r\n                              <td class=\"text-center\">\r\n                                <input\r\n                                  disabled\r\n                                  [checked]=\"page?.read\"\r\n                                  type=\"radio\"\r\n                                  fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL_READ\" />\r\n                              </td>\r\n                              <td class=\"text-center\">\r\n                                <input\r\n                                  disabled\r\n                                  [checked]=\"page?.readwrite\"\r\n                                  type=\"radio\"\r\n                                  fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL_WRITE\" />\r\n                              </td>\r\n\r\n                              <td class=\"text-center\">\r\n                                <input\r\n                                  disabled\r\n                                  [checked]=\"page?.hide\"\r\n                                  type=\"radio\"\r\n                                  fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL_NONE\" />\r\n                              </td>\r\n                            </tr>\r\n                          </ng-container>\r\n                          <ng-container *ngIf=\"policyGroupPage?.data?.length === 0\">\r\n                            <tr>\r\n                              <td class=\"text-center\" colspan=\"4\">No pages associated with Policy Group.</td>\r\n                            </tr>\r\n                          </ng-container>\r\n                        </tbody>\r\n                      </table>\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n              </mat-card-content>\r\n            </mat-card>\r\n          </div> -->\r\n        <div class=\"text-right mt-3\">\r\n          <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button>\r\n          <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button>\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"saveRbac()\">Save</button>\r\n        </div>\r\n      </mat-card-content>\r\n    </mat-card>\r\n  </div>\r\n</div>", styles: [".mat-card-content .mat-radio-group .mat-radio-button{padding-right:10px;font-family:Roboto,sans-serif!important}.toggleleft{font-size:var(--font-14);font-weight:600;display:block;padding-bottom:10px}:host ::ng-deep .p-dropdown.nobg{background-color:transparent;border:none}:host ::ng-deep .p-dropdown.nobg:hover,:host ::ng-deep .p-dropdown.nobg:focus{background-color:transparent!important;border:none!important}.pageLevelAccessTable table thead tr th,.pageLevelAccessTable table tbody tr td{vertical-align:middle;color:var(--text-dark)}.pageLevelAccessTable table thead tr th input,.pageLevelAccessTable table tbody tr td input{background:var(--bg-light);color:var(--text-dark)}.pageLevelAccessTable table thead tr th a:hover,.pageLevelAccessTable table tbody tr td a:hover{text-decoration:none}:host ::ng-deep .p-inputtext.validity{height:30px;line-height:13px}:host ::ng-deep .p-dropdown.condition{height:30px;line-height:13px}@media screen and (max-width: 990px){:host ::ng-deep .selected-list .c-list{width:calc(100% - 35px)!important}.pageLevelAccessTable{width:100%;overflow:auto}.pageLevelAccessTable .table{margin-bottom:60px}}.selected-list .c-angle-down,.selected-list .c-angle-up{margin-top:-5px}\n"], dependencies: [{ kind: "directive", type: i5.NgClass, selector: "[ngClass]", inputs: ["class", "ngClass"] }, { kind: "directive", type: i5.NgForOf, selector: "[ngFor][ngForOf]", inputs: ["ngForOf", "ngForTrackBy", "ngForTemplate"] }, { kind: "directive", type: i5.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "directive", type: i1$2.ɵNgNoValidate, selector: "form:not([ngNoForm]):not([ngNativeValidate])" }, { kind: "directive", type: i1$2.DefaultValueAccessor, selector: "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]" }, { kind: "directive", type: i1$2.NumberValueAccessor, selector: "input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]" }, { kind: "directive", type: i1$2.RadioControlValueAccessor, selector: "input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]", inputs: ["name", "formControlName", "value"] }, { kind: "directive", type: i1$2.NgControlStatus, selector: "[formControlName],[ngModel],[formControl]" }, { kind: "directive", type: i1$2.NgControlStatusGroup, selector: "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]" }, { kind: "directive", type: i1$2.MinValidator, selector: "input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]", inputs: ["min"] }, { kind: "directive", type: i1$2.FormGroupDirective, selector: "[formGroup]", inputs: ["formGroup"], outputs: ["ngSubmit"], exportAs: ["ngForm"] }, { kind: "directive", type: i1$2.FormControlName, selector: "[formControlName]", inputs: ["formControlName", "disabled", "ngModel"], outputs: ["ngModelChange"] }, { kind: "directive", type: i1$2.FormGroupName, selector: "[formGroupName]", inputs: ["formGroupName"] }, { kind: "directive", type: i1$2.FormArrayName, selector: "[formArrayName]", inputs: ["formArrayName"] }, { kind: "directive", type: i6.PrimeTemplate, selector: "[pTemplate]", inputs: ["type", "pTemplate"] }, { kind: "directive", type: i7$1.Tooltip, selector: "[pTooltip]", inputs: ["tooltipPosition", "tooltipEvent", "appendTo", "positionStyle", "tooltipStyleClass", "tooltipZIndex", "escape", "showDelay", "hideDelay", "life", "positionTop", "positionLeft", "autoHide", "fitContent", "hideOnEscape", "pTooltip", "tooltipDisabled", "tooltipOptions"] }, { kind: "component", type: i7.Dropdown, selector: "p-dropdown", inputs: ["id", "scrollHeight", "filter", "name", "style", "panelStyle", "styleClass", "panelStyleClass", "readonly", "required", "editable", "appendTo", "tabindex", "placeholder", "filterPlaceholder", "filterLocale", "inputId", "dataKey", "filterBy", "filterFields", "autofocus", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "autoDisplayFirst", "group", "showClear", "emptyFilterMessage", "emptyMessage", "lazy", "virtualScroll", "virtualScrollItemSize", "virtualScrollOptions", "overlayOptions", "ariaFilterLabel", "ariaLabel", "ariaLabelledBy", "filterMatchMode", "maxlength", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "focusOnHover", "selectOnFocus", "autoOptionFocus", "autofocusFilter", "disabled", "itemSize", "autoZIndex", "baseZIndex", "showTransitionOptions", "hideTransitionOptions", "filterValue", "options"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onShow", "onHide", "onClear", "onLazyLoad"] }, { kind: "component", type: i9.Accordion, selector: "p-accordion", inputs: ["multiple", "style", "styleClass", "expandIcon", "collapseIcon", "activeIndex", "selectOnFocus", "headerAriaLevel"], outputs: ["onClose", "onOpen", "activeIndexChange"] }, { kind: "component", type: i9.AccordionTab, selector: "p-accordionTab", inputs: ["id", "header", "headerStyle", "tabStyle", "contentStyle", "tabStyleClass", "headerStyleClass", "contentStyleClass", "disabled", "cache", "transitionOptions", "iconPos", "selected", "headerAriaLevel"], outputs: ["selectedChange"] }, { kind: "directive", type: i10.InputText, selector: "[pInputText]" }, { kind: "component", type: i11.MultiSelect, selector: "p-multiSelect", inputs: ["id", "ariaLabel", "style", "styleClass", "panelStyle", "panelStyleClass", "inputId", "disabled", "readonly", "group", "filter", "filterPlaceHolder", "filterLocale", "overlayVisible", "tabindex", "appendTo", "dataKey", "name", "ariaLabelledBy", "displaySelectedLabel", "maxSelectedLabels", "selectionLimit", "selectedItemsLabel", "showToggleAll", "emptyFilterMessage", "emptyMessage", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "showHeader", "filterBy", "scrollHeight", "lazy", "virtualScroll", "virtualScrollItemSize", "virtualScrollOptions", "overlayOptions", "ariaFilterLabel", "filterMatchMode", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "autofocusFilter", "display", "autocomplete", "showClear", "autoZIndex", "baseZIndex", "showTransitionOptions", "hideTransitionOptions", "defaultLabel", "placeholder", "options", "filterValue", "itemSize", "selectAll", "focusOnHover", "filterFields", "selectOnFocus", "autoOptionFocus"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onClear", "onPanelShow", "onPanelHide", "onLazyLoad", "onRemove", "onSelectAllChange"] }, { kind: "directive", type: PermissionDirective, selector: "[fieldKey]", inputs: ["fieldKey"] }, { kind: "component", type: AlertComponent, selector: "app-alert" }, { kind: "component", type: i14.MatCard, selector: "mat-card", inputs: ["appearance"], exportAs: ["matCard"] }, { kind: "directive", type: i14.MatCardContent, selector: "mat-card-content" }, { kind: "directive", type: i5$1.MatRadioGroup, selector: "mat-radio-group", exportAs: ["matRadioGroup"] }, { kind: "component", type: i5$1.MatRadioButton, selector: "mat-radio-button", inputs: ["disableRipple", "tabIndex"], exportAs: ["matRadioButton"] }, { kind: "component", type: ManageAccessRadioComponent, selector: "app-manage-access-radio", inputs: ["reloadForm"], outputs: ["accessBy", "policyDropdown", "roleDropdown", "userDropdown", "dropDownSelectedValues"] }] });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "16.2.12", type: PageaccessComponent, selector: "lib-pageaccess", viewQueries: [{ propertyName: "AddComponent", first: true, predicate: ManageAccessRadioComponent, descendants: true }], ngImport: i0, template: "<app-alert></app-alert>\r\n<div class=\"row rbac-card\">\r\n  <div class=\"col-12\">\r\n    <mat-card class=\"mat-card\">\r\n      <mat-card-content class=\"p-2\">\r\n        <form [formGroup]=\"rbacForm\">\r\n          <app-manage-access-radio (accessBy)=\"accessBy($event)\" (userDropdown)=\"userDropdown($event)\"\r\n            (roleDropdown)=\"roleDropdown($event)\" (policyDropdown)=\"policyDropdown($event)\"\r\n            (dropDownSelectedValues)=\"dropDownSelectedValues($event)\"></app-manage-access-radio>\r\n          <h3 class=\"radio-title mb-2 pa-title\">Page Access Management</h3>\r\n          <mat-card class=\"mat-card\">\r\n            <mat-card-content class=\"p-2\">\r\n              <div class=\"row\">\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"moduleList\" [settings]=\"moduleDropdownSettings\"\r\n                    onSelect=\"loadSubModule('click')\" onDeSelect=\"removeSubModule($event)\"\r\n                    onSelectAll=\"loadSubModule('click')\" onDeSelectAll=\"removeAllSubModule()\"\r\n                    formControlName=\"module\"></angular2-multiselect> -->\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Sub Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"subModuleList\" [settings]=\"submoduleDropdownSettings\"\r\n                    onSelect=\"loadSubModulePage('click')\" onDeSelect=\"removeSubModulePage($event, 'submodule')\"\r\n                    onSelectAll=\"loadSubModulePage('click')\" onDeSelectAll=\"removeAllSubModulePage()\"\r\n                    formControlName=\"submodule\">\r\n                  </angular2-multiselect> -->\r\n                </div>\r\n\r\n                <div class=\"col-lg-6 mb-3\">\r\n                  <p-accordion class=\"w-full policygroup-accordion\" iconPos=\"endVal\">\r\n                    <p-accordionTab>\r\n                      <ng-template pTemplate=\"header\">\r\n                        <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                          <span class=\"font-bold\">\r\n                            <label aria-labelledby=\"policyGroupList\" for=\"policyGroupList\"\r\n                              class=\"mb-0 referral-form-labels\">Pages\r\n\r\n                              <span *ngIf=\"selectedPageData.length > 0\"\r\n                                class=\"pg-count ml-2\">{{selectedPageData.length}}</span>\r\n                            </label>\r\n                          </span>\r\n                        </span>\r\n                      </ng-template>\r\n                      <!-- <angular2-multiselect [data]=\"pagesList\" [settings]=\"pageDropdownSettings\"\r\n                        (onSelect)=\"populatePage('click',true,$event)\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        (onDeSelect)=\"populatePage('click',false,$event)\"\r\n                        (onSelectAll)=\"populatePage('click',true,$event)\" (onDeSelectAll)=\"removeAllPopulatePage()\"\r\n                        formControlName=\"pageList\"></angular2-multiselect> -->\r\n                        <p-multiSelect [options]=\"pagesList\" formControlName=\"pageList\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        defaultLabel=\"Select Pages\" display=\"chip\" optionLabel=\"pagename\" [autoDisplayFirst]=\"false\"         \r\n                        styleClass=\"policygroup-v2 w-100\" (onChange)=\"populatePage('click',true,$event)\"\r\n                        >\r\n                        <ng-template let-value pTemplate=\"selectedItems\">\r\n                          <div *ngFor=\"let option of value\">\r\n                              <div #selectedpg class=\"p-multiselect-token\"  [ngClass]=\"option.disabled ? 'disabled' : '' \"\r\n                                id=\"{{option.id}}\">\r\n                                <span class=\"policygroupname\" >\r\n                                  {{ option.pagename }}\r\n                                </span>\r\n                                <em class=\"pi pi-times-circle ml-2 clear-icon right-sec\" *ngIf=\"!option.disabled\"\r\n                                role=\"button\" (click)=\"removeValue($event, selectedpg)\"></em>\r\n                              </div>\r\n                          </div>\r\n                          <div *ngIf=\"!value || value.length === 0\">Select Pages</div>\r\n                        </ng-template>\r\n                      </p-multiSelect>\r\n                    </p-accordionTab>\r\n                  </p-accordion>\r\n                </div>\r\n\r\n                <div class=\"col-lg-3 col-md-12 col-12 mb-3\">\r\n                  <label class=\"radio-title d-block required\">Provide Access by </label>\r\n                  <mat-radio-group formControlName=\"provideAccess\" (change)=\"showLevelAccess($event.value)\">\r\n                    <mat-radio-button value=\"1\" fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL\">Page\r\n                      Level&nbsp;&nbsp;</mat-radio-button>\r\n                    <mat-radio-button value=\"2\" fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL\">Field\r\n                      Level</mat-radio-button>\r\n                  </mat-radio-group>\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"fieldLevelAccess\">\r\n                  <label class=\"radio-title\">Select Page</label>\r\n                  <br />\r\n                  <p-dropdown id=\"selectpage\" ariaLabelledBy=\"selectpage\" [options]=\"selectedPageData\"\r\n                    fieldKey=\"SETTINGS_PAG_ACC_PAGE\" [filter]=\"true\"\r\n                    [showClear]=\"fieldLevelCheckCount && fieldLevelCheckCount?.length\" [resetFilterOnHide]=\"true\"\r\n                    (onChange)=\"getFieldLevelList('click')\" formControlName=\"fpages\" optionLabel=\"pagename\"\r\n                    optionValue=\"id\" placeholder=\"Select a page\" class=\"dd-stand-size\">\r\n                    <ng-template let-item pTemplate=\"selectedItem\">\r\n                      <div pTooltip=\"{{item?.pagename}}\" tooltipPosition=\"top\" class=\"text-truncate\"> {{ item?.pagename\r\n                        }}</div>\r\n                    </ng-template>\r\n                    <ng-template let-object pTemplate=\"item\">\r\n                      {{ object.pagename }}\r\n                    </ng-template>\r\n                  </p-dropdown>\r\n                </div>\r\n              </div>\r\n\r\n              <div *ngIf=\"pageLevelAccess\" class=\"row\">\r\n                <div class=\"col-12 mt-3 pageLevelAccessTable\">\r\n                  <table aria-describedby=\"pageLevelAccessTable\" class=\"table table-bordered\">\r\n                    <col />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <thead>\r\n                      <th class=\"text-left\">Page Name</th>\r\n                      <th class=\"text-center\">R</th>\r\n                      <th class=\"text-center\">RW</th>\r\n                      <th class=\"text-center\">RWD</th>\r\n                      <th class=\"text-center\">None</th>\r\n                      <th class=\"text-center\">Validity</th>\r\n                    </thead>\r\n                    <tbody>\r\n                      <ng-container formArrayName=\"pageLevelData\"\r\n                        *ngFor=\"let fAccess of rbacForm.get('pageLevelData')['controls']; let i = index\">\r\n                        <tr [formGroup]=\"rbacForm.get('pageLevelData')['controls'][i]\">\r\n                          <td class=\"text-left\">\r\n                            <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                              formControlName=\"pageName\" placeholder=\"pageleveldata\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\" type=\"radio\" value=\"3\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE\" type=\"radio\" value=\"2\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE_DELETE\" type=\"radio\" value=\"5\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_NONE\" type=\"radio\" value=\"4\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <ng-container *ngIf=\"\r\n                                  rbacForm.get('pageList')?.value[i]?.activeVersion?.gridconfig ||\r\n                                  rbacForm.get('pageList')?.value[i]?.gridconfig\r\n                                \">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" [disabled]=\"fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <p-inputNumber type=\"number\" class=\"validity\"\r\n                                *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [readonly]=\"fAccess?.value?.pageAccess === '4'\" [min]=\"1\"\r\n                                fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_VALIDITY\" formControlName=\"validity\"\r\n                                mode=\"decimal\"></p-inputNumber>\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.pageAccess === '3' || fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </ng-container>\r\n                          </td>\r\n                        </tr>\r\n                      </ng-container>\r\n                    </tbody>\r\n                  </table>\r\n                </div>\r\n              </div>\r\n              <div class=\"row\"\r\n                *ngIf=\"showFieldGrid && fieldLevelCheckCount?.length > 0 && fieldLevelAccess && fieldPageLevel?.length > 0\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <thead>\r\n                        <th class=\"text-left\">Field Name</th>\r\n                        <th class=\"text-center\">Read</th>\r\n                        <th class=\"text-center\">Write</th>\r\n                        <th class=\"text-center\">None</th>\r\n                        <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"2\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n              <!-- This code for field access for grid page -->\r\n              <div class=\"row\"\r\n                *ngIf=\"showFieldGrid && fieldLevelCheckCount?.length > 0 && fieldLevelAccess && fieldPageLevel?.length === 0\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <!-- <col style=\"width: 120px\" /> -->\r\n                      <thead>\r\n                        <tr>\r\n                          <th class=\"text-left\">Field Name</th>\r\n                          <th class=\"text-center\">Read</th>\r\n                          <!-- <th class=\"text-center\">Write</th> -->\r\n                          <th class=\"text-center\">None</th>\r\n                          <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                        </tr>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" name=\"permissiongroup_{{i}}\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" />\r\n                            </td>\r\n                            <!-- <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\" value=\"2\" />\r\n                            </td> -->\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n            </mat-card-content>\r\n          </mat-card>\r\n        </form>\r\n        <div class=\"mt-3\" *ngIf=\"policyGroupPages.length && !fieldLevelAccess && selectedAccess === 'role'\">\r\n          <p-accordion class=\"w-full dynamic-search\" iconPos=\"endVal\">\r\n            <p-accordionTab>\r\n              <ng-template pTemplate=\"header\">\r\n                <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                  <span class=\"font-bold\">Policy Groups associated with {{ selectedName }} Role</span>\r\n                </span>\r\n              </ng-template>\r\n              <mat-card class=\"mt-2\">\r\n                <mat-card-content>\r\n                  <div class=\"row\">\r\n                    <div class=\"col-12 mt-1\" *ngFor=\"let policyGroup of policyGroupPages\">\r\n                      <div class=\"radio-title mb-2\">Policy Group: {{ policyGroup?.policygroup?.policygroupname }}</div>\r\n                      <!-- It shows associated Roles -->\r\n                      <div class=\"table-responsive\">\r\n                        <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                          <col />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <thead>\r\n                            <tr>\r\n                              <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                              <th scope=\"col\" class=\"text-center\">R</th>\r\n                              <th scope=\"col\" class=\"text-center\">RW</th>\r\n                              <th scope=\"col\" class=\"text-center\">RWD</th>\r\n                              <th scope=\"col\" class=\"text-center\">None</th>\r\n                            </tr>\r\n                          </thead>\r\n                          <tbody>\r\n                            <ng-container *ngFor=\"let page of policyGroup?.policygrouppage                        \">\r\n                              <tr>\r\n                                <td class=\"text-left\">\r\n                                  <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                                    title=\"page?.page?.activeVersion?.pagename\"\r\n                                    [value]=\"page?.page[0]?.activeVersion?.pagename\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.read\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.readwrite\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.full\" type=\"radio\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.hide\" type=\"radio\" />\r\n                                </td>\r\n                              </tr>\r\n                            </ng-container>\r\n                            <ng-container *ngIf=\"policyGroupPages?.length === 0\">\r\n                              <tr>\r\n                                <td class=\"text-center\" colspan=\"4\">No pages associated with Policy Group.</td>\r\n                              </tr>\r\n                            </ng-container>\r\n                          </tbody>\r\n                        </table>\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                </mat-card-content>\r\n              </mat-card>\r\n            </p-accordionTab>\r\n          </p-accordion>\r\n\r\n        </div>\r\n        <div class=\"mt-3\" *ngIf=\"policyGroupRolePages.length && !fieldLevelAccess && selectedAccess === 'policygroup'\">\r\n          <p-accordion class=\"w-full dynamic-search\" iconPos=\"endVal\">\r\n            <p-accordionTab>\r\n              <ng-template pTemplate=\"header\">\r\n                <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                  <span class=\"font-bold\">Roles associated with {{ selectedName }} Policy Group</span>\r\n                </span>\r\n              </ng-template>\r\n              <mat-card class=\"mt-2\">\r\n                <mat-card-content>\r\n                  <div class=\"row\">\r\n                    <div class=\"col-12 mt-1\" *ngFor=\"let role of policyGroupRolePages\">\r\n                      <div class=\"radio-title mb-2\">Role: {{ role?.role?.name }}</div>\r\n                      <!-- It shows associated policygroups -->\r\n                      <div class=\"table-responsive\">\r\n                        <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                          <col />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <thead>\r\n                            <tr>\r\n                              <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                              <th scope=\"col\" class=\"text-center\">R</th>\r\n                              <th scope=\"col\" class=\"text-center\">RW</th>\r\n                              <th scope=\"col\" class=\"text-center\">RWD</th>\r\n                              <th scope=\"col\" class=\"text-center\">None</th>\r\n                            </tr>\r\n                          </thead>\r\n                          <tbody>\r\n                            <ng-container *ngFor=\"let page of role?.rolepage\">\r\n                              <tr>\r\n                                <td class=\"text-left\">\r\n                                  <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                                    title=\"page?.page?.activeVersion?.pagename\"\r\n                                    [value]=\"page?.page[0]?.activeVersion?.pagename\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.read\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.readwrite\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.full\" type=\"radio\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.hide\" type=\"radio\" />\r\n                                </td>\r\n                              </tr>\r\n                            </ng-container>\r\n                            <ng-container *ngIf=\"policyGroupRolePages?.length === 0\">\r\n                              <tr>\r\n                                <td class=\"text-center\" colspan=\"4\">No pages associated with Role.</td>\r\n                              </tr>\r\n                            </ng-container>\r\n                          </tbody>\r\n                        </table>\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                </mat-card-content>\r\n              </mat-card>\r\n            </p-accordionTab>\r\n          </p-accordion>\r\n\r\n        </div>\r\n        <div class=\"text-right mt-3\" *ngIf=\"multiPageAccess\">\r\n          <!-- <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button> -->\r\n          <!-- <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button> -->\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"submitAlert()\"\r\n            [disabled]=\"(pagelevelaccesssavedisable && pagelevelaccesscountdisable) || (!this.pagelevelaccesscount || this.pagelevelaccesscount?.length === 0) || (enablesave && pagelevelaccesscount && pagelevelaccesscount?.length > 0)\">Save</button>\r\n        </div>\r\n        <div class=\"text-right mt-3\" *ngIf=\"!multiPageAccess\">\r\n          <!-- <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button> -->\r\n          <!-- <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button> -->\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"submitAlert()\"\r\n            [disabled]=\"((multiPageAccess) || (fieldLevelCheckCount && fieldLevelCheckCount?.length === 0) || (enablesave && fieldLevelCheckCount && fieldLevelCheckCount?.length > 0) || (!pagelevelaccesscount || pagelevelaccesscount?.length === 0))\">Save</button>\r\n        </div>\r\n      </mat-card-content>\r\n    </mat-card>\r\n  </div>\r\n</div>\r\n\r\n<div class=\"modal\" id=\"submitAlert\" tabindex=\"-1\" role=\"dialog\">\r\n  <div class=\"modal-dialog modal-lg\" role=\"document\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <h5 class=\"modal-title\">Page Access - Warning</h5>\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\r\n          <span aria-hidden=\"true\">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class=\"modal-body\">\r\n        Field Level Access is already present for this Page. Modifying the Page Level Access will remove all Field Level\r\n        Access. Do you want to proceed?\r\n        <div class=\"clearfix\"></div>\r\n        <div class=\"mt-2\">\r\n          <button class=\"pull-right mb-2 btn btn-primary btncommon delete\" data-dismiss=\"modal\" (click)=\"saveRbac()\">\r\n            Yes\r\n          </button>\r\n          <button class=\"pull-right mb-2 mr-2 btn bg-white text-primary btncancel\" data-dismiss=\"modal\"\r\n            (click)=\"getSelectedPages()\">Cancel</button>\r\n        </div>\r\n        <div class=\"clearfix\"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<app-alert></app-alert>\r\n<div class=\"row rbac-card\">\r\n  <div class=\"col-12\">\r\n    <mat-card class=\"mat-card\">\r\n      <mat-card-content class=\"p-2\">\r\n        <form [formGroup]=\"rbacForm\">\r\n          <app-manage-access-radio (accessBy)=\"accessBy($event)\" (userDropdown)=\"userDropdown($event)\"\r\n            (roleDropdown)=\"roleDropdown($event)\" (policyDropdown)=\"policyDropdown($event)\"\r\n            (dropDownSelectedValues)=\"dropDownSelectedValues($event)\"></app-manage-access-radio>\r\n          <h3 class=\"radio-title mb-2 pa-title\">Page Access Management</h3>\r\n          <mat-card class=\"mat-card\">\r\n            <mat-card-content class=\"p-2\">\r\n              <div class=\"row\">\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"moduleList\" [settings]=\"moduleDropdownSettings\"\r\n                    onSelect=\"loadSubModule('click')\" onDeSelect=\"removeSubModule($event)\"\r\n                    onSelectAll=\"loadSubModule('click')\" onDeSelectAll=\"removeAllSubModule()\"\r\n                    formControlName=\"module\"></angular2-multiselect> -->\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Sub Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"subModuleList\" [settings]=\"submoduleDropdownSettings\"\r\n                    onSelect=\"loadSubModulePage('click')\" onDeSelect=\"removeSubModulePage($event, 'submodule')\"\r\n                    onSelectAll=\"loadSubModulePage('click')\" onDeSelectAll=\"removeAllSubModulePage()\"\r\n                    formControlName=\"submodule\">\r\n                  </angular2-multiselect> -->\r\n                </div>\r\n\r\n                <div class=\"col-lg-6 mb-3\">\r\n                  <p-accordion class=\"w-full policygroup-accordion\" iconPos=\"endVal\">\r\n                    <p-accordionTab>\r\n                      <ng-template pTemplate=\"header\">\r\n                        <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                          <span class=\"font-bold\">\r\n                            <label aria-labelledby=\"policyGroupList\" for=\"policyGroupList\"\r\n                              class=\"mb-0 referral-form-labels\">Pages\r\n\r\n                              <span *ngIf=\"selectedPageData.length > 0\"\r\n                                class=\"pg-count ml-2\">{{selectedPageData.length}}</span>\r\n                            </label>\r\n                          </span>\r\n                        </span>\r\n                      </ng-template>\r\n                      <!-- <angular2-multiselect [data]=\"pagesList\" [settings]=\"pageDropdownSettings\"\r\n                        (onSelect)=\"populatePage('click',true,$event)\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        (onDeSelect)=\"populatePage('click',false,$event)\"\r\n                        (onSelectAll)=\"populatePage('click',true,$event)\" (onDeSelectAll)=\"removeAllPopulatePage()\"\r\n                        formControlName=\"pageList\"></angular2-multiselect> -->\r\n                        <p-multiSelect [options]=\"pagesList\" formControlName=\"pageList\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        defaultLabel=\"Select Pages\" display=\"chip\" optionLabel=\"pagename\" [autoDisplayFirst]=\"false\"         \r\n                        styleClass=\"policygroup-v2 w-100\" (onChange)=\"populatePage('click',true,$event)\"\r\n                        >\r\n                        <ng-template let-value pTemplate=\"selectedItems\">\r\n                          <div *ngFor=\"let option of value\">\r\n                              <div #selectedpg class=\"p-multiselect-token\"  [ngClass]=\"option.disabled ? 'disabled' : '' \"\r\n                                id=\"{{option.id}}\">\r\n                                <span class=\"policygroupname\" >\r\n                                  {{ option.pagename }}\r\n                                </span>\r\n                                <em class=\"pi pi-times-circle ml-2 clear-icon right-sec\" *ngIf=\"!option.disabled\"\r\n                                role=\"button\" (click)=\"removeValue($event, selectedpg)\"></em>\r\n                              </div>\r\n                          </div>\r\n                          <div *ngIf=\"!value || value.length === 0\">Select Pages</div>\r\n                        </ng-template>\r\n                      </p-multiSelect>\r\n                    </p-accordionTab>\r\n                  </p-accordion>\r\n                </div>\r\n\r\n                <div class=\"col-lg-3 col-md-12 col-12 mb-3\">\r\n                  <label class=\"radio-title d-block required\">Provide Access by </label>\r\n                  <mat-radio-group formControlName=\"provideAccess\" (change)=\"showLevelAccess($event.value)\">\r\n                    <mat-radio-button value=\"1\" fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL\">Page\r\n                      Level&nbsp;&nbsp;</mat-radio-button>\r\n                    <mat-radio-button value=\"2\" fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL\">Field\r\n                      Level</mat-radio-button>\r\n                  </mat-radio-group>\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"fieldLevelAccess\">\r\n                  <label class=\"radio-title\">Select Page</label>\r\n                  <br />\r\n                  <p-dropdown id=\"selectpage\" ariaLabelledBy=\"selectpage\" [options]=\"selectedPageData\"\r\n                    fieldKey=\"SETTINGS_PAG_ACC_PAGE\" [filter]=\"true\"\r\n                    [showClear]=\"fieldLevelCheckCount && fieldLevelCheckCount?.length\" [resetFilterOnHide]=\"true\"\r\n                    (onChange)=\"getFieldLevelList('click')\" formControlName=\"fpages\" optionLabel=\"pagename\"\r\n                    optionValue=\"id\" placeholder=\"Select a page\" class=\"dd-stand-size\">\r\n                    <ng-template let-item pTemplate=\"selectedItem\">\r\n                      <div pTooltip=\"{{item?.pagename}}\" tooltipPosition=\"top\" class=\"text-truncate\"> {{ item?.pagename\r\n                        }}</div>\r\n                    </ng-template>\r\n                    <ng-template let-object pTemplate=\"item\">\r\n                      {{ object.pagename }}\r\n                    </ng-template>\r\n                  </p-dropdown>\r\n                </div>\r\n              </div>\r\n\r\n              <div *ngIf=\"pageLevelAccess\" class=\"row\">\r\n                <div class=\"col-12 mt-3 pageLevelAccessTable\">\r\n                  <table aria-describedby=\"pageLevelAccessTable\" class=\"table table-bordered\">\r\n                    <col />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <thead>\r\n                      <th class=\"text-left\">Page Name</th>\r\n                      <th class=\"text-center\">R</th>\r\n                      <th class=\"text-center\">RW</th>\r\n                      <th class=\"text-center\">RWD</th>\r\n                      <th class=\"text-center\">None</th>\r\n                      <th class=\"text-center\">Validity</th>\r\n                    </thead>\r\n                    <tbody>\r\n                      <ng-container formArrayName=\"pageLevelData\"\r\n                        *ngFor=\"let fAccess of rbacForm.get('pageLevelData')['controls']; let i = index\">\r\n                        <tr [formGroup]=\"rbacForm.get('pageLevelData')['controls'][i]\">\r\n                          <td class=\"text-left\">\r\n                            <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                              formControlName=\"pageName\" placeholder=\"pageleveldata\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\" type=\"radio\" value=\"3\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE\" type=\"radio\" value=\"2\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE_DELETE\" type=\"radio\" value=\"5\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_NONE\" type=\"radio\" value=\"4\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <ng-container *ngIf=\"\r\n                                  rbacForm.get('pageList')?.value[i]?.activeVersion?.gridconfig ||\r\n                                  rbacForm.get('pageList')?.value[i]?.gridconfig\r\n                                \">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" [disabled]=\"fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <p-inputNumber type=\"number\" class=\"validity\"\r\n                                *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [readonly]=\"fAccess?.value?.pageAccess === '4'\" [min]=\"1\"\r\n                                fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_VALIDITY\" formControlName=\"validity\"\r\n                                mode=\"decimal\"></p-inputNumber>\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.pageAccess === '3' || fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </ng-container>\r\n                          </td>\r\n                        </tr>\r\n                      </ng-container>\r\n                    </tbody>\r\n                  </table>\r\n                </div>\r\n              </div>\r\n              <div class=\"row\"\r\n                *ngIf=\"showFieldGrid && fieldLevelCheckCount?.length > 0 && fieldLevelAccess && fieldPageLevel?.length > 0\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <thead>\r\n                        <th class=\"text-left\">Field Name</th>\r\n                        <th class=\"text-center\">Read</th>\r\n                        <th class=\"text-center\">Write</th>\r\n                        <th class=\"text-center\">None</th>\r\n                        <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"2\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n              <!-- This code for field access for grid page -->\r\n              <div class=\"row\"\r\n                *ngIf=\"showFieldGrid && fieldLevelCheckCount?.length > 0 && fieldLevelAccess && fieldPageLevel?.length === 0\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <!-- <col style=\"width: 120px\" /> -->\r\n                      <thead>\r\n                        <tr>\r\n                          <th class=\"text-left\">Field Name</th>\r\n                          <th class=\"text-center\">Read</th>\r\n                          <!-- <th class=\"text-center\">Write</th> -->\r\n                          <th class=\"text-center\">None</th>\r\n                          <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                        </tr>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" name=\"permissiongroup_{{i}}\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" />\r\n                            </td>\r\n                            <!-- <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\" value=\"2\" />\r\n                            </td> -->\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n            </mat-card-content>\r\n          </mat-card>\r\n        </form>\r\n        <div class=\"mt-3\" *ngIf=\"policyGroupPages.length && !fieldLevelAccess && selectedAccess === 'role'\">\r\n          <p-accordion class=\"w-full dynamic-search\" iconPos=\"endVal\">\r\n            <p-accordionTab>\r\n              <ng-template pTemplate=\"header\">\r\n                <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                  <span class=\"font-bold\">Policy Groups associated with {{ selectedName }} Role</span>\r\n                </span>\r\n              </ng-template>\r\n              <mat-card class=\"mt-2\">\r\n                <mat-card-content>\r\n                  <div class=\"row\">\r\n                    <div class=\"col-12 mt-1\" *ngFor=\"let policyGroup of policyGroupPages\">\r\n                      <div class=\"radio-title mb-2\">Policy Group: {{ policyGroup?.policygroup?.policygroupname }}</div>\r\n                      <!-- It shows associated Roles -->\r\n                      <div class=\"table-responsive\">\r\n                        <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                          <col />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <thead>\r\n                            <tr>\r\n                              <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                              <th scope=\"col\" class=\"text-center\">R</th>\r\n                              <th scope=\"col\" class=\"text-center\">RW</th>\r\n                              <th scope=\"col\" class=\"text-center\">RWD</th>\r\n                              <th scope=\"col\" class=\"text-center\">None</th>\r\n                            </tr>\r\n                          </thead>\r\n                          <tbody>\r\n                            <ng-container *ngFor=\"let page of policyGroup?.policygrouppage                        \">\r\n                              <tr>\r\n                                <td class=\"text-left\">\r\n                                  <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                                    title=\"page?.page?.activeVersion?.pagename\"\r\n                                    [value]=\"page?.page[0]?.activeVersion?.pagename\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.read\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.readwrite\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.full\" type=\"radio\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.hide\" type=\"radio\" />\r\n                                </td>\r\n                              </tr>\r\n                            </ng-container>\r\n                            <ng-container *ngIf=\"policyGroupPages?.length === 0\">\r\n                              <tr>\r\n                                <td class=\"text-center\" colspan=\"4\">No pages associated with Policy Group.</td>\r\n                              </tr>\r\n                            </ng-container>\r\n                          </tbody>\r\n                        </table>\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                </mat-card-content>\r\n              </mat-card>\r\n            </p-accordionTab>\r\n          </p-accordion>\r\n\r\n        </div>\r\n        <div class=\"mt-3\" *ngIf=\"policyGroupRolePages.length && !fieldLevelAccess && selectedAccess === 'policygroup'\">\r\n          <p-accordion class=\"w-full dynamic-search\" iconPos=\"endVal\">\r\n            <p-accordionTab>\r\n              <ng-template pTemplate=\"header\">\r\n                <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                  <span class=\"font-bold\">Roles associated with {{ selectedName }} Policy Group</span>\r\n                </span>\r\n              </ng-template>\r\n              <mat-card class=\"mt-2\">\r\n                <mat-card-content>\r\n                  <div class=\"row\">\r\n                    <div class=\"col-12 mt-1\" *ngFor=\"let role of policyGroupRolePages\">\r\n                      <div class=\"radio-title mb-2\">Role: {{ role?.role?.name }}</div>\r\n                      <!-- It shows associated policygroups -->\r\n                      <div class=\"table-responsive\">\r\n                        <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                          <col />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <thead>\r\n                            <tr>\r\n                              <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                              <th scope=\"col\" class=\"text-center\">R</th>\r\n                              <th scope=\"col\" class=\"text-center\">RW</th>\r\n                              <th scope=\"col\" class=\"text-center\">RWD</th>\r\n                              <th scope=\"col\" class=\"text-center\">None</th>\r\n                            </tr>\r\n                          </thead>\r\n                          <tbody>\r\n                            <ng-container *ngFor=\"let page of role?.rolepage\">\r\n                              <tr>\r\n                                <td class=\"text-left\">\r\n                                  <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                                    title=\"page?.page?.activeVersion?.pagename\"\r\n                                    [value]=\"page?.page[0]?.activeVersion?.pagename\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.read\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.readwrite\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.full\" type=\"radio\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.hide\" type=\"radio\" />\r\n                                </td>\r\n                              </tr>\r\n                            </ng-container>\r\n                            <ng-container *ngIf=\"policyGroupRolePages?.length === 0\">\r\n                              <tr>\r\n                                <td class=\"text-center\" colspan=\"4\">No pages associated with Role.</td>\r\n                              </tr>\r\n                            </ng-container>\r\n                          </tbody>\r\n                        </table>\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                </mat-card-content>\r\n              </mat-card>\r\n            </p-accordionTab>\r\n          </p-accordion>\r\n\r\n        </div>\r\n        <div class=\"text-right mt-3\" *ngIf=\"multiPageAccess\">\r\n          <!-- <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button> -->\r\n          <!-- <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button> -->\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"submitAlert()\"\r\n            [disabled]=\"(pagelevelaccesssavedisable && pagelevelaccesscountdisable) || (!this.pagelevelaccesscount || this.pagelevelaccesscount?.length === 0) || (enablesave && pagelevelaccesscount && pagelevelaccesscount?.length > 0)\">Save</button>\r\n        </div>\r\n        <div class=\"text-right mt-3\" *ngIf=\"!multiPageAccess\">\r\n          <!-- <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button> -->\r\n          <!-- <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button> -->\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"submitAlert()\"\r\n            [disabled]=\"((multiPageAccess) || (fieldLevelCheckCount && fieldLevelCheckCount?.length === 0) || (enablesave && fieldLevelCheckCount && fieldLevelCheckCount?.length > 0) || (!pagelevelaccesscount || pagelevelaccesscount?.length === 0))\">Save</button>\r\n        </div>\r\n      </mat-card-content>\r\n    </mat-card>\r\n  </div>\r\n</div>\r\n\r\n<div class=\"modal\" id=\"submitAlert\" tabindex=\"-1\" role=\"dialog\">\r\n  <div class=\"modal-dialog modal-lg\" role=\"document\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <h5 class=\"modal-title\">Page Access - Warning</h5>\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\r\n          <span aria-hidden=\"true\">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class=\"modal-body\">\r\n        Field Level Access is already present for this Page. Modifying the Page Level Access will remove all Field Level\r\n        Access. Do you want to proceed?\r\n        <div class=\"clearfix\"></div>\r\n        <div class=\"mt-2\">\r\n          <button class=\"pull-right mb-2 btn btn-primary btncommon delete\" data-dismiss=\"modal\" (click)=\"saveRbac()\">\r\n            Yes\r\n          </button>\r\n          <button class=\"pull-right mb-2 mr-2 btn bg-white text-primary btncancel\" data-dismiss=\"modal\"\r\n            (click)=\"getSelectedPages()\">Cancel</button>\r\n        </div>\r\n        <div class=\"clearfix\"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n", styles: [".mat-card-content .mat-radio-group .mat-radio-button{padding-right:10px;font-family:Roboto,sans-serif!important}.toggleleft{font-size:var(--font-14);font-weight:600;display:block;padding-bottom:10px}:host ::ng-deep .p-dropdown.nobg{background-color:transparent;border:none}:host ::ng-deep .p-dropdown.nobg:hover,:host ::ng-deep .p-dropdown.nobg:focus{background-color:transparent!important;border:none!important}.pageLevelAccessTable table thead tr th,.pageLevelAccessTable table tbody tr td{vertical-align:middle;color:var(--text-dark)}.pageLevelAccessTable table thead tr th input,.pageLevelAccessTable table tbody tr td input{background:var(--bg-light);color:var(--text-dark)}.pageLevelAccessTable table thead tr th a:hover,.pageLevelAccessTable table tbody tr td a:hover{text-decoration:none}:host ::ng-deep .p-inputtext.validity{height:30px;line-height:13px}:host ::ng-deep .p-dropdown.condition{height:30px;line-height:13px}@media screen and (max-width: 990px){:host ::ng-deep .selected-list .c-list{width:calc(100% - 35px)!important}.pageLevelAccessTable{width:100%;overflow:auto}.pageLevelAccessTable .table{margin-bottom:60px}}.selected-list .c-angle-down,.selected-list .c-angle-up{margin-top:-5px}\n"], dependencies: [{ kind: "directive", type: i5.NgClass, selector: "[ngClass]", inputs: ["class", "ngClass"] }, { kind: "directive", type: i5.NgForOf, selector: "[ngFor][ngForOf]", inputs: ["ngForOf", "ngForTrackBy", "ngForTemplate"] }, { kind: "directive", type: i5.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "directive", type: i1$2.ɵNgNoValidate, selector: "form:not([ngNoForm]):not([ngNativeValidate])" }, { kind: "directive", type: i1$2.DefaultValueAccessor, selector: "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]" }, { kind: "directive", type: i1$2.NumberValueAccessor, selector: "input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]" }, { kind: "directive", type: i1$2.RadioControlValueAccessor, selector: "input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]", inputs: ["name", "formControlName", "value"] }, { kind: "directive", type: i1$2.NgControlStatus, selector: "[formControlName],[ngModel],[formControl]" }, { kind: "directive", type: i1$2.NgControlStatusGroup, selector: "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]" }, { kind: "directive", type: i1$2.MinValidator, selector: "input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]", inputs: ["min"] }, { kind: "directive", type: i1$2.FormGroupDirective, selector: "[formGroup]", inputs: ["formGroup"], outputs: ["ngSubmit"], exportAs: ["ngForm"] }, { kind: "directive", type: i1$2.FormControlName, selector: "[formControlName]", inputs: ["formControlName", "disabled", "ngModel"], outputs: ["ngModelChange"] }, { kind: "directive", type: i1$2.FormGroupName, selector: "[formGroupName]", inputs: ["formGroupName"] }, { kind: "directive", type: i1$2.FormArrayName, selector: "[formArrayName]", inputs: ["formArrayName"] }, { kind: "directive", type: i6.PrimeTemplate, selector: "[pTemplate]", inputs: ["type", "pTemplate"] }, { kind: "directive", type: i7$1.Tooltip, selector: "[pTooltip]", inputs: ["tooltipPosition", "tooltipEvent", "appendTo", "positionStyle", "tooltipStyleClass", "tooltipZIndex", "escape", "showDelay", "hideDelay", "life", "positionTop", "positionLeft", "autoHide", "fitContent", "hideOnEscape", "pTooltip", "tooltipDisabled", "tooltipOptions"] }, { kind: "component", type: i7.Dropdown, selector: "p-dropdown", inputs: ["id", "scrollHeight", "filter", "name", "style", "panelStyle", "styleClass", "panelStyleClass", "readonly", "required", "editable", "appendTo", "tabindex", "placeholder", "filterPlaceholder", "filterLocale", "inputId", "dataKey", "filterBy", "filterFields", "autofocus", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "autoDisplayFirst", "group", "showClear", "emptyFilterMessage", "emptyMessage", "lazy", "virtualScroll", "virtualScrollItemSize", "virtualScrollOptions", "overlayOptions", "ariaFilterLabel", "ariaLabel", "ariaLabelledBy", "filterMatchMode", "maxlength", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "focusOnHover", "selectOnFocus", "autoOptionFocus", "autofocusFilter", "disabled", "itemSize", "autoZIndex", "baseZIndex", "showTransitionOptions", "hideTransitionOptions", "filterValue", "options"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onShow", "onHide", "onClear", "onLazyLoad"] }, { kind: "component", type: i9.Accordion, selector: "p-accordion", inputs: ["multiple", "style", "styleClass", "expandIcon", "collapseIcon", "activeIndex", "selectOnFocus", "headerAriaLevel"], outputs: ["onClose", "onOpen", "activeIndexChange"] }, { kind: "component", type: i9.AccordionTab, selector: "p-accordionTab", inputs: ["id", "header", "headerStyle", "tabStyle", "contentStyle", "tabStyleClass", "headerStyleClass", "contentStyleClass", "disabled", "cache", "transitionOptions", "iconPos", "selected", "headerAriaLevel"], outputs: ["selectedChange"] }, { kind: "directive", type: i10.InputText, selector: "[pInputText]" }, { kind: "component", type: i11.MultiSelect, selector: "p-multiSelect", inputs: ["id", "ariaLabel", "style", "styleClass", "panelStyle", "panelStyleClass", "inputId", "disabled", "readonly", "group", "filter", "filterPlaceHolder", "filterLocale", "overlayVisible", "tabindex", "appendTo", "dataKey", "name", "ariaLabelledBy", "displaySelectedLabel", "maxSelectedLabels", "selectionLimit", "selectedItemsLabel", "showToggleAll", "emptyFilterMessage", "emptyMessage", "resetFilterOnHide", "dropdownIcon", "optionLabel", "optionValue", "optionDisabled", "optionGroupLabel", "optionGroupChildren", "showHeader", "filterBy", "scrollHeight", "lazy", "virtualScroll", "virtualScrollItemSize", "virtualScrollOptions", "overlayOptions", "ariaFilterLabel", "filterMatchMode", "tooltip", "tooltipPosition", "tooltipPositionStyle", "tooltipStyleClass", "autofocusFilter", "display", "autocomplete", "showClear", "autoZIndex", "baseZIndex", "showTransitionOptions", "hideTransitionOptions", "defaultLabel", "placeholder", "options", "filterValue", "itemSize", "selectAll", "focusOnHover", "filterFields", "selectOnFocus", "autoOptionFocus"], outputs: ["onChange", "onFilter", "onFocus", "onBlur", "onClick", "onClear", "onPanelShow", "onPanelHide", "onLazyLoad", "onRemove", "onSelectAllChange"] }, { kind: "directive", type: PermissionDirective, selector: "[fieldKey]", inputs: ["fieldKey"] }, { kind: "component", type: AlertComponent, selector: "app-alert" }, { kind: "component", type: i14.MatCard, selector: "mat-card", inputs: ["appearance"], exportAs: ["matCard"] }, { kind: "directive", type: i14.MatCardContent, selector: "mat-card-content" }, { kind: "directive", type: i5$1.MatRadioGroup, selector: "mat-radio-group", exportAs: ["matRadioGroup"] }, { kind: "component", type: i5$1.MatRadioButton, selector: "mat-radio-button", inputs: ["disableRipple", "tabIndex"], exportAs: ["matRadioButton"] }, { kind: "component", type: ManageAccessRadioComponent, selector: "app-manage-access-radio", inputs: ["reloadForm"], outputs: ["accessBy", "policyDropdown", "roleDropdown", "userDropdown", "dropDownSelectedValues"] }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.2.12", ngImport: i0, type: PageaccessComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'lib-pageaccess', template: "<app-alert></app-alert>\r\n<div class=\"row rbac page-access rbac-card mt-2\">\r\n  <div class=\"col-12\">\r\n    <mat-card class=\"mat-card\">\r\n      <mat-card-content class=\"p-2\">\r\n        <form [formGroup]=\"rbacForm\">\r\n          <app-manage-access-radio (accessBy)=\"accessBy($event)\" (userDropdown)=\"userDropdown($event)\"\r\n            (roleDropdown)=\"roleDropdown($event)\" (policyDropdown)=\"policyDropdown($event)\"\r\n            (dropDownSelectedValues)=\"dropDownSelectedValues($event)\"></app-manage-access-radio>\r\n\r\n          <h3 class=\"radio-title mb-2\">Page Access Management</h3>\r\n          <mat-card class=\"mat-card\">\r\n            <mat-card-content class=\"p-2\">\r\n              <div class=\"row\">\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"moduleList\" [settings]=\"moduleDropdownSettings\"\r\n                    onSelect=\"loadSubModule('click')\" onDeSelect=\"removeSubModule($event)\"\r\n                    onSelectAll=\"loadSubModule('click')\" onDeSelectAll=\"removeAllSubModule()\"\r\n                    formControlName=\"module\"></angular2-multiselect> -->\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Sub Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"subModuleList\" [settings]=\"submoduleDropdownSettings\"\r\n                    onSelect=\"loadSubModulePage('click')\" onDeSelect=\"removeSubModulePage($event, 'submodule')\"\r\n                    onSelectAll=\"loadSubModulePage('click')\" onDeSelectAll=\"removeAllSubModulePage()\"\r\n                    formControlName=\"submodule\">\r\n                  </angular2-multiselect> -->\r\n                </div>\r\n\r\n                <div class=\"col-lg-6 mb-3\">\r\n                  <p-accordion class=\"w-full policygroup-accordion\" iconPos=\"endVal\">\r\n                    <p-accordionTab>\r\n                      <ng-template pTemplate=\"header\">\r\n                        <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                          <span class=\"font-bold\">\r\n                            <label aria-labelledby=\"policyGroupList\" for=\"policyGroupList\"\r\n                              class=\"mb-0 referral-form-labels\">Pages\r\n\r\n                              <span *ngIf=\"selectedPageData.length > 0\"\r\n                                class=\"pg-count ml-2\">{{selectedPageData.length}}</span>\r\n                            </label>\r\n                          </span>\r\n                        </span>\r\n                      </ng-template>\r\n                      <!-- <angular2-multiselect [data]=\"pagesList\" [settings]=\"pageDropdownSettings\"\r\n                        (onSelect)=\"populatePage('click',true,$event)\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        (onDeSelect)=\"populatePage('click',false,$event)\"\r\n                        (onSelectAll)=\"populatePage('click',true,$event)\" (onDeSelectAll)=\"removeAllPopulatePage()\"\r\n                        formControlName=\"pageList\"></angular2-multiselect> -->\r\n                        <p-multiSelect [options]=\"pagesList\" formControlName=\"pageList\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        defaultLabel=\"Select Pages\" display=\"chip\" optionLabel=\"pagename\" [autoDisplayFirst]=\"false\"         \r\n                        styleClass=\"policygroup-v2 w-100\" (onChange)=\"populatePage('click',true,$event)\"\r\n                        >\r\n                        <ng-template let-value pTemplate=\"selectedItems\">\r\n                          <div *ngFor=\"let option of value\">\r\n                              <div #selectedpg class=\"p-multiselect-token\"  [ngClass]=\"option.disabled ? 'disabled' : '' \"\r\n                                id=\"{{option.id}}\">\r\n                                <span class=\"policygroupname\" >\r\n                                  {{ option.pagename }}\r\n                                </span>\r\n                                <em class=\"pi pi-times-circle ml-2 clear-icon right-sec\" *ngIf=\"!option.disabled\"\r\n                                role=\"button\" (click)=\"removeValue($event, selectedpg)\"></em>\r\n                              </div>\r\n                          </div>\r\n                          <div *ngIf=\"!value || value.length === 0\">Select Pages</div>\r\n                        </ng-template>\r\n                      </p-multiSelect>\r\n                    </p-accordionTab>\r\n                  </p-accordion>\r\n                </div>\r\n\r\n                <div class=\"col-lg-3 col-md-12 col-12 mb-3\">\r\n                  <label class=\"radio-title d-block required\">Provide Access by </label>\r\n                  <mat-radio-group formControlName=\"provideAccess\" (change)=\"showLevelAccess($event.value)\">\r\n                    <mat-radio-button value=\"1\" fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL\">Page\r\n                      Level&nbsp;&nbsp;</mat-radio-button>\r\n                    <mat-radio-button value=\"2\" fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL\">Field\r\n                      Level</mat-radio-button>\r\n                  </mat-radio-group>\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"fieldLevelAccess\">\r\n                  <label class=\"radio-title\">Select Page</label>\r\n                  <br />\r\n                  <p-dropdown id=\"selectpage\" ariaLabelledBy=\"selectpage\" [options]=\"selectedPageData\"\r\n                    fieldKey=\"SETTINGS_PAG_ACC_PAGE\" [filter]=\"true\"\r\n                    [showClear]=\"fieldLevelCheckCount && fieldLevelCheckCount?.length\" [resetFilterOnHide]=\"true\"\r\n                    (onChange)=\"getFieldLevelList('click')\" formControlName=\"fpages\" optionLabel=\"pagename\"\r\n                    optionValue=\"id\" placeholder=\"Select a page\" class=\"dd-stand-size\">\r\n                    <ng-template let-item pTemplate=\"selectedItem\">\r\n                      <div pTooltip=\"{{item?.pagename}}\" tooltipPosition=\"top\" class=\"text-truncate\"> {{ item?.pagename\r\n                        }}</div>\r\n                    </ng-template>\r\n                    <ng-template let-object pTemplate=\"item\">\r\n                      {{ object.pagename }}\r\n                    </ng-template>\r\n                  </p-dropdown>\r\n                </div>\r\n              </div>\r\n\r\n              <div *ngIf=\"pageLevelAccess\" class=\"row\">\r\n                <div class=\"col-12 mt-3 pageLevelAccessTable\">\r\n                  <table aria-describedby=\"pageLevelAccessTable\" class=\"table table-bordered\">\r\n                    <col />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <thead>\r\n                      <th class=\"text-left\">Page Name</th>\r\n                      <th class=\"text-center\">R</th>\r\n                      <th class=\"text-center\">RW</th>\r\n                      <th class=\"text-center\">RWD</th>\r\n                      <th class=\"text-center\">None</th>\r\n                      <th class=\"text-center\">Validity</th>\r\n                    </thead>\r\n                    <tbody>\r\n                      <ng-container formArrayName=\"pageLevelData\"\r\n                        *ngFor=\"let fAccess of rbacForm.get('pageLevelData')['controls']; let i = index\">\r\n                        <tr [formGroup]=\"rbacForm.get('pageLevelData')['controls'][i]\">\r\n                          <td class=\"text-left\">\r\n                            <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                              formControlName=\"pageName\" placeholder=\"pageleveldata\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\" type=\"radio\" value=\"3\"\r\n                              title=\"pageradio{{ i }}\" fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE\" type=\"radio\" value=\"2\"\r\n                              title=\"pageradio{{ i }}\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE_DELETE\" type=\"radio\" value=\"5\"\r\n                              title=\"pageradio{{ i }}\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_NONE\" type=\"radio\" value=\"4\"\r\n                              title=\"pageradio{{ i }}\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <ng-container *ngIf=\"\r\n                                  rbacForm.get('pageList')?.value[i]?.activeVersion?.gridconfig ||\r\n                                  rbacForm.get('pageList')?.value[i]?.gridconfig\r\n                                \">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" [disabled]=\"fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <p-inputNumber type=\"number\" class=\"validity\"\r\n                                *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [readonly]=\"fAccess?.value?.pageAccess === '4'\" [min]=\"1\"\r\n                                fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_VALIDITY\" formControlName=\"validity\"\r\n                                mode=\"decimal\"></p-inputNumber>\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.pageAccess === '3' || fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </ng-container>\r\n                          </td>\r\n                        </tr>\r\n                      </ng-container>\r\n                    </tbody>\r\n                  </table>\r\n                </div>\r\n              </div>\r\n              <div class=\"row\" *ngIf=\"fieldLevelAccess\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <thead>\r\n                        <th class=\"text-left\">Field Name</th>\r\n                        <th class=\"text-center\">Read</th>\r\n                        <th class=\"text-center\">Write</th>\r\n                        <th class=\"text-center\">None</th>\r\n                        <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" title=\"accessRadio{{ i }}\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"2\" title=\"accessRadio{{ i }}\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" title=\"accessRadio{{ i }}\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n            </mat-card-content>\r\n          </mat-card>\r\n        </form>\r\n        <!-- <div class=\"mt-3\" *ngIf=\"!fieldLevelAccess && selectedAccess === 'role'\">\r\n            <h3 class=\"radio-title mb-2\">Policy Groups associated with {{ selectedRole }}</h3>\r\n            <mat-card class=\"mt-2\">\r\n              <mat-card-content>\r\n                <div class=\"row\">\r\n                  <div class=\"col-12 mt-1\" *ngFor=\"let policyGroupPage of policyGroupPages\">\r\n                    <div class=\"radio-title mb-2\">Policy Group: {{ policyGroupPage.name }}</div>\r\n                    <div class=\"table-responsive\">\r\n                      <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                        <col />\r\n                        <col style=\"width: 120px\" />\r\n                        <col style=\"width: 120px\" />\r\n                        <col style=\"width: 120px\" />\r\n                        <thead>\r\n                          <tr>\r\n                            <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                            <th scope=\"col\" class=\"text-center\">Read</th>\r\n                            <th scope=\"col\" class=\"text-center\">Write</th>\r\n                            <th scope=\"col\" class=\"text-center\">None</th>\r\n                          </tr>\r\n                        </thead>\r\n                        <tbody>\r\n                          <ng-container *ngFor=\"let page of policyGroupPage?.data\">\r\n                            <tr>\r\n                              <td class=\"text-left\">\r\n                                <input\r\n                                  style=\"border: none; pointer-events: none; width: 360px\"\r\n                                  type=\"text\"\r\n                                  title=\"page?.page?.activeVersion?.pagename\"\r\n                                  [value]=\"page?.page?.activeVersion?.pagename\" />\r\n                              </td>\r\n\r\n                              <td class=\"text-center\">\r\n                                <input\r\n                                  disabled\r\n                                  [checked]=\"page?.read\"\r\n                                  type=\"radio\"\r\n                                  fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL_READ\" />\r\n                              </td>\r\n                              <td class=\"text-center\">\r\n                                <input\r\n                                  disabled\r\n                                  [checked]=\"page?.readwrite\"\r\n                                  type=\"radio\"\r\n                                  fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL_WRITE\" />\r\n                              </td>\r\n\r\n                              <td class=\"text-center\">\r\n                                <input\r\n                                  disabled\r\n                                  [checked]=\"page?.hide\"\r\n                                  type=\"radio\"\r\n                                  fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL_NONE\" />\r\n                              </td>\r\n                            </tr>\r\n                          </ng-container>\r\n                          <ng-container *ngIf=\"policyGroupPage?.data?.length === 0\">\r\n                            <tr>\r\n                              <td class=\"text-center\" colspan=\"4\">No pages associated with Policy Group.</td>\r\n                            </tr>\r\n                          </ng-container>\r\n                        </tbody>\r\n                      </table>\r\n                    </div>\r\n                  </div>\r\n                </div>\r\n              </mat-card-content>\r\n            </mat-card>\r\n          </div> -->\r\n        <div class=\"text-right mt-3\">\r\n          <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button>\r\n          <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button>\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"saveRbac()\">Save</button>\r\n        </div>\r\n      </mat-card-content>\r\n    </mat-card>\r\n  </div>\r\n</div>", styles: [".mat-card-content .mat-radio-group .mat-radio-button{padding-right:10px;font-family:Roboto,sans-serif!important}.toggleleft{font-size:var(--font-14);font-weight:600;display:block;padding-bottom:10px}:host ::ng-deep .p-dropdown.nobg{background-color:transparent;border:none}:host ::ng-deep .p-dropdown.nobg:hover,:host ::ng-deep .p-dropdown.nobg:focus{background-color:transparent!important;border:none!important}.pageLevelAccessTable table thead tr th,.pageLevelAccessTable table tbody tr td{vertical-align:middle;color:var(--text-dark)}.pageLevelAccessTable table thead tr th input,.pageLevelAccessTable table tbody tr td input{background:var(--bg-light);color:var(--text-dark)}.pageLevelAccessTable table thead tr th a:hover,.pageLevelAccessTable table tbody tr td a:hover{text-decoration:none}:host ::ng-deep .p-inputtext.validity{height:30px;line-height:13px}:host ::ng-deep .p-dropdown.condition{height:30px;line-height:13px}@media screen and (max-width: 990px){:host ::ng-deep .selected-list .c-list{width:calc(100% - 35px)!important}.pageLevelAccessTable{width:100%;overflow:auto}.pageLevelAccessTable .table{margin-bottom:60px}}.selected-list .c-angle-down,.selected-list .c-angle-up{margin-top:-5px}\n"] }]
+            args: [{ selector: 'lib-pageaccess', template: "<app-alert></app-alert>\r\n<div class=\"row rbac-card\">\r\n  <div class=\"col-12\">\r\n    <mat-card class=\"mat-card\">\r\n      <mat-card-content class=\"p-2\">\r\n        <form [formGroup]=\"rbacForm\">\r\n          <app-manage-access-radio (accessBy)=\"accessBy($event)\" (userDropdown)=\"userDropdown($event)\"\r\n            (roleDropdown)=\"roleDropdown($event)\" (policyDropdown)=\"policyDropdown($event)\"\r\n            (dropDownSelectedValues)=\"dropDownSelectedValues($event)\"></app-manage-access-radio>\r\n          <h3 class=\"radio-title mb-2 pa-title\">Page Access Management</h3>\r\n          <mat-card class=\"mat-card\">\r\n            <mat-card-content class=\"p-2\">\r\n              <div class=\"row\">\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"moduleList\" [settings]=\"moduleDropdownSettings\"\r\n                    onSelect=\"loadSubModule('click')\" onDeSelect=\"removeSubModule($event)\"\r\n                    onSelectAll=\"loadSubModule('click')\" onDeSelectAll=\"removeAllSubModule()\"\r\n                    formControlName=\"module\"></angular2-multiselect> -->\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Sub Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"subModuleList\" [settings]=\"submoduleDropdownSettings\"\r\n                    onSelect=\"loadSubModulePage('click')\" onDeSelect=\"removeSubModulePage($event, 'submodule')\"\r\n                    onSelectAll=\"loadSubModulePage('click')\" onDeSelectAll=\"removeAllSubModulePage()\"\r\n                    formControlName=\"submodule\">\r\n                  </angular2-multiselect> -->\r\n                </div>\r\n\r\n                <div class=\"col-lg-6 mb-3\">\r\n                  <p-accordion class=\"w-full policygroup-accordion\" iconPos=\"endVal\">\r\n                    <p-accordionTab>\r\n                      <ng-template pTemplate=\"header\">\r\n                        <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                          <span class=\"font-bold\">\r\n                            <label aria-labelledby=\"policyGroupList\" for=\"policyGroupList\"\r\n                              class=\"mb-0 referral-form-labels\">Pages\r\n\r\n                              <span *ngIf=\"selectedPageData.length > 0\"\r\n                                class=\"pg-count ml-2\">{{selectedPageData.length}}</span>\r\n                            </label>\r\n                          </span>\r\n                        </span>\r\n                      </ng-template>\r\n                      <!-- <angular2-multiselect [data]=\"pagesList\" [settings]=\"pageDropdownSettings\"\r\n                        (onSelect)=\"populatePage('click',true,$event)\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        (onDeSelect)=\"populatePage('click',false,$event)\"\r\n                        (onSelectAll)=\"populatePage('click',true,$event)\" (onDeSelectAll)=\"removeAllPopulatePage()\"\r\n                        formControlName=\"pageList\"></angular2-multiselect> -->\r\n                        <p-multiSelect [options]=\"pagesList\" formControlName=\"pageList\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        defaultLabel=\"Select Pages\" display=\"chip\" optionLabel=\"pagename\" [autoDisplayFirst]=\"false\"         \r\n                        styleClass=\"policygroup-v2 w-100\" (onChange)=\"populatePage('click',true,$event)\"\r\n                        >\r\n                        <ng-template let-value pTemplate=\"selectedItems\">\r\n                          <div *ngFor=\"let option of value\">\r\n                              <div #selectedpg class=\"p-multiselect-token\"  [ngClass]=\"option.disabled ? 'disabled' : '' \"\r\n                                id=\"{{option.id}}\">\r\n                                <span class=\"policygroupname\" >\r\n                                  {{ option.pagename }}\r\n                                </span>\r\n                                <em class=\"pi pi-times-circle ml-2 clear-icon right-sec\" *ngIf=\"!option.disabled\"\r\n                                role=\"button\" (click)=\"removeValue($event, selectedpg)\"></em>\r\n                              </div>\r\n                          </div>\r\n                          <div *ngIf=\"!value || value.length === 0\">Select Pages</div>\r\n                        </ng-template>\r\n                      </p-multiSelect>\r\n                    </p-accordionTab>\r\n                  </p-accordion>\r\n                </div>\r\n\r\n                <div class=\"col-lg-3 col-md-12 col-12 mb-3\">\r\n                  <label class=\"radio-title d-block required\">Provide Access by </label>\r\n                  <mat-radio-group formControlName=\"provideAccess\" (change)=\"showLevelAccess($event.value)\">\r\n                    <mat-radio-button value=\"1\" fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL\">Page\r\n                      Level&nbsp;&nbsp;</mat-radio-button>\r\n                    <mat-radio-button value=\"2\" fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL\">Field\r\n                      Level</mat-radio-button>\r\n                  </mat-radio-group>\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"fieldLevelAccess\">\r\n                  <label class=\"radio-title\">Select Page</label>\r\n                  <br />\r\n                  <p-dropdown id=\"selectpage\" ariaLabelledBy=\"selectpage\" [options]=\"selectedPageData\"\r\n                    fieldKey=\"SETTINGS_PAG_ACC_PAGE\" [filter]=\"true\"\r\n                    [showClear]=\"fieldLevelCheckCount && fieldLevelCheckCount?.length\" [resetFilterOnHide]=\"true\"\r\n                    (onChange)=\"getFieldLevelList('click')\" formControlName=\"fpages\" optionLabel=\"pagename\"\r\n                    optionValue=\"id\" placeholder=\"Select a page\" class=\"dd-stand-size\">\r\n                    <ng-template let-item pTemplate=\"selectedItem\">\r\n                      <div pTooltip=\"{{item?.pagename}}\" tooltipPosition=\"top\" class=\"text-truncate\"> {{ item?.pagename\r\n                        }}</div>\r\n                    </ng-template>\r\n                    <ng-template let-object pTemplate=\"item\">\r\n                      {{ object.pagename }}\r\n                    </ng-template>\r\n                  </p-dropdown>\r\n                </div>\r\n              </div>\r\n\r\n              <div *ngIf=\"pageLevelAccess\" class=\"row\">\r\n                <div class=\"col-12 mt-3 pageLevelAccessTable\">\r\n                  <table aria-describedby=\"pageLevelAccessTable\" class=\"table table-bordered\">\r\n                    <col />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <thead>\r\n                      <th class=\"text-left\">Page Name</th>\r\n                      <th class=\"text-center\">R</th>\r\n                      <th class=\"text-center\">RW</th>\r\n                      <th class=\"text-center\">RWD</th>\r\n                      <th class=\"text-center\">None</th>\r\n                      <th class=\"text-center\">Validity</th>\r\n                    </thead>\r\n                    <tbody>\r\n                      <ng-container formArrayName=\"pageLevelData\"\r\n                        *ngFor=\"let fAccess of rbacForm.get('pageLevelData')['controls']; let i = index\">\r\n                        <tr [formGroup]=\"rbacForm.get('pageLevelData')['controls'][i]\">\r\n                          <td class=\"text-left\">\r\n                            <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                              formControlName=\"pageName\" placeholder=\"pageleveldata\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\" type=\"radio\" value=\"3\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE\" type=\"radio\" value=\"2\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE_DELETE\" type=\"radio\" value=\"5\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_NONE\" type=\"radio\" value=\"4\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <ng-container *ngIf=\"\r\n                                  rbacForm.get('pageList')?.value[i]?.activeVersion?.gridconfig ||\r\n                                  rbacForm.get('pageList')?.value[i]?.gridconfig\r\n                                \">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" [disabled]=\"fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <p-inputNumber type=\"number\" class=\"validity\"\r\n                                *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [readonly]=\"fAccess?.value?.pageAccess === '4'\" [min]=\"1\"\r\n                                fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_VALIDITY\" formControlName=\"validity\"\r\n                                mode=\"decimal\"></p-inputNumber>\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.pageAccess === '3' || fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </ng-container>\r\n                          </td>\r\n                        </tr>\r\n                      </ng-container>\r\n                    </tbody>\r\n                  </table>\r\n                </div>\r\n              </div>\r\n              <div class=\"row\"\r\n                *ngIf=\"showFieldGrid && fieldLevelCheckCount?.length > 0 && fieldLevelAccess && fieldPageLevel?.length > 0\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <thead>\r\n                        <th class=\"text-left\">Field Name</th>\r\n                        <th class=\"text-center\">Read</th>\r\n                        <th class=\"text-center\">Write</th>\r\n                        <th class=\"text-center\">None</th>\r\n                        <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"2\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n              <!-- This code for field access for grid page -->\r\n              <div class=\"row\"\r\n                *ngIf=\"showFieldGrid && fieldLevelCheckCount?.length > 0 && fieldLevelAccess && fieldPageLevel?.length === 0\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <!-- <col style=\"width: 120px\" /> -->\r\n                      <thead>\r\n                        <tr>\r\n                          <th class=\"text-left\">Field Name</th>\r\n                          <th class=\"text-center\">Read</th>\r\n                          <!-- <th class=\"text-center\">Write</th> -->\r\n                          <th class=\"text-center\">None</th>\r\n                          <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                        </tr>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" name=\"permissiongroup_{{i}}\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" />\r\n                            </td>\r\n                            <!-- <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\" value=\"2\" />\r\n                            </td> -->\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n            </mat-card-content>\r\n          </mat-card>\r\n        </form>\r\n        <div class=\"mt-3\" *ngIf=\"policyGroupPages.length && !fieldLevelAccess && selectedAccess === 'role'\">\r\n          <p-accordion class=\"w-full dynamic-search\" iconPos=\"endVal\">\r\n            <p-accordionTab>\r\n              <ng-template pTemplate=\"header\">\r\n                <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                  <span class=\"font-bold\">Policy Groups associated with {{ selectedName }} Role</span>\r\n                </span>\r\n              </ng-template>\r\n              <mat-card class=\"mt-2\">\r\n                <mat-card-content>\r\n                  <div class=\"row\">\r\n                    <div class=\"col-12 mt-1\" *ngFor=\"let policyGroup of policyGroupPages\">\r\n                      <div class=\"radio-title mb-2\">Policy Group: {{ policyGroup?.policygroup?.policygroupname }}</div>\r\n                      <!-- It shows associated Roles -->\r\n                      <div class=\"table-responsive\">\r\n                        <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                          <col />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <thead>\r\n                            <tr>\r\n                              <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                              <th scope=\"col\" class=\"text-center\">R</th>\r\n                              <th scope=\"col\" class=\"text-center\">RW</th>\r\n                              <th scope=\"col\" class=\"text-center\">RWD</th>\r\n                              <th scope=\"col\" class=\"text-center\">None</th>\r\n                            </tr>\r\n                          </thead>\r\n                          <tbody>\r\n                            <ng-container *ngFor=\"let page of policyGroup?.policygrouppage                        \">\r\n                              <tr>\r\n                                <td class=\"text-left\">\r\n                                  <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                                    title=\"page?.page?.activeVersion?.pagename\"\r\n                                    [value]=\"page?.page[0]?.activeVersion?.pagename\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.read\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.readwrite\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.full\" type=\"radio\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.hide\" type=\"radio\" />\r\n                                </td>\r\n                              </tr>\r\n                            </ng-container>\r\n                            <ng-container *ngIf=\"policyGroupPages?.length === 0\">\r\n                              <tr>\r\n                                <td class=\"text-center\" colspan=\"4\">No pages associated with Policy Group.</td>\r\n                              </tr>\r\n                            </ng-container>\r\n                          </tbody>\r\n                        </table>\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                </mat-card-content>\r\n              </mat-card>\r\n            </p-accordionTab>\r\n          </p-accordion>\r\n\r\n        </div>\r\n        <div class=\"mt-3\" *ngIf=\"policyGroupRolePages.length && !fieldLevelAccess && selectedAccess === 'policygroup'\">\r\n          <p-accordion class=\"w-full dynamic-search\" iconPos=\"endVal\">\r\n            <p-accordionTab>\r\n              <ng-template pTemplate=\"header\">\r\n                <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                  <span class=\"font-bold\">Roles associated with {{ selectedName }} Policy Group</span>\r\n                </span>\r\n              </ng-template>\r\n              <mat-card class=\"mt-2\">\r\n                <mat-card-content>\r\n                  <div class=\"row\">\r\n                    <div class=\"col-12 mt-1\" *ngFor=\"let role of policyGroupRolePages\">\r\n                      <div class=\"radio-title mb-2\">Role: {{ role?.role?.name }}</div>\r\n                      <!-- It shows associated policygroups -->\r\n                      <div class=\"table-responsive\">\r\n                        <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                          <col />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <thead>\r\n                            <tr>\r\n                              <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                              <th scope=\"col\" class=\"text-center\">R</th>\r\n                              <th scope=\"col\" class=\"text-center\">RW</th>\r\n                              <th scope=\"col\" class=\"text-center\">RWD</th>\r\n                              <th scope=\"col\" class=\"text-center\">None</th>\r\n                            </tr>\r\n                          </thead>\r\n                          <tbody>\r\n                            <ng-container *ngFor=\"let page of role?.rolepage\">\r\n                              <tr>\r\n                                <td class=\"text-left\">\r\n                                  <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                                    title=\"page?.page?.activeVersion?.pagename\"\r\n                                    [value]=\"page?.page[0]?.activeVersion?.pagename\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.read\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.readwrite\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.full\" type=\"radio\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.hide\" type=\"radio\" />\r\n                                </td>\r\n                              </tr>\r\n                            </ng-container>\r\n                            <ng-container *ngIf=\"policyGroupRolePages?.length === 0\">\r\n                              <tr>\r\n                                <td class=\"text-center\" colspan=\"4\">No pages associated with Role.</td>\r\n                              </tr>\r\n                            </ng-container>\r\n                          </tbody>\r\n                        </table>\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                </mat-card-content>\r\n              </mat-card>\r\n            </p-accordionTab>\r\n          </p-accordion>\r\n\r\n        </div>\r\n        <div class=\"text-right mt-3\" *ngIf=\"multiPageAccess\">\r\n          <!-- <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button> -->\r\n          <!-- <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button> -->\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"submitAlert()\"\r\n            [disabled]=\"(pagelevelaccesssavedisable && pagelevelaccesscountdisable) || (!this.pagelevelaccesscount || this.pagelevelaccesscount?.length === 0) || (enablesave && pagelevelaccesscount && pagelevelaccesscount?.length > 0)\">Save</button>\r\n        </div>\r\n        <div class=\"text-right mt-3\" *ngIf=\"!multiPageAccess\">\r\n          <!-- <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button> -->\r\n          <!-- <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button> -->\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"submitAlert()\"\r\n            [disabled]=\"((multiPageAccess) || (fieldLevelCheckCount && fieldLevelCheckCount?.length === 0) || (enablesave && fieldLevelCheckCount && fieldLevelCheckCount?.length > 0) || (!pagelevelaccesscount || pagelevelaccesscount?.length === 0))\">Save</button>\r\n        </div>\r\n      </mat-card-content>\r\n    </mat-card>\r\n  </div>\r\n</div>\r\n\r\n<div class=\"modal\" id=\"submitAlert\" tabindex=\"-1\" role=\"dialog\">\r\n  <div class=\"modal-dialog modal-lg\" role=\"document\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <h5 class=\"modal-title\">Page Access - Warning</h5>\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\r\n          <span aria-hidden=\"true\">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class=\"modal-body\">\r\n        Field Level Access is already present for this Page. Modifying the Page Level Access will remove all Field Level\r\n        Access. Do you want to proceed?\r\n        <div class=\"clearfix\"></div>\r\n        <div class=\"mt-2\">\r\n          <button class=\"pull-right mb-2 btn btn-primary btncommon delete\" data-dismiss=\"modal\" (click)=\"saveRbac()\">\r\n            Yes\r\n          </button>\r\n          <button class=\"pull-right mb-2 mr-2 btn bg-white text-primary btncancel\" data-dismiss=\"modal\"\r\n            (click)=\"getSelectedPages()\">Cancel</button>\r\n        </div>\r\n        <div class=\"clearfix\"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<app-alert></app-alert>\r\n<div class=\"row rbac-card\">\r\n  <div class=\"col-12\">\r\n    <mat-card class=\"mat-card\">\r\n      <mat-card-content class=\"p-2\">\r\n        <form [formGroup]=\"rbacForm\">\r\n          <app-manage-access-radio (accessBy)=\"accessBy($event)\" (userDropdown)=\"userDropdown($event)\"\r\n            (roleDropdown)=\"roleDropdown($event)\" (policyDropdown)=\"policyDropdown($event)\"\r\n            (dropDownSelectedValues)=\"dropDownSelectedValues($event)\"></app-manage-access-radio>\r\n          <h3 class=\"radio-title mb-2 pa-title\">Page Access Management</h3>\r\n          <mat-card class=\"mat-card\">\r\n            <mat-card-content class=\"p-2\">\r\n              <div class=\"row\">\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"moduleList\" [settings]=\"moduleDropdownSettings\"\r\n                    onSelect=\"loadSubModule('click')\" onDeSelect=\"removeSubModule($event)\"\r\n                    onSelectAll=\"loadSubModule('click')\" onDeSelectAll=\"removeAllSubModule()\"\r\n                    formControlName=\"module\"></angular2-multiselect> -->\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"false\">\r\n                  <label class=\"radio-title\">Sub Modules</label>\r\n                  <!-- <angular2-multiselect [data]=\"subModuleList\" [settings]=\"submoduleDropdownSettings\"\r\n                    onSelect=\"loadSubModulePage('click')\" onDeSelect=\"removeSubModulePage($event, 'submodule')\"\r\n                    onSelectAll=\"loadSubModulePage('click')\" onDeSelectAll=\"removeAllSubModulePage()\"\r\n                    formControlName=\"submodule\">\r\n                  </angular2-multiselect> -->\r\n                </div>\r\n\r\n                <div class=\"col-lg-6 mb-3\">\r\n                  <p-accordion class=\"w-full policygroup-accordion\" iconPos=\"endVal\">\r\n                    <p-accordionTab>\r\n                      <ng-template pTemplate=\"header\">\r\n                        <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                          <span class=\"font-bold\">\r\n                            <label aria-labelledby=\"policyGroupList\" for=\"policyGroupList\"\r\n                              class=\"mb-0 referral-form-labels\">Pages\r\n\r\n                              <span *ngIf=\"selectedPageData.length > 0\"\r\n                                class=\"pg-count ml-2\">{{selectedPageData.length}}</span>\r\n                            </label>\r\n                          </span>\r\n                        </span>\r\n                      </ng-template>\r\n                      <!-- <angular2-multiselect [data]=\"pagesList\" [settings]=\"pageDropdownSettings\"\r\n                        (onSelect)=\"populatePage('click',true,$event)\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        (onDeSelect)=\"populatePage('click',false,$event)\"\r\n                        (onSelectAll)=\"populatePage('click',true,$event)\" (onDeSelectAll)=\"removeAllPopulatePage()\"\r\n                        formControlName=\"pageList\"></angular2-multiselect> -->\r\n                        <p-multiSelect [options]=\"pagesList\" formControlName=\"pageList\" fieldKey=\"SETTINGS_PAG_ACC_PAGE\"\r\n                        defaultLabel=\"Select Pages\" display=\"chip\" optionLabel=\"pagename\" [autoDisplayFirst]=\"false\"         \r\n                        styleClass=\"policygroup-v2 w-100\" (onChange)=\"populatePage('click',true,$event)\"\r\n                        >\r\n                        <ng-template let-value pTemplate=\"selectedItems\">\r\n                          <div *ngFor=\"let option of value\">\r\n                              <div #selectedpg class=\"p-multiselect-token\"  [ngClass]=\"option.disabled ? 'disabled' : '' \"\r\n                                id=\"{{option.id}}\">\r\n                                <span class=\"policygroupname\" >\r\n                                  {{ option.pagename }}\r\n                                </span>\r\n                                <em class=\"pi pi-times-circle ml-2 clear-icon right-sec\" *ngIf=\"!option.disabled\"\r\n                                role=\"button\" (click)=\"removeValue($event, selectedpg)\"></em>\r\n                              </div>\r\n                          </div>\r\n                          <div *ngIf=\"!value || value.length === 0\">Select Pages</div>\r\n                        </ng-template>\r\n                      </p-multiSelect>\r\n                    </p-accordionTab>\r\n                  </p-accordion>\r\n                </div>\r\n\r\n                <div class=\"col-lg-3 col-md-12 col-12 mb-3\">\r\n                  <label class=\"radio-title d-block required\">Provide Access by </label>\r\n                  <mat-radio-group formControlName=\"provideAccess\" (change)=\"showLevelAccess($event.value)\">\r\n                    <mat-radio-button value=\"1\" fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL\">Page\r\n                      Level&nbsp;&nbsp;</mat-radio-button>\r\n                    <mat-radio-button value=\"2\" fieldKey=\"SETTINGS_PAG_ACC_PAG_FIELD_LEVEL\">Field\r\n                      Level</mat-radio-button>\r\n                  </mat-radio-group>\r\n                </div>\r\n                <div class=\"col-lg-3 col-md-6 col-12 mb-3\" *ngIf=\"fieldLevelAccess\">\r\n                  <label class=\"radio-title\">Select Page</label>\r\n                  <br />\r\n                  <p-dropdown id=\"selectpage\" ariaLabelledBy=\"selectpage\" [options]=\"selectedPageData\"\r\n                    fieldKey=\"SETTINGS_PAG_ACC_PAGE\" [filter]=\"true\"\r\n                    [showClear]=\"fieldLevelCheckCount && fieldLevelCheckCount?.length\" [resetFilterOnHide]=\"true\"\r\n                    (onChange)=\"getFieldLevelList('click')\" formControlName=\"fpages\" optionLabel=\"pagename\"\r\n                    optionValue=\"id\" placeholder=\"Select a page\" class=\"dd-stand-size\">\r\n                    <ng-template let-item pTemplate=\"selectedItem\">\r\n                      <div pTooltip=\"{{item?.pagename}}\" tooltipPosition=\"top\" class=\"text-truncate\"> {{ item?.pagename\r\n                        }}</div>\r\n                    </ng-template>\r\n                    <ng-template let-object pTemplate=\"item\">\r\n                      {{ object.pagename }}\r\n                    </ng-template>\r\n                  </p-dropdown>\r\n                </div>\r\n              </div>\r\n\r\n              <div *ngIf=\"pageLevelAccess\" class=\"row\">\r\n                <div class=\"col-12 mt-3 pageLevelAccessTable\">\r\n                  <table aria-describedby=\"pageLevelAccessTable\" class=\"table table-bordered\">\r\n                    <col />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <col style=\"width: 120px\" />\r\n                    <thead>\r\n                      <th class=\"text-left\">Page Name</th>\r\n                      <th class=\"text-center\">R</th>\r\n                      <th class=\"text-center\">RW</th>\r\n                      <th class=\"text-center\">RWD</th>\r\n                      <th class=\"text-center\">None</th>\r\n                      <th class=\"text-center\">Validity</th>\r\n                    </thead>\r\n                    <tbody>\r\n                      <ng-container formArrayName=\"pageLevelData\"\r\n                        *ngFor=\"let fAccess of rbacForm.get('pageLevelData')['controls']; let i = index\">\r\n                        <tr [formGroup]=\"rbacForm.get('pageLevelData')['controls'][i]\">\r\n                          <td class=\"text-left\">\r\n                            <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                              formControlName=\"pageName\" placeholder=\"pageleveldata\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\" type=\"radio\" value=\"3\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE\" type=\"radio\" value=\"2\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_READ_WRITE_DELETE\" type=\"radio\" value=\"5\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <input (change)=\"changePageAccess(i)\" formControlName=\"pageAccess\"\r\n                              fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_NONE\" type=\"radio\" value=\"4\" />\r\n                          </td>\r\n                          <td class=\"text-center\">\r\n                            <ng-container *ngIf=\"\r\n                                  rbacForm.get('pageList')?.value[i]?.activeVersion?.gridconfig ||\r\n                                  rbacForm.get('pageList')?.value[i]?.gridconfig\r\n                                \">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" [disabled]=\"fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <p-inputNumber type=\"number\" class=\"validity\"\r\n                                *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [readonly]=\"fAccess?.value?.pageAccess === '4'\" [min]=\"1\"\r\n                                fieldKey=\"SETTINGS_PAG_ACC_PAGE_PAGE_LEVEL_VALIDITY\" formControlName=\"validity\"\r\n                                mode=\"decimal\"></p-inputNumber>\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.pageAccess === '3' || fAccess?.value?.pageAccess === '4'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </ng-container>\r\n                          </td>\r\n                        </tr>\r\n                      </ng-container>\r\n                    </tbody>\r\n                  </table>\r\n                </div>\r\n              </div>\r\n              <div class=\"row\"\r\n                *ngIf=\"showFieldGrid && fieldLevelCheckCount?.length > 0 && fieldLevelAccess && fieldPageLevel?.length > 0\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <thead>\r\n                        <th class=\"text-left\">Field Name</th>\r\n                        <th class=\"text-center\">Read</th>\r\n                        <th class=\"text-center\">Write</th>\r\n                        <th class=\"text-center\">None</th>\r\n                        <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"2\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n              <!-- This code for field access for grid page -->\r\n              <div class=\"row\"\r\n                *ngIf=\"showFieldGrid && fieldLevelCheckCount?.length > 0 && fieldLevelAccess && fieldPageLevel?.length === 0\">\r\n                <div class=\"col-12\">\r\n                  <div class=\"table-responsive\">\r\n                    <table aria-describedby=\"fieldLevelAccessTable\" class=\"table table-bordered\">\r\n                      <col />\r\n                      <col style=\"width: 120px\" />\r\n                      <col style=\"width: 120px\" />\r\n                      <!-- <col style=\"width: 120px\" /> -->\r\n                      <thead>\r\n                        <tr>\r\n                          <th class=\"text-left\">Field Name</th>\r\n                          <th class=\"text-center\">Read</th>\r\n                          <!-- <th class=\"text-center\">Write</th> -->\r\n                          <th class=\"text-center\">None</th>\r\n                          <th class=\"text-center\" *ngIf=\"showFieldValidity\">Validity</th>\r\n                        </tr>\r\n                      </thead>\r\n                      <tbody>\r\n                        <ng-container formArrayName=\"fieldLevelData\"\r\n                          *ngFor=\"let fAccess of rbacForm.get('fieldLevelData')['controls']; let i = index\">\r\n                          <tr [formGroupName]=\"i\">\r\n                            <td class=\"text-left\">\r\n                              {{ fData[i]['displayname'] }}\r\n                              <input type=\"hidden\" formControlName=\"assetid\" value=\"{{ fData[i]['id'] }}\" />\r\n                              <input type=\"hidden\" formControlName=\"pageId\" name=\"permissiongroup_{{i}}\" />\r\n                            </td>\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"3\" />\r\n                            </td>\r\n                            <!-- <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\" value=\"2\" />\r\n                            </td> -->\r\n                            <td class=\"text-center\">\r\n                              <input formControlName=\"access\" (change)=\"changeFieldAccess($event)\" type=\"radio\"\r\n                                value=\"4\" />\r\n                            </td>\r\n                            <td class=\"text-center\" *ngIf=\"showFieldValidity\">\r\n                              <p-dropdown [options]=\"conditions\" styleClass=\"condition\"\r\n                                [disabled]=\"fAccess?.value?.access === '4'\" formControlName=\"condition\"\r\n                                placeholder=\"Select a condition\" optionLabel=\"name\" optionValue=\"key\">\r\n                              </p-dropdown>\r\n                              <input type=\"number\" class=\"validity\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                [min]=\"1\" formControlName=\"validity\" [readonly]=\"fAccess?.value?.access === '4'\"\r\n                                style=\"width: 50px; margin-left: 15px\" pInputText />\r\n                              <p-dropdown [options]=\"getFallbackPermission(fAccess)\" styleClass=\"condition\"\r\n                                formControlName=\"fallbackTo\" *ngIf=\"fAccess?.value?.condition !== 'always'\"\r\n                                placeholder=\"Select a permission\"\r\n                                [disabled]=\"fAccess?.value?.access === '4' || fAccess?.value?.access === '3'\"\r\n                                optionLabel=\"name\" optionValue=\"key\" [style]=\"{ 'margin-left': '15px' }\">\r\n                              </p-dropdown>\r\n                            </td>\r\n                          </tr>\r\n                        </ng-container>\r\n                      </tbody>\r\n                    </table>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n            </mat-card-content>\r\n          </mat-card>\r\n        </form>\r\n        <div class=\"mt-3\" *ngIf=\"policyGroupPages.length && !fieldLevelAccess && selectedAccess === 'role'\">\r\n          <p-accordion class=\"w-full dynamic-search\" iconPos=\"endVal\">\r\n            <p-accordionTab>\r\n              <ng-template pTemplate=\"header\">\r\n                <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                  <span class=\"font-bold\">Policy Groups associated with {{ selectedName }} Role</span>\r\n                </span>\r\n              </ng-template>\r\n              <mat-card class=\"mt-2\">\r\n                <mat-card-content>\r\n                  <div class=\"row\">\r\n                    <div class=\"col-12 mt-1\" *ngFor=\"let policyGroup of policyGroupPages\">\r\n                      <div class=\"radio-title mb-2\">Policy Group: {{ policyGroup?.policygroup?.policygroupname }}</div>\r\n                      <!-- It shows associated Roles -->\r\n                      <div class=\"table-responsive\">\r\n                        <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                          <col />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <thead>\r\n                            <tr>\r\n                              <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                              <th scope=\"col\" class=\"text-center\">R</th>\r\n                              <th scope=\"col\" class=\"text-center\">RW</th>\r\n                              <th scope=\"col\" class=\"text-center\">RWD</th>\r\n                              <th scope=\"col\" class=\"text-center\">None</th>\r\n                            </tr>\r\n                          </thead>\r\n                          <tbody>\r\n                            <ng-container *ngFor=\"let page of policyGroup?.policygrouppage                        \">\r\n                              <tr>\r\n                                <td class=\"text-left\">\r\n                                  <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                                    title=\"page?.page?.activeVersion?.pagename\"\r\n                                    [value]=\"page?.page[0]?.activeVersion?.pagename\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.read\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.readwrite\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.full\" type=\"radio\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.hide\" type=\"radio\" />\r\n                                </td>\r\n                              </tr>\r\n                            </ng-container>\r\n                            <ng-container *ngIf=\"policyGroupPages?.length === 0\">\r\n                              <tr>\r\n                                <td class=\"text-center\" colspan=\"4\">No pages associated with Policy Group.</td>\r\n                              </tr>\r\n                            </ng-container>\r\n                          </tbody>\r\n                        </table>\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                </mat-card-content>\r\n              </mat-card>\r\n            </p-accordionTab>\r\n          </p-accordion>\r\n\r\n        </div>\r\n        <div class=\"mt-3\" *ngIf=\"policyGroupRolePages.length && !fieldLevelAccess && selectedAccess === 'policygroup'\">\r\n          <p-accordion class=\"w-full dynamic-search\" iconPos=\"endVal\">\r\n            <p-accordionTab>\r\n              <ng-template pTemplate=\"header\">\r\n                <span class=\"flex align-items-center head-text gap-2 w-full\">\r\n                  <span class=\"font-bold\">Roles associated with {{ selectedName }} Policy Group</span>\r\n                </span>\r\n              </ng-template>\r\n              <mat-card class=\"mt-2\">\r\n                <mat-card-content>\r\n                  <div class=\"row\">\r\n                    <div class=\"col-12 mt-1\" *ngFor=\"let role of policyGroupRolePages\">\r\n                      <div class=\"radio-title mb-2\">Role: {{ role?.role?.name }}</div>\r\n                      <!-- It shows associated policygroups -->\r\n                      <div class=\"table-responsive\">\r\n                        <table id=\"policyGroupTable\" aria-describedby=\"policyGroupTable\" class=\"table table-bordered\">\r\n                          <col />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <col style=\"width: 120px\" />\r\n                          <thead>\r\n                            <tr>\r\n                              <th scope=\"col\" class=\"text-left\">Page Name</th>\r\n                              <th scope=\"col\" class=\"text-center\">R</th>\r\n                              <th scope=\"col\" class=\"text-center\">RW</th>\r\n                              <th scope=\"col\" class=\"text-center\">RWD</th>\r\n                              <th scope=\"col\" class=\"text-center\">None</th>\r\n                            </tr>\r\n                          </thead>\r\n                          <tbody>\r\n                            <ng-container *ngFor=\"let page of role?.rolepage\">\r\n                              <tr>\r\n                                <td class=\"text-left\">\r\n                                  <input style=\"border: none; pointer-events: none; width: 360px\" type=\"text\"\r\n                                    title=\"page?.page?.activeVersion?.pagename\"\r\n                                    [value]=\"page?.page[0]?.activeVersion?.pagename\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.read\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.readwrite\" type=\"radio\" />\r\n                                </td>\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.full\" type=\"radio\" />\r\n                                </td>\r\n\r\n                                <td class=\"text-center\">\r\n                                  <input disabled [checked]=\"page?.hide\" type=\"radio\" />\r\n                                </td>\r\n                              </tr>\r\n                            </ng-container>\r\n                            <ng-container *ngIf=\"policyGroupRolePages?.length === 0\">\r\n                              <tr>\r\n                                <td class=\"text-center\" colspan=\"4\">No pages associated with Role.</td>\r\n                              </tr>\r\n                            </ng-container>\r\n                          </tbody>\r\n                        </table>\r\n                      </div>\r\n                    </div>\r\n                  </div>\r\n                </mat-card-content>\r\n              </mat-card>\r\n            </p-accordionTab>\r\n          </p-accordion>\r\n\r\n        </div>\r\n        <div class=\"text-right mt-3\" *ngIf=\"multiPageAccess\">\r\n          <!-- <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button> -->\r\n          <!-- <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button> -->\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"submitAlert()\"\r\n            [disabled]=\"(pagelevelaccesssavedisable && pagelevelaccesscountdisable) || (!this.pagelevelaccesscount || this.pagelevelaccesscount?.length === 0) || (enablesave && pagelevelaccesscount && pagelevelaccesscount?.length > 0)\">Save</button>\r\n        </div>\r\n        <div class=\"text-right mt-3\" *ngIf=\"!multiPageAccess\">\r\n          <!-- <button class=\"btn btn-primary mr-2\" fieldKey=\"SETTINGS_PAG_ACC_BACK\" (click)=\"redirectList()\">Back</button> -->\r\n          <!-- <button class=\"btn btn-cancel mr-2\" fieldKey=\"SETTINGS_PAG_ACC_CLEAR\" (click)=\"resetForm()\">Clear</button> -->\r\n          <button class=\"btn btn-primary\" fieldKey=\"SETTINGS_PAG_ACC_SAVE\" (click)=\"submitAlert()\"\r\n            [disabled]=\"((multiPageAccess) || (fieldLevelCheckCount && fieldLevelCheckCount?.length === 0) || (enablesave && fieldLevelCheckCount && fieldLevelCheckCount?.length > 0) || (!pagelevelaccesscount || pagelevelaccesscount?.length === 0))\">Save</button>\r\n        </div>\r\n      </mat-card-content>\r\n    </mat-card>\r\n  </div>\r\n</div>\r\n\r\n<div class=\"modal\" id=\"submitAlert\" tabindex=\"-1\" role=\"dialog\">\r\n  <div class=\"modal-dialog modal-lg\" role=\"document\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <h5 class=\"modal-title\">Page Access - Warning</h5>\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\r\n          <span aria-hidden=\"true\">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class=\"modal-body\">\r\n        Field Level Access is already present for this Page. Modifying the Page Level Access will remove all Field Level\r\n        Access. Do you want to proceed?\r\n        <div class=\"clearfix\"></div>\r\n        <div class=\"mt-2\">\r\n          <button class=\"pull-right mb-2 btn btn-primary btncommon delete\" data-dismiss=\"modal\" (click)=\"saveRbac()\">\r\n            Yes\r\n          </button>\r\n          <button class=\"pull-right mb-2 mr-2 btn bg-white text-primary btncancel\" data-dismiss=\"modal\"\r\n            (click)=\"getSelectedPages()\">Cancel</button>\r\n        </div>\r\n        <div class=\"clearfix\"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n", styles: [".mat-card-content .mat-radio-group .mat-radio-button{padding-right:10px;font-family:Roboto,sans-serif!important}.toggleleft{font-size:var(--font-14);font-weight:600;display:block;padding-bottom:10px}:host ::ng-deep .p-dropdown.nobg{background-color:transparent;border:none}:host ::ng-deep .p-dropdown.nobg:hover,:host ::ng-deep .p-dropdown.nobg:focus{background-color:transparent!important;border:none!important}.pageLevelAccessTable table thead tr th,.pageLevelAccessTable table tbody tr td{vertical-align:middle;color:var(--text-dark)}.pageLevelAccessTable table thead tr th input,.pageLevelAccessTable table tbody tr td input{background:var(--bg-light);color:var(--text-dark)}.pageLevelAccessTable table thead tr th a:hover,.pageLevelAccessTable table tbody tr td a:hover{text-decoration:none}:host ::ng-deep .p-inputtext.validity{height:30px;line-height:13px}:host ::ng-deep .p-dropdown.condition{height:30px;line-height:13px}@media screen and (max-width: 990px){:host ::ng-deep .selected-list .c-list{width:calc(100% - 35px)!important}.pageLevelAccessTable{width:100%;overflow:auto}.pageLevelAccessTable .table{margin-bottom:60px}}.selected-list .c-angle-down,.selected-list .c-angle-up{margin-top:-5px}\n"] }]
         }], ctorParameters: function () { return [{ type: i0.Injector }, { type: i1$2.FormBuilder }, { type: i0.ChangeDetectorRef }, { type: DataStoreService }, { type: i3.Router }, { type: AlertService }]; }, propDecorators: { AddComponent: [{
                 type: ViewChild,
                 args: [ManageAccessRadioComponent]

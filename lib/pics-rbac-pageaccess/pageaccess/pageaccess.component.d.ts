@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Injector, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../@core/service/auth.service';
-import { PageAccessService } from '../@core/urls/page-access.service';
-import { AlertService } from '../@core/service/alert.service';
 import { Subscription } from 'rxjs';
-import { RBACINFO } from '../@core/urls/rbac-url.config';
+import { AlertService } from '../@core/service/alert.service';
+import { AuthService } from '../@core/service/auth.service';
 import { DataStoreService } from '../@core/service/data-store.service';
+import { PageAccessService } from '../@core/urls/page-access.service';
+import { RBACINFO } from '../@core/urls/rbac-url.config';
 import * as i0 from "@angular/core";
 export declare class PageaccessComponent implements OnInit {
     private formBuilder;
@@ -25,6 +25,7 @@ export declare class PageaccessComponent implements OnInit {
     subModuleList: any[];
     pageData: any[];
     pagesList: any[];
+    loadedPagesList: any[];
     selectedPageData: any[];
     fData: any[];
     moduleDropdownSettings: {};
@@ -46,8 +47,10 @@ export declare class PageaccessComponent implements OnInit {
     selectedAccess: string;
     updatePage: boolean;
     selectedId: number;
+    selectedName: string;
     assetList: any;
     policyGroupPages: Array<any>;
+    policyGroupRolePages: Array<any>;
     selectedRole: string;
     conditions: Array<any>;
     permissions: Array<any>;
@@ -62,7 +65,25 @@ export declare class PageaccessComponent implements OnInit {
     pId: any;
     fullArray: any;
     mergedAsset: any;
+    httpService: any;
+    permissionUpdatedPages: Array<any>;
+    fieldPageLevel: [];
     fieldLevelCheckCount: any;
+    pagelevelaccesssavedisable: boolean;
+    pagelevelaccesscount: any;
+    selectedPages: Array<number>;
+    previousSelection: Array<number>;
+    isPageDeselectSave: boolean;
+    deselectedItemIds: Array<number>;
+    isRemoveAllFields: boolean;
+    deselectAssetIds: Array<number>;
+    enablesave: boolean;
+    pagelevelaccesscountdisable: boolean;
+    showFieldGrid: boolean;
+    getPageList: boolean;
+    disabledPages: Array<number>;
+    oldPageAccessValues: any[];
+    grantedPages: any[];
     constructor(injector: Injector, formBuilder: FormBuilder, cdRef: ChangeDetectorRef, _storeservice: DataStoreService, router: Router, alert: AlertService);
     ngOnInit(): void;
     ngOnDestroy(): void;
@@ -75,10 +96,15 @@ export declare class PageaccessComponent implements OnInit {
     getOrganizationPage(): void;
     getFallbackPermission(fAccess: any): any[];
     getSelectedPages(_selectedPages?: any, _pageConfig?: any, _assetconfig?: any): void;
+    getGrantedPages(): void;
+    removeValue(e: any, item: any): void;
+    onControlChanges(): void;
+    checkExistingGrantedPolicyPages(rolePages: any, policyGroupPages: any): any;
+    checkExistingGrantedRolePages(policyPages: any, policyGroupRolePages: any): any;
     policyGroupCondition(data: any, policyGroup: any): void;
     getConfiguredAssetData(selectedAccess: any, selectedId: any): void;
     loadPages(tempPageData: any, action: any, pageids: any, pageConfig: any, fieldConfig: any): void;
-    populatePage(action?: any, pageConfig?: any, fieldConfig?: any, pageids?: any): void;
+    populatePage(action: any, selected?: any, event?: any, pageConfig?: any, fieldConfig?: any, pageids?: any): void;
     removeAllPopulatePage(): void;
     showLevelAccess(id: any): void;
     fPagesCheckLength(fpages: any, pageIds: any): void;
@@ -96,6 +122,7 @@ export declare class PageaccessComponent implements OnInit {
     checkMergedAsset(data: any): void;
     getAccessByAsset(accessArray: any): void;
     mergeAsset(arr1: any, arr2: any): any;
+    submitAlert(): void;
     saveRbac(): void;
     getPageLevelByArray(pageLevelData: any): void;
     getFieldLevelByAsset(fieldLevelData: any): void;
@@ -113,7 +140,6 @@ export declare class PageaccessComponent implements OnInit {
     saveAccessPatching(): void;
     changeFieldAccess(_index: any): void;
     changePageAccess(index: any): void;
-    removeValue(e: any, item: any): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<PageaccessComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<PageaccessComponent, "lib-pageaccess", never, {}, {}, never, never, false, never>;
 }
