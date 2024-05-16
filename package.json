@@ -1,6 +1,6 @@
 {
   "name": "@pics-core/rbac-pageaccess",
-  "version": "1.0.3-RPMP.4",
+  "version": "1.0.3-RPMP.4.1",
   "peerDependencies": {
     "@angular/common": "^16.2.12",
     "@angular/core": "^16.2.12",
@@ -18,12 +18,12 @@
   },
   "main": "bundles/pics-core-rbac-pageaccess.umd.js",
   "module": "fesm2022/pics-core-rbac-pageaccess.mjs",
-  "es2015": "fesm2015/pics-core-rbac-pageaccess.js",
-  "esm2015": "esm2015/pics-core-rbac-pageaccess.js",
-  "fesm2015": "fesm2015/pics-core-rbac-pageaccess.js",
+  "es2022": "fesm2022/pics-core-rbac-pageaccess.js",
+  "esm2022": "esm2022/pics-core-rbac-pageaccess.js",
+  "fesm2022": "fesm2022/pics-core-rbac-pageaccess.js",
   "typings": "index.d.ts",
   "sideEffects": false,
-  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
+  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.",
   "directories": {
     "lib": "lib"
   },
