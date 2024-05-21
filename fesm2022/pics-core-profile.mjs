@@ -1192,8 +1192,8 @@ let ProfileComponent$1 = class ProfileComponent {
     createRow(x) {
         return new FormGroup({
             id: new FormControl(null),
-            phonenumbertype: new FormControl(x?.contactType ? x?.contactType : ' ', [Validators.required]),
-            phonenumber: new FormControl(x?.contactNumber ? x?.contactNumber : ' ', [Validators.required, Validators.pattern(/\(\d{3}\) \d{3}-\d{4}/)])
+            phonenumbertype: new FormControl(x?.phonenumbertype ? x?.phonenumbertype : ' ', [Validators.required]),
+            phonenumber: new FormControl(x?.phonenumber ? x?.phonenumber : ' ', [Validators.required, Validators.pattern(/\(\d{3}\) \d{3}-\d{4}/)])
         });
     }
     addSerice() {
@@ -1282,21 +1282,8 @@ let ProfileComponent$1 = class ProfileComponent {
                 alternate_email: personData?.email?.find(e => e?.emailtype == 'alternate_email')?.email,
                 // HomePhone:personData?.phone_numbers?.find(p => p?.phonenumbertype === 'HOME_PHONE')?.phonenumber,
             });
-            // if(personData?.phone_numbers?.length < 1){
-            //   const value = personData?.phone_numbers?.find(p => p?.phonenumbertype === 'CELL_PHONE')?.phonenumber;
-            //   const mobile =`(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6)}`;
-            //   this.userForm.patchValue({
-            //     phone:mobile
-            //   })
-            // }
-            // else{
-            //   this.userForm.patchValue({
-            //     phone:personData.phone
-            //   })
-            // }
             const control = this.userForm.controls['contactData'];
             control.controls = [];
-            personData?.phone_numbers.map(item => item.phonenumbertype);
             personData?.phone_numbers?.forEach(x => {
                 control.push(this.createRow(x));
             });
