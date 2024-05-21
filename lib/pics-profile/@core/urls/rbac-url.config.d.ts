@@ -90,6 +90,7 @@ export declare class MasterURL {
             getAllCategoryTree: string;
             getLookupTree: string;
             getPermissionsTree: string;
+            GetCategoryLookup: string;
         };
     };
 }

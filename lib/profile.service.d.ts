@@ -19,6 +19,7 @@ export declare class ProfileService {
     getUserPreference(id: any): Observable<Object>;
     updateUser(data: any, userid: string): Observable<Object>;
     saveUserPreference(data: any): Observable<Object>;
+    getCategoryLookup(name: any): Observable<Object>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ProfileService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<ProfileService>;
 }
