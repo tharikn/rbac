@@ -1192,7 +1192,7 @@ let ProfileComponent$1 = class ProfileComponent {
     }
     createRow(x) {
         return new FormGroup({
-            id: new FormControl(null),
+            id: new FormControl(x?.id ? x?.id : null),
             phonenumbertype: new FormControl(x?.phonenumbertype ? x?.phonenumbertype : ' ', [Validators.required]),
             phonenumber: new FormControl(x?.phonenumber ? x?.phonenumber : ' ', [Validators.required, Validators.pattern(/\(\d{3}\) \d{3}-\d{4}/)])
         });
@@ -1285,9 +1285,11 @@ let ProfileComponent$1 = class ProfileComponent {
             });
             const control = this.userForm.controls['contactData'];
             control.controls = [];
-            personData?.phone_numbers?.forEach(x => {
-                control.push(this.createRow(x));
-            });
+            if (personData?.phone_numbers?.length) {
+                personData?.phone_numbers?.forEach(x => {
+                    control.push(this.createRow(x));
+                });
+            }
         });
     }
     get formValidate() {
