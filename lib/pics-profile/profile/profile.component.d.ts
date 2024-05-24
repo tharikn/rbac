@@ -48,6 +48,7 @@ export declare class ProfileComponent implements OnInit {
     userId: string;
     externalOnly: boolean;
     contactTypeList: any[];
+    languagesList: any[];
     constructor(injector: Injector, authService: AuthService, formBuilder: FormBuilder, httpService: HttpService, profileService: ProfileService, attachmentService: AttachmentsService, _storeservice: DataStoreService);
     ngOnInit(): void;
     get contactData(): FormArray;
