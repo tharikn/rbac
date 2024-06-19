@@ -1,4 +1,4 @@
-import { EventEmitter, OnInit } from '@angular/core';
+import { OnInit } from '@angular/core';
 import { RBACINFO } from './pics-profile/@core/urls/rbac-url.config';
 import { Observable } from 'rxjs';
 import { PermissionStore } from './pics-profile/@core/permissions/permission.store';
@@ -10,10 +10,8 @@ export declare class ProfileComponent implements OnInit {
     RBACORG?: RBACINFO;
     PERMISSION?: any;
     profileEvent: Observable<any>;
-    libOnPasswordSuccess: EventEmitter<any>;
     constructor(permissionStore: PermissionStore, _storeservice: DataStoreService);
     ngOnInit(): void;
-    onPasswordSuccess($event: any): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ProfileComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ProfileComponent, "profile", never, { "RBACORG": { "alias": "RBACORG"; "required": false; }; "PERMISSION": { "alias": "PERMISSION"; "required": false; }; "profileEvent": { "alias": "profileEvent"; "required": false; }; }, { "libOnPasswordSuccess": "libOnPasswordSuccess"; }, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ProfileComponent, "profile", never, { "RBACORG": { "alias": "RBACORG"; "required": false; }; "PERMISSION": { "alias": "PERMISSION"; "required": false; }; "profileEvent": { "alias": "profileEvent"; "required": false; }; }, {}, never, never, false, never>;
 }

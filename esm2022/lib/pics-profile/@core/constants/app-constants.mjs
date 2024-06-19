@@ -2,13 +2,11 @@ export class AppConstants {
     static errorMessage = 'Something went wrong!';
     static regexEmail = '^[0-9a-zA-Z.-]+[@][0-9a-zA-Z.-]+[.][0-9a-zA-Z]{2,}$';
     static errorList = [
-        'Include at least one number',
-        'Include at least one special character',
-        'Include at least one upper case letter',
-        'Include at least one lower case letter',
-        'Be at least 8 characters in length',
-        'Should not exceed sixteen (16) characters',
-        'Space characters are invalid'
+        'Have at least one (1) number',
+        'Have at least one (1) special character',
+        'Have at least one (1) upper case letter',
+        'Have at least one (1) lower case letter',
+        'Contain a minimum of fourteen (14) characters'
     ];
 }
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXBwLWNvbnN0YW50cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3Byb2plY3RzL3BpY3MtY29yZS9wcm9maWxlL3NyYy9saWIvcGljcy1wcm9maWxlL0Bjb3JlL2NvbnN0YW50cy9hcHAtY29uc3RhbnRzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE1BQU0sT0FBTyxZQUFZO0lBQ2hCLE1BQU0sQ0FBQyxZQUFZLEdBQUcsdUJBQXVCLENBQUM7SUFDOUMsTUFBTSxDQUFDLFVBQVUsR0FBRyxxREFBcUQsQ0FBQztJQUUxRSxNQUFNLENBQUMsU0FBUyxHQUFHO1FBQ3hCLDZCQUE2QjtRQUM3Qix3Q0FBd0M7UUFDeEMsd0NBQXdDO1FBQ3hDLHdDQUF3QztRQUN4QyxvQ0FBb0M7UUFDcEMsMkNBQTJDO1FBQzNDLDhCQUE4QjtLQUMvQixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGNsYXNzIEFwcENvbnN0YW50cyB7XHJcbiAgcHVibGljIHN0YXRpYyBlcnJvck1lc3NhZ2UgPSAnU29tZXRoaW5nIHdlbnQgd3JvbmchJztcclxuICBwdWJsaWMgc3RhdGljIHJlZ2V4RW1haWwgPSAnXlswLTlhLXpBLVouLV0rW0BdWzAtOWEtekEtWi4tXStbLl1bMC05YS16QS1aXXsyLH0kJztcclxuXHJcbiAgcHVibGljIHN0YXRpYyBlcnJvckxpc3QgPSBbXHJcbiAgICAnSW5jbHVkZSBhdCBsZWFzdCBvbmUgbnVtYmVyJyxcclxuICAgICdJbmNsdWRlIGF0IGxlYXN0IG9uZSBzcGVjaWFsIGNoYXJhY3RlcicsXHJcbiAgICAnSW5jbHVkZSBhdCBsZWFzdCBvbmUgdXBwZXIgY2FzZSBsZXR0ZXInLFxyXG4gICAgJ0luY2x1ZGUgYXQgbGVhc3Qgb25lIGxvd2VyIGNhc2UgbGV0dGVyJyxcclxuICAgICdCZSBhdCBsZWFzdCA4IGNoYXJhY3RlcnMgaW4gbGVuZ3RoJyxcclxuICAgICdTaG91bGQgbm90IGV4Y2VlZCBzaXh0ZWVuICgxNikgY2hhcmFjdGVycycsXHJcbiAgICAnU3BhY2UgY2hhcmFjdGVycyBhcmUgaW52YWxpZCdcclxuICBdO1xyXG5cclxufVxyXG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXBwLWNvbnN0YW50cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3Byb2plY3RzL3BpY3MtY29yZS9wcm9maWxlL3NyYy9saWIvcGljcy1wcm9maWxlL0Bjb3JlL2NvbnN0YW50cy9hcHAtY29uc3RhbnRzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE1BQU0sT0FBTyxZQUFZO0lBQ2hCLE1BQU0sQ0FBQyxZQUFZLEdBQUcsdUJBQXVCLENBQUM7SUFDOUMsTUFBTSxDQUFDLFVBQVUsR0FBRyxxREFBcUQsQ0FBQztJQUUxRSxNQUFNLENBQUMsU0FBUyxHQUFHO1FBQ3hCLDhCQUE4QjtRQUM5Qix5Q0FBeUM7UUFDekMseUNBQXlDO1FBQ3pDLHlDQUF5QztRQUN6QywrQ0FBK0M7S0FDaEQsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBjbGFzcyBBcHBDb25zdGFudHMge1xyXG4gIHB1YmxpYyBzdGF0aWMgZXJyb3JNZXNzYWdlID0gJ1NvbWV0aGluZyB3ZW50IHdyb25nISc7XHJcbiAgcHVibGljIHN0YXRpYyByZWdleEVtYWlsID0gJ15bMC05YS16QS1aLi1dK1tAXVswLTlhLXpBLVouLV0rWy5dWzAtOWEtekEtWl17Mix9JCc7XHJcblxyXG4gIHB1YmxpYyBzdGF0aWMgZXJyb3JMaXN0ID0gW1xyXG4gICAgJ0hhdmUgYXQgbGVhc3Qgb25lICgxKSBudW1iZXInLFxyXG4gICAgJ0hhdmUgYXQgbGVhc3Qgb25lICgxKSBzcGVjaWFsIGNoYXJhY3RlcicsXHJcbiAgICAnSGF2ZSBhdCBsZWFzdCBvbmUgKDEpIHVwcGVyIGNhc2UgbGV0dGVyJyxcclxuICAgICdIYXZlIGF0IGxlYXN0IG9uZSAoMSkgbG93ZXIgY2FzZSBsZXR0ZXInLFxyXG4gICAgJ0NvbnRhaW4gYSBtaW5pbXVtIG9mIGZvdXJ0ZWVuICgxNCkgY2hhcmFjdGVycydcclxuICBdO1xyXG5cclxufVxyXG4iXX0=

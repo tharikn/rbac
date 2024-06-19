@@ -1,6 +1,6 @@
 {
   "name": "@pics-core/profile",
-  "version": "0.0.6-RPMP.14",
+  "version": "1.0.1",
   "peerDependencies": {
     "@angular/common": "^16.2.12",
     "@angular/core": "^16.2.12",
@@ -18,9 +18,9 @@
   },
   "main": "bundles/pics-core-profile.umd.js",
   "module": "fesm2022/pics-core-profile.mjs",
-  "es2015": "fesm2015/pics-core-profile.js",
-  "esm2015": "esm2015/pics-core-profile.js",
-  "fesm2015": "fesm2015/pics-core-profile.js",
+  "es2022": "fesm2022/pics-core-profile.js",
+  "esm2022": "esm2022/pics-core-profile.js",
+  "fesm2022": "fesm2022/pics-core-profile.js",
   "typings": "index.d.ts",
   "sideEffects": false,
   "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",

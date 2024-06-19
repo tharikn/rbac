@@ -127,7 +127,6 @@ export declare class RBACINFO {
     others?: any;
     orgID?: any;
     environment?: Environment;
-    optinPapperless?: boolean | undefined;
 }
 export declare class Environment {
     mstrUsername?: string;
