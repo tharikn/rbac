@@ -700,7 +700,7 @@ class UsersComponent {
     }
     getPolicyGroupList(_managementGroupId) {
         this.userService.getOrgPolicyGroupList(this.orgId).subscribe((res) => {
-            this.policyGroupList = res['data'].sort((a, b) => a.policygroupname.localeCompare(b.name));
+            this.policyGroupList = res['data'].sort((a, b) => a.policygroupname.localeCompare(b.policygroupname));
         }, (err) => console.log(err));
     }
     addUser() {
