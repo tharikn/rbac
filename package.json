@@ -1,6 +1,6 @@
 {
-  "name": "@pics-core/rbac-users",
-  "version": "1.0.12",
+  "name": "@pics-core/rbac-org",
+  "version": "1.0.0",
   "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
   "directories": {
     "lib": "lib"
@@ -22,11 +22,11 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "main": "bundles/pics-core-rbac-users.umd.js",
-  "module": "fesm2022/pics-core-rbac-users.mjs",
-  "es2022": "fesm2022/pics-core-rbac-users.js",
-  "esm2022": "esm2022/pics-core-rbac-users.js",
-  "fesm2022": "fesm2022/pics-core-rbac-users.js",
+  "main": "bundles/pics-core-rbac-org.umd.js",
+  "module": "fesm2022/pics-core-rbac-org.mjs",
+  "es2022": "fesm2022/pics-core-rbac-org.js",
+  "esm2022": "esm2022/pics-core-rbac-org.js",
+  "fesm2022": "fesm2022/pics-core-rbac-org.js",
   "typings": "index.d.ts",
   "sideEffects": false,
   "exports": {
@@ -35,9 +35,9 @@
     },
     ".": {
       "types": "./index.d.ts",
-      "esm2022": "./esm2022/pics-core-rbac-users.mjs",
-      "esm": "./esm2022/pics-core-rbac-users.mjs",
-      "default": "./fesm2022/pics-core-rbac-users.mjs"
+      "esm2022": "./esm2022/pics-core-rbac-org.mjs",
+      "esm": "./esm2022/pics-core-rbac-org.mjs",
+      "default": "./fesm2022/pics-core-rbac-org.mjs"
     }
   }
 }

@@ -1,3 +1,3 @@
-export * from './lib/rbac-users.service';
-export * from './lib/rbac-users.component';
-export * from './lib/rbac-users.module';
+export * from './lib/rbac-org.service';
+export * from './lib/rbac-org.component';
+export * from './lib/rbac-org.module';
