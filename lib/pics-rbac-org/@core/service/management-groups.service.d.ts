@@ -1,18 +1,19 @@
-import { HttpService } from './http.service';
+import { DataStoreService } from './data-store.service';
 import * as i0 from "@angular/core";
 export declare class ManagementGroupsService {
-    private httpService;
-    constructor(httpService: HttpService);
-    getOrganizations(organizationid: any): import("rxjs").Observable<Object>;
-    createOrganization(organization: any): import("rxjs").Observable<Object>;
-    updateOrganization(organization: any): import("rxjs").Observable<Object>;
-    deleteOrganization(organizationid: number): import("rxjs").Observable<Object>;
-    getManagementGroups(organizationid: number, parentid: number): import("rxjs").Observable<Object>;
-    getManagementGroupTree(_organizationid: any): import("rxjs").Observable<Object>;
-    createManagementGroup(managementGroup: any): import("rxjs").Observable<Object>;
-    updateManagementGroup(managementGroup: any): import("rxjs").Observable<Object>;
-    deleteManagementGroup(managementGroupId: number): import("rxjs").Observable<Object>;
-    getAllOrganizations(): import("rxjs").Observable<Object>;
+    private _storeservice;
+    httpService: any;
+    constructor(_storeservice: DataStoreService);
+    getOrganizations(organizationid: any): any;
+    createOrganization(organization: any): any;
+    updateOrganization(organization: any): any;
+    deleteOrganization(organizationid: number): any;
+    getManagementGroups(organizationid: number, parentid: number): any;
+    getManagementGroupTree(_organizationid: any): any;
+    createManagementGroup(managementGroup: any): any;
+    updateManagementGroup(managementGroup: any): any;
+    deleteManagementGroup(managementGroupId: number): any;
+    getAllOrganizations(): any;
     static ɵfac: i0.ɵɵFactoryDeclaration<ManagementGroupsService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<ManagementGroupsService>;
 }
