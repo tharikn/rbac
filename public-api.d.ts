@@ -1,4 +1,3 @@
-export * from './lib/profile.service';
-export * from './lib/profile-update.service';
-export * from './lib/profile.component';
-export * from './lib/profile.module';
+export * from './lib/rbac-users.service';
+export * from './lib/rbac-users.component';
+export * from './lib/rbac-users.module';

@@ -1,6 +1,12 @@
 {
-  "name": "@pics-core/profile",
-  "version": "1.0.6",
+  "name": "@pics-core/rbac-users",
+  "version": "1.0.10",
+  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
+  "directories": {
+    "lib": "lib"
+  },
+  "author": "tulasireddy",
+  "license": "ISC",
   "peerDependencies": {
     "@angular/common": "^16.2.12",
     "@angular/core": "^16.2.12",
@@ -16,28 +22,22 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "main": "bundles/pics-core-profile.umd.js",
-  "module": "fesm2022/pics-core-profile.mjs",
-  "es2022": "fesm2022/pics-core-profile.js",
-  "esm2022": "esm2022/pics-core-profile.js",
-  "fesm2022": "fesm2022/pics-core-profile.js",
+  "main": "bundles/pics-core-rbac-users.umd.js",
+  "module": "fesm2022/pics-core-rbac-users.mjs",
+  "es2022": "fesm2022/pics-core-rbac-users.js",
+  "esm2022": "esm2022/pics-core-rbac-users.js",
+  "fesm2022": "fesm2022/pics-core-rbac-users.js",
   "typings": "index.d.ts",
   "sideEffects": false,
-  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
-  "directories": {
-    "lib": "lib"
-  },
-  "author": "tulasireddy",
-  "license": "ISC",
   "exports": {
     "./package.json": {
       "default": "./package.json"
     },
     ".": {
       "types": "./index.d.ts",
-      "esm2022": "./esm2022/pics-core-profile.mjs",
-      "esm": "./esm2022/pics-core-profile.mjs",
-      "default": "./fesm2022/pics-core-profile.mjs"
+      "esm2022": "./esm2022/pics-core-rbac-users.mjs",
+      "esm": "./esm2022/pics-core-rbac-users.mjs",
+      "default": "./fesm2022/pics-core-rbac-users.mjs"
     }
   }
 }
