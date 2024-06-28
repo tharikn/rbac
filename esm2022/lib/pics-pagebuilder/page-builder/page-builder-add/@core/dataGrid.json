@@ -1,0 +1,18 @@
+[
+    {
+        "label": "Data Grid",
+        "reorder": true,
+        "addAnotherPosition": "bottom",
+        "layoutFixed": false,
+        "enableRowGroups": false,
+        "initEmpty": false,
+        "tableView": false,
+        "defaultValue": [
+            {}
+        ],
+        "key": "dataGrid",
+        "type": "datagrid",
+        "input": true,
+        "components": []
+    }
+]

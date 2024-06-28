@@ -1,0 +1,77 @@
+{
+    "edit": "",
+    "editUrl": "",
+    "delete": "",
+    "deleteUrl": "",
+    "externalLink": "",
+    "externalUrl": "",
+    "defaultSortColumn": null,
+    "gridTitle": "",
+    "defaultSortType": null,
+    "isShowOnTop": "",
+    "isInitialFormLoad": "",
+    "exportPageName": null,
+    "gridSelection": "",
+    "gridDownloadRangeQueryHeader": null,
+    "gridActionFormArray": [
+        {
+            "action": "Add",
+            "icon": "fa fa-plus",
+            "isOutsideGrid": true,
+            "isOwner": false,
+            "link": "",
+            "name": "Add",
+            "type": "External Link"
+        },
+        {
+            "action": "edit",
+            "icon": "fa fa-pencil",
+            "isOutsideGrid": "",
+            "isOwner": false,
+            "link": "",
+            "name": "Edit",
+            "type": "External Link"
+        },
+        {
+            "action": "view",
+            "icon": "fa fa-eye",
+            "isOutsideGrid": "",
+            "isOwner": true,
+            "link": "",
+            "name": "Edit",
+            "type": "External Link"
+        },
+        {
+            "action": "delete",
+            "icon": "fa fa-trash",
+            "isOutsideGrid": "",
+            "isOwner": true,
+            "link": "",
+            "name": "Delete",
+            "type": "External Link"
+        }
+    ],
+    "gridConfigFormArray": [
+        {
+            "header": "",
+            "columnDef": "",
+            "link": "",
+            "routelink": "",
+            "icon": "",
+            "icontext": "",
+            "dateFormat": "",
+            "datetext": "",
+            "sort": "",
+            "filter": "",
+            "hide": "",
+            "fixed": "",
+            "Choosable": "",
+            "visible": "",
+            "selected": [],
+            "mobileView": "",
+            "tabView": ""
+        }
+    ],
+    "gridDownloadRangeQueryArray": [],
+    "chooser": ""
+}

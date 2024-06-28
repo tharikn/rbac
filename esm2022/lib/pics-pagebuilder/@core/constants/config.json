@@ -1,0 +1,38 @@
+[
+    {
+        "name": "Appointments",
+        "component": "AppointmentsComponent",
+        "componentName": "AppointmentsComponent",
+        "selectedTag": "<app-appointments></app-appointments>"
+    },
+    {
+        "name": "Event Scheduler",
+        "component": "EventSchedulerComponent",
+        "componentName": "EventSchedulerComponent",
+        "selectedTag": "<app-event-scheduler></app-event-scheduler>"
+    },
+    {
+        "name": "Document Packetization",
+        "component": "DocumentPacketizationComponent",
+        "componentName": "DocumentPacketizationComponent",
+        "selectedTag": "<app-document-packetization></app-document-packetization>"
+    },
+    {
+        "name": "Email Template",
+        "component": "EmailTemplateComponent",
+        "componentName": "EmailTemplateComponent",
+        "selectedTag": "<app-email-template></app-email-template>"
+    },
+    {
+        "name": "Event Scheduler",
+        "component": "EventSchedulerComponent",
+        "componentName": "EventSchedulerComponent",
+        "selectedTag": "<app-event-scheduler></app-event-scheduler>"
+    },
+    {
+        "name": "Inspection",
+        "component": "CreateSitevisitComponent",
+        "componentName": "CreateSitevisitComponent",
+        "selectedTag": "<app-create-sitevisit></app-create-sitevisit>"
+    }
+]
