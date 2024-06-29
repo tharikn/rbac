@@ -1,6 +1,6 @@
 {
   "name": "@pics-module/page-builder",
-  "version": "1.0.65",
+  "version": "1.0.69",
   "peerDependencies": {
     "@angular/common": "^16.2.12",
     "@angular/core": "^16.2.12",
