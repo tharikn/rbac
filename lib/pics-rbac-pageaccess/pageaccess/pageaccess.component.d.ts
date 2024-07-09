@@ -18,7 +18,6 @@ export declare class PageaccessComponent implements OnInit {
     userList: any[];
     policyGroupData: any[];
     roleAddedData: any[];
-    dataLevelAccess: boolean;
     pageLevelAccess: boolean;
     multiPageAccess: boolean;
     fieldLevelAccess: boolean;
@@ -55,7 +54,6 @@ export declare class PageaccessComponent implements OnInit {
     selectedRole: string;
     conditions: Array<any>;
     permissions: Array<any>;
-    dataAccess: Array<any>;
     showFieldValidity: boolean;
     pageAccessService: PageAccessService;
     orgSubs: Subscription;
@@ -141,8 +139,8 @@ export declare class PageaccessComponent implements OnInit {
     resetForm(id?: any, clear?: any): void;
     redirectList(): void;
     saveAccessPatching(): void;
-    changeFieldAccess(_event: any, i: any): void;
-    changePageAccess(index: any, selectedPrivilege: any): void;
+    changeFieldAccess(_index: any): void;
+    changePageAccess(index: any): void;
     setDefaultPageAccess(pageAccessData: FormArray, i: number): void;
     checkObjectType(schema: string, table: string): Promise<unknown>;
     isView(pageId: number): boolean;

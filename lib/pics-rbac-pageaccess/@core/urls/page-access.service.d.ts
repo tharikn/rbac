@@ -3,7 +3,7 @@ import * as i0 from "@angular/core";
 export declare class PageAccessService {
     private _storeservice;
     isfull: boolean;
-    hide: boolean;
+    ishide: boolean;
     isread: boolean;
     isreadwrite: boolean;
     httpService: any;
@@ -48,12 +48,9 @@ export declare class PageAccessService {
     updateDuplicatesinArray(origArr: any[], updatingArr: any[]): any[];
     getMostFrequentEle(arr: any): string;
     getAccessArrayOnClick(pagesFromField: any, pageData: any, selectedFieldData: any, savedPageAccessPatching: any, existingValue: any): any;
-    getPageReadAccess(pageAccessValue: any): any;
-    getPageReadFormAccess(pageAccess: any): any;
-    getFieldReadAccess(fieldAccessValue: any): any;
-    getReadFormAccess(pageAccess: any): any;
     checkFieldLevelExist(fieldLevelExist: any, savedPageAccessPatching: any, pagesFromField: any, existingValue: any, i: any): any;
     getAccess(access: any, fieldPageLevel: any): any;
+    getPageAccess(access: any): any;
     getOrganizationPage(orgId: any): any;
     getAssetByPageId(pId: any): any;
     createAsset(selectedAccess: any, selectedId: any, asset: any): any;
