@@ -1,6 +1,6 @@
 {
   "name": "@pics-core/rbac-pageaccess",
-  "version": "1.0.1-OR.43",
+  "version": "1.0.1-OR.44",
   "peerDependencies": {
     "@angular/common": "^16.2.12",
     "@angular/core": "^16.2.12",
