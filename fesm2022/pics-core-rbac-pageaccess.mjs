@@ -2638,7 +2638,6 @@ class PageaccessComponent {
                 const id = pAccessElement.id;
                 const activeVersion = pAccessElement.activeVersion;
                 let tableSchemaConfig = activeVersion.tableschemaconfig;
-                tableSchemaConfig = JSON.parse(tableSchemaConfig);
                 const objectType = tableSchemaConfig?.objectType ? tableSchemaConfig.objectType : 'table';
                 if (objectType === 'view') {
                     this.viewArray.push(id);
@@ -2696,7 +2695,6 @@ class PageaccessComponent {
                         const id = pageName[0]?.id;
                         const activeVersion = pageName[0]?.activeVersion;
                         let tableSchemaConfig = activeVersion?.tableschemaconfig;
-                        tableSchemaConfig = JSON.parse(tableSchemaConfig);
                         const objectType = tableSchemaConfig?.objectType ? tableSchemaConfig.objectType : 'table';
                         if (objectType === 'view') {
                             this.viewArray.push(id);
