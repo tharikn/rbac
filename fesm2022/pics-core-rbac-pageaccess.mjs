@@ -3429,7 +3429,7 @@ class PageaccessComponent {
     setDefaultPageAccess(pageAccessData, i) {
         pageAccessData.at(i).get('condition').setValue('always');
         pageAccessData.at(i).get('validity').setValue('1');
-        // pageAccessData.at(i).get('accessdata').setValue('all');
+        pageAccessData.at(i).get('accessdata').setValue('all');
         pageAccessData.at(i).get('fallbackTo').setValue('n');
     }
     checkObjectType(schema, table) {
