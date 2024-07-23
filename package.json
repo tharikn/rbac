@@ -1,6 +1,12 @@
 {
-  "name": "@pics-core/rbac-pageaccess",
-  "version": "1.0.8",
+  "name": "@pics-core/rbac-org",
+  "version": "1.0.1",
+  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
+  "directories": {
+    "lib": "lib"
+  },
+  "author": "tulasireddy",
+  "license": "ISC",
   "peerDependencies": {
     "@angular/common": "^16.2.12",
     "@angular/core": "^16.2.12",
@@ -16,28 +22,22 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "main": "bundles/pics-core-rbac-pageaccess.umd.js",
-  "module": "fesm2022/pics-core-rbac-pageaccess.mjs",
-  "es2022": "fesm2022/pics-core-rbac-pageaccess.js",
-  "esm2022": "esm2022/pics-core-rbac-pageaccess.js",
-  "fesm2022": "fesm2022/pics-core-rbac-pageaccess.js",
+  "main": "bundles/pics-core-rbac-org.umd.js",
+  "module": "fesm2022/pics-core-rbac-org.mjs",
+  "es2022": "fesm2022/pics-core-rbac-org.js",
+  "esm2022": "esm2022/pics-core-rbac-org.js",
+  "fesm2022": "fesm2022/pics-core-rbac-org.js",
   "typings": "index.d.ts",
   "sideEffects": false,
-  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.",
-  "directories": {
-    "lib": "lib"
-  },
-  "author": "JonesArnold",
-  "license": "ISC",
   "exports": {
     "./package.json": {
       "default": "./package.json"
     },
     ".": {
       "types": "./index.d.ts",
-      "esm2022": "./esm2022/pics-core-rbac-pageaccess.mjs",
-      "esm": "./esm2022/pics-core-rbac-pageaccess.mjs",
-      "default": "./fesm2022/pics-core-rbac-pageaccess.mjs"
+      "esm2022": "./esm2022/pics-core-rbac-org.mjs",
+      "esm": "./esm2022/pics-core-rbac-org.mjs",
+      "default": "./fesm2022/pics-core-rbac-org.mjs"
     }
   }
 }
