@@ -1,3 +1,3 @@
-export * from './lib/rbac-pageaccess.service';
-export * from './lib/rbac-pageaccess.component';
-export * from './lib/rbac-pageaccess.module';
+export * from './lib/rbac-permissions.service';
+export * from './lib/rbac-permissions.component';
+export * from './lib/rbac-permissions.module';

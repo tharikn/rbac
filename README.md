@@ -1,23 +1,23 @@
-# RbacPageaccess
+# RbacPermissions
 
 This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.
 
 ## Code scaffolding
 
-Run `ng generate component component-name --project rbac-pageaccess` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project rbac-pageaccess`.
-> Note: Don't forget to add `--project rbac-pageaccess` or else it will be added to the default project in your `angular.json` file. 
+Run `ng generate component component-name --project rbac-permissions` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project rbac-permissions`.
+> Note: Don't forget to add `--project rbac-permissions` or else it will be added to the default project in your `angular.json` file. 
 
 ## Build
 
-Run `ng build rbac-pageaccess` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build rbac-permissions` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 ## Publishing
 
-After building your library with `ng build rbac-pageaccess`, go to the dist folder `cd dist/rbac-pageaccess` and run `npm publish`.
+After building your library with `ng build rbac-permissions`, go to the dist folder `cd dist/rbac-permissions` and run `npm publish`.
 
 ## Running unit tests
 
-Run `ng test rbac-pageaccess` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `ng test rbac-permissions` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
 ## Further help
 
