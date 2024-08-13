@@ -1,12 +1,6 @@
 {
-  "name": "@pics-core/rbac-permissions",
-  "version": "1.0.3",
-  "description": "This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.",
-  "directories": {
-    "lib": "lib"
-  },
-  "author": "tulasireddy",
-  "license": "ISC",
+  "name": "@pics-module/dynamic",
+  "version": "1.0.2",
   "peerDependencies": {
     "@angular/common": "^16.2.12",
     "@angular/core": "^16.2.12",
@@ -15,6 +9,7 @@
     "@angular/cdk": "^16.2.12",
     "primeflex": "^2.0.0",
     "primeicons": "^5.0.0",
+    "moment": "^2.29.4",
     "primeng": "^16.3.1",
     "rxjs": "~6.6.0",
     "quill": "^1.3.6"
@@ -22,22 +17,18 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "main": "bundles/pics-core-rbac-permissions.umd.js",
-  "module": "fesm2022/pics-core-rbac-permissions.mjs",
-  "es2022": "fesm2022/pics-core-rbac-permissions.js",
-  "esm2022": "esm2022/pics-core-rbac-permissions.js",
-  "fesm2022": "fesm2022/pics-core-rbac-permissions.js",
+  "module": "fesm2022/pics-module-dynamic.mjs",
   "typings": "index.d.ts",
-  "sideEffects": false,
   "exports": {
     "./package.json": {
       "default": "./package.json"
     },
     ".": {
       "types": "./index.d.ts",
-      "esm2022": "./esm2022/pics-core-rbac-permissions.mjs",
-      "esm": "./esm2022/pics-core-rbac-permissions.mjs",
-      "default": "./fesm2022/pics-core-rbac-permissions.mjs"
+      "esm2022": "./esm2022/pics-module-dynamic.mjs",
+      "esm": "./esm2022/pics-module-dynamic.mjs",
+      "default": "./fesm2022/pics-module-dynamic.mjs"
     }
-  }
+  },
+  "sideEffects": false
 }

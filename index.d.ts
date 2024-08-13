@@ -1,5 +1,5 @@
 /**
  * Generated bundle index. Do not edit.
  */
-/// <amd-module name="@pics-core/rbac-permissions" />
+/// <amd-module name="@pics-module/dynamic" />
 export * from './public-api';

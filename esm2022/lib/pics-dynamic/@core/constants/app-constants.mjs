@@ -1,0 +1,5 @@
+export class AppConstants {
+    static errorMessage = 'Something went wrong!';
+    static regexEmail = '^[0-9a-zA-Z.-]+[@][0-9a-zA-Z.-]+[.][0-9a-zA-Z]{2,}$';
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXBwLWNvbnN0YW50cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3Byb2plY3RzL3BpY3MtbW9kdWxlL2R5bmFtaWMvc3JjL2xpYi9waWNzLWR5bmFtaWMvQGNvcmUvY29uc3RhbnRzL2FwcC1jb25zdGFudHMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsTUFBTSxPQUFPLFlBQVk7SUFDaEIsTUFBTSxDQUFDLFlBQVksR0FBRyx1QkFBdUIsQ0FBQztJQUM5QyxNQUFNLENBQUMsVUFBVSxHQUFHLHFEQUFxRCxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGNsYXNzIEFwcENvbnN0YW50cyB7XHJcbiAgcHVibGljIHN0YXRpYyBlcnJvck1lc3NhZ2UgPSAnU29tZXRoaW5nIHdlbnQgd3JvbmchJztcclxuICBwdWJsaWMgc3RhdGljIHJlZ2V4RW1haWwgPSAnXlswLTlhLXpBLVouLV0rW0BdWzAtOWEtekEtWi4tXStbLl1bMC05YS16QS1aXXsyLH0kJztcclxufSJdfQ==

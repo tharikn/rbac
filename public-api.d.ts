@@ -1,3 +1,3 @@
-export * from './lib/rbac-permissions.service';
-export * from './lib/rbac-permissions.component';
-export * from './lib/rbac-permissions.module';
+export * from './lib/dynamic.service';
+export * from './lib/dynamic.component';
+export * from './lib/dynamic.module';
